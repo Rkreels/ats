@@ -12,16 +12,21 @@ import { useVoiceTrigger } from "@/hooks/useVoiceTrigger";
 
 export default function VoiceSettings() {
   const { toast } = useToast();
-  const { voiceEnabled, toggleVoice } = useVoiceTutorial();
+  const { 
+    voiceEnabled, 
+    toggleVoice, 
+    voicePersona, 
+    setVoicePersona,
+    voiceSpeed,
+    setVoiceSpeed
+  } = useVoiceTutorial();
   
   // Voice tutorial settings form state
-  const [voicePersona, setVoicePersona] = useState("professional");
   const [voiceTutorialLevel, setVoiceTutorialLevel] = useState("all");
-  const [voiceSpeed, setVoiceSpeed] = useState("normal");
   
   // Mock function to save settings
   const saveSettings = () => {
-    // In a real implementation, this would update the voice settings in the context
+    // The voice persona and speed are now directly managed by the context
     toast({
       title: "Voice settings saved",
       description: "Your voice tutorial preferences have been updated."
@@ -30,7 +35,7 @@ export default function VoiceSettings() {
   
   // Voice tutorials
   const { voiceProps: voiceSettingsProps } = useVoiceTrigger({
-    what: "These settings control how the voice tutorial system works."
+    what: "These settings control how the voice tutorial system works. You can adjust the speed, choose different voice personas, and enable or disable specific types of voice guidance."
   });
   
   return (
@@ -88,7 +93,7 @@ export default function VoiceSettings() {
               <SelectValue placeholder="Select voice speed" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="slow">Slow</SelectItem>
+              <SelectItem value="slow">Slow (For non-English speakers)</SelectItem>
               <SelectItem value="normal">Normal</SelectItem>
               <SelectItem value="fast">Fast</SelectItem>
             </SelectContent>

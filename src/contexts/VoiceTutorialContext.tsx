@@ -1,3 +1,4 @@
+
 import { createContext, useState, useContext, useEffect, ReactNode } from "react";
 
 type VoiceTutorialType = "what" | "decision";
@@ -14,6 +15,10 @@ interface VoiceTutorialContextType {
   voiceEnabled: boolean;
   toggleVoice: () => void;
   isPlaying: boolean;
+  voicePersona: string;
+  setVoicePersona: (persona: string) => void;
+  voiceSpeed: string;
+  setVoiceSpeed: (speed: string) => void;
 }
 
 const VoiceTutorialContext = createContext<VoiceTutorialContextType | undefined>(undefined);
@@ -23,6 +28,9 @@ export const VoiceTutorialProvider = ({ children }: { children: ReactNode }) => 
   const [voiceEnabled, setVoiceEnabled] = useState<boolean>(true);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [voiceQueue, setVoiceQueue] = useState<VoiceTutorialContent[]>([]);
+  // Add state for voice persona and speed
+  const [voicePersona, setVoicePersona] = useState<string>("professional");
+  const [voiceSpeed, setVoiceSpeed] = useState<string>("slow");
   
   // Browser's SpeechSynthesis API
   const synth = typeof window !== 'undefined' ? window.speechSynthesis : null;
@@ -45,9 +53,12 @@ export const VoiceTutorialProvider = ({ children }: { children: ReactNode }) => 
     
     // Process next item in queue if available
     if (voiceQueue.length > 0) {
-      const nextTutorial = voiceQueue[0];
-      setVoiceQueue(prev => prev.slice(1));
-      setActiveTutorial(nextTutorial);
+      // Add a small delay before playing the next item to prevent overlapping
+      setTimeout(() => {
+        const nextTutorial = voiceQueue[0];
+        setVoiceQueue(prev => prev.slice(1));
+        setActiveTutorial(nextTutorial);
+      }, 500);
     }
   };
   
@@ -64,21 +75,29 @@ export const VoiceTutorialProvider = ({ children }: { children: ReactNode }) => 
     if (activeTutorial && voiceEnabled && synth) {
       const utterance = new SpeechSynthesisUtterance(activeTutorial.text);
       
-      // Use different voices based on tutorial type
+      // Use different voices based on persona
       const voices = synth.getVoices();
       
       if (voices.length > 0) {
         let voiceIndex = 0;
         
-        switch (activeTutorial.type) {
-          case "what":
-            // Informational voice (prefer female voices)
+        // Select voice based on persona preference
+        switch (voicePersona) {
+          case "friendly":
             voiceIndex = voices.findIndex(v => v.name.includes("Female") || v.name.includes("Samantha"));
             break;
-          case "decision":
-            // Authoritative voice (prefer male voices)
-            voiceIndex = voices.findIndex(v => v.name.includes("Male") || v.name.includes("Daniel"));
+          case "professional":
+            voiceIndex = voices.findIndex(v => v.name.includes("Male") || v.name.includes("Alex"));
             break;
+          case "technical":
+            voiceIndex = voices.findIndex(v => v.name.includes("Daniel") || v.name.includes("Male"));
+            break;
+          case "mentor":
+            voiceIndex = voices.findIndex(v => v.name.includes("Karen") || v.name.includes("Female"));
+            break;
+          default:
+            // Default voice
+            voiceIndex = 0;
         }
         
         if (voiceIndex !== -1) {
@@ -86,16 +105,22 @@ export const VoiceTutorialProvider = ({ children }: { children: ReactNode }) => 
         }
       }
       
-      // Set properties based on tutorial type
-      switch (activeTutorial.type) {
-        case "what":
-          utterance.rate = 1.2; // Faster for quick information
-          utterance.pitch = 1.1;
+      // Set speech rate based on user preference
+      switch (voiceSpeed) {
+        case "slow":
+          utterance.rate = 0.8; // Slower for non-English speakers
+          utterance.pitch = 1.0;
           break;
-        case "decision":
+        case "normal":
           utterance.rate = 1.0;
-          utterance.pitch = 0.9;
+          utterance.pitch = 1.0;
           break;
+        case "fast":
+          utterance.rate = 1.2;
+          utterance.pitch = 1.0;
+          break;
+        default:
+          utterance.rate = 0.8; // Default to slow
       }
       
       // Events
@@ -116,11 +141,22 @@ export const VoiceTutorialProvider = ({ children }: { children: ReactNode }) => 
     return () => {
       if (synth) synth.cancel();
     };
-  }, [activeTutorial, voiceEnabled]);
+  }, [activeTutorial, voiceEnabled, voicePersona, voiceSpeed]);
   
   return (
     <VoiceTutorialContext.Provider 
-      value={{ activeTutorial, setTutorial, clearTutorial, voiceEnabled, toggleVoice, isPlaying }}
+      value={{ 
+        activeTutorial, 
+        setTutorial, 
+        clearTutorial, 
+        voiceEnabled, 
+        toggleVoice, 
+        isPlaying, 
+        voicePersona, 
+        setVoicePersona,
+        voiceSpeed,
+        setVoiceSpeed
+      }}
     >
       {children}
     </VoiceTutorialContext.Provider>

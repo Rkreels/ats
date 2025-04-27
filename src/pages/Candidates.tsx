@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useVoiceTrigger } from "@/hooks/useVoiceTrigger";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -34,21 +35,21 @@ export default function Candidates() {
     setCandidates(initialCandidates);
   }, []);
 
-  // Voice tutorials
+  // Voice tutorials with improved descriptions
   const { voiceProps: candidateOverviewProps } = useVoiceTrigger({
-    what: "This is the candidate pipeline where you track applicants through each stage. Use filters to narrow down candidates or drag them between stages to update their status."
+    what: "Welcome to the candidate pipeline. Here you can see all applicants and track them through different stages of the hiring process. You can search for candidates, filter them by status, and sort them in different ways."
   });
 
   const { voiceProps: searchVoiceProps } = useVoiceTrigger({
-    what: "Use the search bar to quickly find candidates by name, role, or email."
+    what: "Type in this search box to find candidates by their name, role, or email address. The list will update as you type."
   });
 
   const { voiceProps: filterVoiceProps } = useVoiceTrigger({
-    what: "Filter candidates by their current status in the hiring pipeline."
+    what: "Use this dropdown to filter candidates by their current status. Select options like Applied, Interview, Offer, or Hired to see only candidates in that stage."
   });
 
   const { voiceProps: sortVoiceProps } = useVoiceTrigger({
-    what: "Sort candidates by name, role, or application date to organize your view."
+    what: "Sort your candidate list by name, role, or application date. You can also choose between ascending and descending order."
   });
 
   // Filtered and sorted candidates

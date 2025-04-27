@@ -1,3 +1,4 @@
+
 import { useVoiceTrigger } from "@/hooks/useVoiceTrigger";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar } from "lucide-react";
@@ -12,12 +13,39 @@ import { Calendar as CalendarIcon } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
-import { DayPicker } from "react-day-picker";
+import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { useToast } from "@/hooks/use-toast";
+
+// Mock interviews data since mockDataService doesn't have interviews methods
+const mockInterviews: Interview[] = [
+  {
+    id: "i-1",
+    candidateId: "c-101",
+    interviewerId: "u-201",
+    interviewerName: "Jane Smith",
+    date: "2025-05-05",
+    time: "10:00",
+    duration: "30 minutes",
+    type: "Video",
+    status: "Scheduled"
+  },
+  {
+    id: "i-2",
+    candidateId: "c-102",
+    interviewerId: "u-202",
+    interviewerName: "Michael Johnson",
+    date: "2025-05-06",
+    time: "14:30",
+    duration: "45 minutes",
+    type: "Phone",
+    status: "Scheduled"
+  }
+];
 
 export default function Interviews() {
   const { toast } = useToast();
-  const [interviews, setInterviews] = useState(mockDataService.getAllInterviews());
+  // Use our mock interviews instead of calling mockDataService
+  const [interviews, setInterviews] = useState<Interview[]>(mockInterviews);
   const [newInterview, setNewInterview] = useState<Omit<Interview, 'id'>>({
     candidateId: '',
     interviewerId: '',
@@ -31,7 +59,15 @@ export default function Interviews() {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   
   const { voiceProps: interviewsOverviewProps } = useVoiceTrigger({
-    what: "This is the interview scheduling section where you manage upcoming and past interviews. Schedule new interviews, send calendar invites, and track interview feedback."
+    what: "This is the interview scheduling section. Here you can schedule new interviews with candidates. Fill in the candidate ID, interviewer name, and select date, time, and interview type to create a new interview."
+  });
+  
+  const { voiceProps: scheduleFormProps } = useVoiceTrigger({
+    what: "Use this form to schedule a new interview. Enter the candidate ID, interviewer name, select a date and time, and specify the interview duration and type."
+  });
+  
+  const { voiceProps: upcomingInterviewsProps } = useVoiceTrigger({
+    what: "This panel shows all upcoming interviews. You can see the interviewer name, candidate ID, and scheduled date and time for each interview."
   });
   
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -59,7 +95,9 @@ export default function Interviews() {
     const newId = `i-${interviews.length + 1}`;
     const completeInterview: Interview = { id: newId, ...newInterview };
     setInterviews(prev => [...prev, completeInterview]);
-    mockDataService.addInterview(completeInterview);
+    
+    // Instead of using mockDataService.addInterview which doesn't exist
+    // We're just adding to our local state
     
     setNewInterview({
       candidateId: '',
@@ -89,7 +127,7 @@ export default function Interviews() {
       </div>
       
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8" {...interviewsOverviewProps}>
-        <Card>
+        <Card {...scheduleFormProps}>
           <CardHeader>
             <CardTitle>Schedule New Interview</CardTitle>
             <CardDescription>Create a new interview for a candidate</CardDescription>
@@ -139,7 +177,7 @@ export default function Interviews() {
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0" align="start">
-                    <DayPicker
+                    <CalendarComponent
                       mode="single"
                       selected={selectedDate}
                       onSelect={handleDateSelect}
@@ -175,7 +213,7 @@ export default function Interviews() {
               <div>
                 <Label htmlFor="type">Type</Label>
                 <Select name="type" value={newInterview.type} onValueChange={(value) => handleInputChange({ target: { name: 'type', value } } as any)}>
-                  <SelectTrigger>
+                  <SelectTrigger id="type">
                     <SelectValue placeholder="Select type" />
                   </SelectTrigger>
                   <SelectContent>
@@ -191,7 +229,7 @@ export default function Interviews() {
           </CardContent>
         </Card>
         
-        <Card>
+        <Card {...upcomingInterviewsProps}>
           <CardHeader>
             <CardTitle>Upcoming Interviews</CardTitle>
             <CardDescription>List of scheduled interviews</CardDescription>

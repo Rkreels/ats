@@ -28,14 +28,24 @@ export const useVoiceTrigger = ({
   // Handlers for different events
   const handleMouseEnter = useCallback(() => {
     if (what) {
-      // Immediate voice feedback
+      // Clear any existing timeout to avoid overlapping instructions
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+      
+      // Immediate voice feedback with no delay
       setTutorial(what, "what");
     }
   }, [what, setTutorial]);
   
   const handleClick = useCallback(() => {
     if (!disableClick && what) {
-      // Also trigger on click for better accessibility
+      // Clear any existing timeout to avoid overlapping instructions  
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+      
+      // Also trigger on click for better accessibility with no delay
       setTutorial(what, "what");
     }
   }, [what, disableClick, setTutorial]);
@@ -43,6 +53,9 @@ export const useVoiceTrigger = ({
   // For decision support (manually triggered)
   const triggerDecision = useCallback(() => {
     if (decision) {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
       setTutorial(decision, "decision");
     }
   }, [decision, setTutorial]);
