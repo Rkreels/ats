@@ -30,7 +30,7 @@ export const VoiceTutorialProvider = ({ children }: { children: ReactNode }) => 
   const [voiceQueue, setVoiceQueue] = useState<VoiceTutorialContent[]>([]);
   // Add state for voice persona and speed
   const [voicePersona, setVoicePersona] = useState<string>("professional");
-  const [voiceSpeed, setVoiceSpeed] = useState<string>("slow");
+  const [voiceSpeed, setVoiceSpeed] = useState<string>("normal");
   
   // Browser's SpeechSynthesis API
   const synth = typeof window !== 'undefined' ? window.speechSynthesis : null;
@@ -105,22 +105,22 @@ export const VoiceTutorialProvider = ({ children }: { children: ReactNode }) => 
         }
       }
       
-      // Set speech rate based on user preference
+      // Set speech rate based on user preference - Updated values for better clarity
       switch (voiceSpeed) {
         case "slow":
-          utterance.rate = 0.8; // Slower for non-English speakers
+          utterance.rate = 0.85; // Slow but slightly faster than before
           utterance.pitch = 1.0;
           break;
         case "normal":
-          utterance.rate = 1.0;
+          utterance.rate = 0.95; // Medium speed
           utterance.pitch = 1.0;
           break;
         case "fast":
-          utterance.rate = 1.2;
+          utterance.rate = 1.1; // Fast but still understandable
           utterance.pitch = 1.0;
           break;
         default:
-          utterance.rate = 0.8; // Default to slow
+          utterance.rate = 0.9; // Default to moderate speed
       }
       
       // Events
