@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -61,6 +62,24 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
+				},
+				// ATS specific colors
+				ats: {
+					primary: '#4361ee',
+					secondary: '#3f37c9',
+					success: '#4cc9f0',
+					danger: '#f72585',
+					warning: '#f9c74f',
+					info: '#90dbf4',
+					light: '#f8f9fa',
+					dark: '#212529'
+				},
+				kanban: {
+					applied: '#4cc9f0',
+					screen: '#4361ee',
+					interview: '#3a0ca3',
+					offer: '#7209b7',
+					hired: '#4bb543'
 				}
 			},
 			borderRadius: {
@@ -84,11 +103,29 @@ export default {
 					to: {
 						height: '0'
 					}
+				},
+				'pulse-slow': {
+					'0%, 100%': { opacity: '1' },
+					'50%': { opacity: '0.5' }
+				},
+				'fade-in': {
+					from: { opacity: '0', transform: 'translateY(8px)' },
+					to: { opacity: '1', transform: 'translateY(0)' }
+				},
+				'voice-wave': {
+					'0%': { transform: 'scaleY(0.5)' },
+					'50%': { transform: 'scaleY(1)' },
+					'100%': { transform: 'scaleY(0.5)' }
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out'
+				'accordion-up': 'accordion-up 0.2s ease-out',
+				'pulse-slow': 'pulse-slow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+				'fade-in': 'fade-in 0.3s ease-out',
+				'voice-wave-1': 'voice-wave 1s ease-in-out infinite',
+				'voice-wave-2': 'voice-wave 1.2s ease-in-out infinite 0.1s',
+				'voice-wave-3': 'voice-wave 1.5s ease-in-out infinite 0.2s'
 			}
 		}
 	},
