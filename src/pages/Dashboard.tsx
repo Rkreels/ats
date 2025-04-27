@@ -1,4 +1,3 @@
-
 import { useVoiceTrigger } from "@/hooks/useVoiceTrigger";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell, Legend } from "recharts";
@@ -19,19 +18,16 @@ export default function Dashboard() {
   
   // Voice tutorials
   const { voiceProps: overviewVoiceProps } = useVoiceTrigger({
-    what: "This is your recruitment dashboard showing key metrics like active jobs, candidates in pipeline, and upcoming interviews.",
-    how: "Review these numbers daily to understand your recruitment funnel activity at a glance."
+    what: "This is your recruitment dashboard showing key metrics like active jobs, candidates in pipeline, and upcoming interviews."
   });
   
   const { voiceProps: timeChartVoiceProps } = useVoiceTrigger({
     what: "This chart shows average time-to-hire in days across different departments over time.",
-    how: "Use this chart to identify which departments are taking longer to fill positions and potentially need process improvements.",
     decision: "Engineering hiring is taking 10 days longer this month than last. Consider reviewing the technical interview process for bottlenecks."
   });
   
   const { voiceProps: diversityVoiceProps } = useVoiceTrigger({
     what: "These charts show the diversity breakdown of your candidate pipeline by gender and ethnicity.",
-    how: "Track these metrics to ensure your recruiting efforts are reaching diverse candidate pools.",
     decision: "Your gender diversity ratio shows a 60/40 male-to-female split. Consider diversifying job boards or using inclusive language in job descriptions."
   });
   

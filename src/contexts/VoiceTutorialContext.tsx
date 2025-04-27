@@ -22,11 +22,19 @@ export const VoiceTutorialProvider = ({ children }: { children: ReactNode }) => 
   const [activeTutorial, setActiveTutorial] = useState<VoiceTutorialContent | null>(null);
   const [voiceEnabled, setVoiceEnabled] = useState<boolean>(true);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
+  const [voiceQueue, setVoiceQueue] = useState<VoiceTutorialContent[]>([]);
   
   // Browser's SpeechSynthesis API
   const synth = typeof window !== 'undefined' ? window.speechSynthesis : null;
   
   const setTutorial = (text: string, type: VoiceTutorialType) => {
+    // If currently playing, queue the new tutorial
+    if (isPlaying && voiceEnabled) {
+      setVoiceQueue(prev => [...prev, { text, type }]);
+      return;
+    }
+    
+    // Otherwise set it as active immediately
     setActiveTutorial({ text, type });
   };
   
@@ -34,11 +42,21 @@ export const VoiceTutorialProvider = ({ children }: { children: ReactNode }) => 
     setActiveTutorial(null);
     if (synth) synth.cancel();
     setIsPlaying(false);
+    
+    // Process next item in queue if available
+    if (voiceQueue.length > 0) {
+      const nextTutorial = voiceQueue[0];
+      setVoiceQueue(prev => prev.slice(1));
+      setActiveTutorial(nextTutorial);
+    }
   };
   
   const toggleVoice = () => {
     setVoiceEnabled(prev => !prev);
-    if (!voiceEnabled && synth) synth.cancel();
+    if (synth) synth.cancel();
+    setIsPlaying(false);
+    setVoiceQueue([]);
+    setActiveTutorial(null);
   };
   
   // Process voice tutorial when it changes
@@ -71,21 +89,27 @@ export const VoiceTutorialProvider = ({ children }: { children: ReactNode }) => 
       // Set properties based on tutorial type
       switch (activeTutorial.type) {
         case "what":
-          utterance.rate = 1.1; // Slightly faster for quick information
+          utterance.rate = 1.2; // Faster for quick information
           utterance.pitch = 1.1;
           break;
         case "decision":
-          utterance.rate = 0.95;
+          utterance.rate = 1.0;
           utterance.pitch = 0.9;
           break;
       }
       
       // Events
       utterance.onstart = () => setIsPlaying(true);
-      utterance.onend = () => setIsPlaying(false);
-      utterance.onerror = () => setIsPlaying(false);
+      utterance.onend = () => {
+        setIsPlaying(false);
+        clearTutorial(); // Auto-clear after speaking
+      };
+      utterance.onerror = () => {
+        setIsPlaying(false);
+        clearTutorial();
+      };
       
-      // Speak the tutorial
+      // Speak the tutorial immediately
       synth.speak(utterance);
     }
     

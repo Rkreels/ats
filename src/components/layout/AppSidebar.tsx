@@ -12,42 +12,36 @@ const menuItems = [
     icon: Home,
     path: "/",
     voiceWhatIs: "This is the dashboard where you can see an overview of recruitment metrics and activity.",
-    voiceHowTo: "Click here to view top-level metrics like time-to-hire, applicant sources, and active job postings."
   },
   {
     label: "Candidates",
     icon: Users,
     path: "/candidates",
     voiceWhatIs: "This is the candidate pipeline where you can track applicants through each stage of the hiring process.",
-    voiceHowTo: "Click here to view all candidates and manage them through the pipeline from application to hire."
   },
   {
     label: "Jobs",
     icon: Briefcase,
     path: "/jobs",
     voiceWhatIs: "This is the job management section where you post new positions and track job applications.",
-    voiceHowTo: "Click here to create new job postings, manage your active jobs, and track approval workflows."
   },
   {
     label: "Interviews",
     icon: Calendar,
     path: "/interviews",
     voiceWhatIs: "This is the interview scheduling section where you manage candidate interviews.",
-    voiceHowTo: "Click here to schedule and track interviews, send calendar invites, and manage interview feedback."
   },
   {
     label: "Reports",
     icon: BarChart2,
     path: "/reports",
     voiceWhatIs: "This is the analytics and reporting section where you track recruitment metrics.",
-    voiceHowTo: "Click here to view time-to-hire metrics, source effectiveness, diversity metrics, and more."
   },
   {
     label: "Settings",
     icon: Settings,
     path: "/settings",
     voiceWhatIs: "This is where you can configure your ATS settings.",
-    voiceHowTo: "Click here to customize job templates, workflows, and notification preferences."
   }
 ];
 
@@ -56,8 +50,7 @@ export default function AppSidebar() {
   const { voiceEnabled, toggleVoice } = useVoiceTutorial();
   
   const { voiceProps: sidebarVoiceProps } = useVoiceTrigger({
-    what: "This is the main navigation menu. Use it to access different sections of your Applicant Tracking System.",
-    how: "Click on any icon to navigate to that section. You can also collapse this sidebar by clicking the menu button at the top."
+    what: "This is the main navigation menu. Use it to access different sections of your Applicant Tracking System."
   });
   
   return (
@@ -99,8 +92,6 @@ export default function AppSidebar() {
               className="p-2 rounded-full hover:bg-gray-100"
               aria-label={voiceEnabled ? "Disable voice tutorials" : "Enable voice tutorials"}
               title={voiceEnabled ? "Disable voice tutorials" : "Enable voice tutorials"}
-              data-voice-what="This button toggles the voice tutorial system on and off."
-              data-voice-how="Click to mute or unmute the voice assistant. When muted, you'll still see text tutorials but won't hear audio."
             >
               {voiceEnabled ? <Volume2 size={18} /> : <VolumeX size={18} />}
             </button>
@@ -118,8 +109,7 @@ export default function AppSidebar() {
           <ul className="space-y-2">
             {menuItems.map((item) => {
               const { voiceProps } = useVoiceTrigger({
-                what: item.voiceWhatIs,
-                how: item.voiceHowTo
+                what: item.voiceWhatIs
               });
               
               return (
