@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useCallback } from "react";
 import { useVoiceTrigger } from "@/hooks/useVoiceTrigger";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -5,8 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Calendar } from "lucide-react";
-import { CalendarDate } from "@/components/ui/calendar";
+import { Calendar as CalendarIcon } from "lucide-react";
+import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { mockDataService } from "@/data/mockData";
 import { Job } from "@/types";
@@ -49,12 +50,13 @@ export default function Jobs() {
   const handleCreateJob = () => {
     const newJobWithId = { ...newJob, id: `j-${jobs.length + 1}` };
     setJobs([...jobs, newJobWithId]);
-    mockDataService.addJob(newJobWithId);
-    setIsCreateJobModalOpen(false);
+    // We need to modify this line as mockDataService doesn't have addJob method
+    // Let's simulate adding the job to our local state only
     toast({
       title: "Job created",
       description: `The job "${newJob.title}" has been created.`
     });
+    setIsCreateJobModalOpen(false);
   };
   
   const filteredJobs = jobs.filter(job => {
@@ -151,16 +153,17 @@ export default function Jobs() {
               variant={"outline"}
               className={""}
             >
-              <Calendar className="mr-2 h-4 w-4" />
+              <CalendarIcon className="mr-2 h-4 w-4" />
               {date ? new Date(date).toLocaleDateString() : <span>Pick a date</span>}
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-auto p-0" align="start">
-            <CalendarDate
+            <Calendar
               mode="single"
               selected={date}
               onSelect={setDate}
               initialFocus
+              className="pointer-events-auto"
             />
           </PopoverContent>
         </Popover>
