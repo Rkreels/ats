@@ -1,7 +1,7 @@
 
 import { useVoiceTutorial } from "@/contexts/VoiceTutorialContext";
 import { useEffect, useState } from "react";
-import { AlertCircle, HelpCircle, Lightbulb, Volume2, VolumeX } from "lucide-react";
+import { HelpCircle, Lightbulb, Volume2, VolumeX } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export const VoiceTutorialPopup = () => {
@@ -17,7 +17,7 @@ export const VoiceTutorialPopup = () => {
         const timer = setTimeout(() => {
           setVisible(false);
           setTimeout(clearTutorial, 300); // Clear after animation completes
-        }, 8000); // Slightly longer than most voice snippets
+        }, 5000); // Shorter duration for quicker response
         
         return () => clearTimeout(timer);
       }
@@ -35,8 +35,6 @@ export const VoiceTutorialPopup = () => {
     switch (activeTutorial.type) {
       case "what":
         return <HelpCircle className="text-blue-500" />;
-      case "how":
-        return <AlertCircle className="text-amber-500" />;
       case "decision":
         return <Lightbulb className="text-purple-500" />;
       default:
@@ -48,8 +46,6 @@ export const VoiceTutorialPopup = () => {
     switch (activeTutorial.type) {
       case "what":
         return "border-blue-200 bg-blue-50";
-      case "how":
-        return "border-amber-200 bg-amber-50";
       case "decision":
         return "border-purple-200 bg-purple-50";
       default:
@@ -70,7 +66,6 @@ export const VoiceTutorialPopup = () => {
           {getTutorialIcon()}
           <h4 className="font-medium">
             {activeTutorial.type === "what" && "What is this?"}
-            {activeTutorial.type === "how" && "How & Why"}
             {activeTutorial.type === "decision" && "Decision Support"}
           </h4>
         </div>

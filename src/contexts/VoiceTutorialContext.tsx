@@ -1,7 +1,6 @@
-
 import { createContext, useState, useContext, useEffect, ReactNode } from "react";
 
-type VoiceTutorialType = "what" | "how" | "decision";
+type VoiceTutorialType = "what" | "decision";
 
 interface VoiceTutorialContent {
   text: string;
@@ -50,19 +49,13 @@ export const VoiceTutorialProvider = ({ children }: { children: ReactNode }) => 
       // Use different voices based on tutorial type
       const voices = synth.getVoices();
       
-      // Try to find specific voices based on type
       if (voices.length > 0) {
-        // Try to find an appropriate voice based on the tutorial type
         let voiceIndex = 0;
         
         switch (activeTutorial.type) {
           case "what":
             // Informational voice (prefer female voices)
             voiceIndex = voices.findIndex(v => v.name.includes("Female") || v.name.includes("Samantha"));
-            break;
-          case "how":
-            // Instructional voice (neutral)
-            voiceIndex = voices.findIndex(v => v.name.includes("Google") || v.name.includes("Alex"));
             break;
           case "decision":
             // Authoritative voice (prefer male voices)
@@ -78,15 +71,11 @@ export const VoiceTutorialProvider = ({ children }: { children: ReactNode }) => 
       // Set properties based on tutorial type
       switch (activeTutorial.type) {
         case "what":
-          utterance.rate = 1.0;
+          utterance.rate = 1.1; // Slightly faster for quick information
           utterance.pitch = 1.1;
           break;
-        case "how":
-          utterance.rate = 0.9;
-          utterance.pitch = 1.0;
-          break;
         case "decision":
-          utterance.rate = 0.85;
+          utterance.rate = 0.95;
           utterance.pitch = 0.9;
           break;
       }
