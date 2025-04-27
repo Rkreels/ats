@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Search, Plus, Edit, ArrowUpRight, Briefcase, Building } from "lucide-react";
+import { Search, Plus, Edit, ArrowUpRight, Briefcase, Building, Users } from "lucide-react";
 import { mockDataService, Job } from "@/data/mockData";
 
 export default function Jobs() {
