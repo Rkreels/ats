@@ -6,6 +6,7 @@ import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { NavLink } from "react-router-dom";
 import { useUser } from "@/contexts/UserContext";
+import { Permissions } from "@/contexts/UserContext";
 
 const menuItems = [
   {
@@ -20,7 +21,7 @@ const menuItems = [
     icon: Users,
     path: "/candidates",
     voiceWhatIs: "This is the candidate pipeline where you can track applicants through each stage of the hiring process.",
-    permission: "canViewCandidates"
+    permission: "canViewCandidates" as keyof Permissions
   },
   {
     label: "Jobs",
@@ -34,14 +35,14 @@ const menuItems = [
     icon: Calendar,
     path: "/interviews",
     voiceWhatIs: "This is the interview scheduling section where you manage candidate interviews.",
-    permission: "canScheduleInterviews"
+    permission: "canScheduleInterviews" as keyof Permissions
   },
   {
     label: "Reports",
     icon: BarChart2,
     path: "/reports",
     voiceWhatIs: "This is the analytics and reporting section where you track recruitment metrics.",
-    permission: "canViewReports"
+    permission: "canViewReports" as keyof Permissions
   },
   {
     label: "Settings",
@@ -88,7 +89,7 @@ export default function AppSidebar() {
           <ul className="space-y-2">
             {menuItems.map((item) => {
               // Skip rendering menu items the user doesn't have permission for
-              if (item.permission && !hasPermission(item.permission as keyof typeof currentUser.permissions)) {
+              if (item.permission && !hasPermission(item.permission)) {
                 return null;
               }
               

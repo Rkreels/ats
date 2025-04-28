@@ -2,14 +2,17 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useVoiceTrigger } from "@/hooks/useVoiceTrigger";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { useUser, UserRole } from "@/contexts/UserContext";
+import { useUser, UserRole, Permissions } from "@/contexts/UserContext";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { Switch } from "@/components/ui/switch";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface User {
   id: string;
@@ -21,7 +24,7 @@ interface User {
 
 export default function UserSettings() {
   const { toast } = useToast();
-  const { hasPermission } = useUser();
+  const { hasPermission, availableUsers, switchUser, currentUser, getRolePermissions, updateUserPermissions } = useUser();
   const [users, setUsers] = useState<User[]>([
     {
       id: "1",
@@ -50,12 +53,36 @@ export default function UserSettings() {
       email: "emily@example.com",
       role: "interviewer",
       status: "Active"
+    },
+    {
+      id: "5",
+      name: "Robert Wilson",
+      email: "robert@example.com",
+      role: "viewer",
+      status: "Active"
+    },
+    {
+      id: "6",
+      name: "Jennifer Lee",
+      email: "jennifer@example.com", 
+      role: "hr_manager",
+      status: "Invited"
+    },
+    {
+      id: "7",
+      name: "William Garcia",
+      email: "william@example.com",
+      role: "interviewer",
+      status: "Active"
     }
   ]);
 
   const [isAddUserDialogOpen, setIsAddUserDialogOpen] = useState(false);
   const [isEditUserDialogOpen, setIsEditUserDialogOpen] = useState(false);
+  const [isRolePermissionDialogOpen, setIsRolePermissionDialogOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [selectedRole, setSelectedRole] = useState<UserRole | null>(null);
+  const [rolePermissions, setRolePermissions] = useState<Permissions | null>(null);
 
   const [newUser, setNewUser] = useState({
     name: "",
@@ -73,6 +100,14 @@ export default function UserSettings() {
 
   const { voiceProps: addUserProps } = useVoiceTrigger({
     what: "Click this button to invite new users to your ATS system. You can set their name, email, and role during the invitation process."
+  });
+
+  const { voiceProps: rolePermissionsProps } = useVoiceTrigger({
+    what: "Configure role permissions to define what each user type can do in the system. This lets you control access to different features based on job responsibilities."
+  });
+
+  const { voiceProps: switchRoleProps } = useVoiceTrigger({
+    what: "Switch to a different user role to test how the system appears to different team members and what permissions they have."
   });
 
   const handleAddUser = () => {
@@ -141,6 +176,35 @@ export default function UserSettings() {
     });
   };
 
+  const openRolePermissionsDialog = (role: UserRole) => {
+    setSelectedRole(role);
+    setRolePermissions(getRolePermissions(role));
+    setIsRolePermissionDialogOpen(true);
+  };
+
+  const handleUpdateRolePermissions = () => {
+    if (!selectedRole || !rolePermissions) return;
+    
+    updateUserPermissions(selectedRole, rolePermissions);
+    
+    setIsRolePermissionDialogOpen(false);
+    setSelectedRole(null);
+    setRolePermissions(null);
+    
+    toast({
+      title: "Permissions updated",
+      description: `Permissions for ${selectedRole.replace('_', ' ')} role have been updated`
+    });
+  };
+
+  const handleSwitchUser = (userId: string) => {
+    switchUser(userId);
+    toast({
+      title: "User switched",
+      description: "You are now viewing the system as a different user"
+    });
+  };
+
   // Check if user has permission to manage users
   if (!hasPermission('canManageUsers')) {
     return (
@@ -160,87 +224,138 @@ export default function UserSettings() {
 
   return (
     <Card {...voiceProps}>
-      <CardHeader>
-        <CardTitle>Users & Roles</CardTitle>
-        <CardDescription>Manage team members and their permissions</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <div className="border rounded-md mb-6" {...tableProps}>
-          <table className="w-full">
-            <thead>
-              <tr className="border-b bg-gray-50 text-left">
-                <th className="p-3 font-medium text-gray-500">Name</th>
-                <th className="p-3 font-medium text-gray-500">Email</th>
-                <th className="p-3 font-medium text-gray-500">Role</th>
-                <th className="p-3 font-medium text-gray-500">Status</th>
-                <th className="p-3 font-medium text-gray-500">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {users.map(user => (
-                <tr key={user.id} className="border-b">
-                  <td className="p-3">{user.name}</td>
-                  <td className="p-3">{user.email}</td>
-                  <td className="p-3">{user.role.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}</td>
-                  <td className="p-3">
-                    <span className={cn(
-                      "rounded-full px-2 py-1 text-xs",
-                      user.status === "Active" ? "bg-green-100 text-green-700" :
-                      user.status === "Invited" ? "bg-amber-100 text-amber-700" : 
-                      "bg-gray-100 text-gray-700"
-                    )}>
-                      {user.status}
-                    </span>
-                  </td>
-                  <td className="p-3">
-                    <div className="flex space-x-2">
-                      <Button 
-                        variant="ghost" 
-                        size="sm"
-                        onClick={() => openEditDialog(user)}
-                        {...useVoiceTrigger({ 
-                          what: `Edit ${user.name}'s profile including their role and permissions.` 
-                        }).voiceProps}
-                      >
-                        Edit
-                      </Button>
-                      <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                          <Button 
-                            variant="ghost" 
-                            size="sm"
-                            className="text-red-500 hover:text-red-700"
-                            {...useVoiceTrigger({ 
-                              what: `Remove ${user.name} from the system. This will revoke all their access.` 
-                            }).voiceProps}
-                          >
-                            Remove
-                          </Button>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent>
-                          <AlertDialogHeader>
-                            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                            <AlertDialogDescription>
-                              This will remove {user.name} from the system and revoke all access. This action cannot be undone.
-                            </AlertDialogDescription>
-                          </AlertDialogHeader>
-                          <AlertDialogFooter>
-                            <AlertDialogCancel>Cancel</AlertDialogCancel>
-                            <AlertDialogAction onClick={() => handleDeleteUser(user.id)}>Remove</AlertDialogAction>
-                          </AlertDialogFooter>
-                        </AlertDialogContent>
-                      </AlertDialog>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+      <CardHeader className="flex flex-row items-center justify-between">
+        <div>
+          <CardTitle>Users & Roles</CardTitle>
+          <CardDescription>Manage team members and their permissions</CardDescription>
         </div>
         
-        <Button {...addUserProps} onClick={() => setIsAddUserDialogOpen(true)}>
-          Invite User
-        </Button>
+        <div className="flex space-x-2">
+          <Select 
+            defaultValue={currentUser.id}
+            onValueChange={handleSwitchUser}
+          >
+            <SelectTrigger className="w-[200px]" {...switchRoleProps}>
+              <SelectValue placeholder="Switch user" />
+            </SelectTrigger>
+            <SelectContent>
+              {availableUsers.map(user => (
+                <SelectItem key={user.id} value={user.id}>
+                  {user.name} ({user.role.replace('_', ' ')})
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      </CardHeader>
+      <CardContent>
+        <Tabs defaultValue="users" className="space-y-4">
+          <TabsList>
+            <TabsTrigger value="users">Users</TabsTrigger>
+            <TabsTrigger value="roles">Role Permissions</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="users">
+            <div className="border rounded-md mb-6" {...tableProps}>
+              <ScrollArea className="h-[500px]">
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b bg-gray-50 text-left">
+                      <th className="p-3 font-medium text-gray-500">Name</th>
+                      <th className="p-3 font-medium text-gray-500">Email</th>
+                      <th className="p-3 font-medium text-gray-500">Role</th>
+                      <th className="p-3 font-medium text-gray-500">Status</th>
+                      <th className="p-3 font-medium text-gray-500">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {users.map(user => (
+                      <tr key={user.id} className="border-b">
+                        <td className="p-3">{user.name}</td>
+                        <td className="p-3">{user.email}</td>
+                        <td className="p-3">{user.role.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}</td>
+                        <td className="p-3">
+                          <span className={cn(
+                            "rounded-full px-2 py-1 text-xs",
+                            user.status === "Active" ? "bg-green-100 text-green-700" :
+                            user.status === "Invited" ? "bg-amber-100 text-amber-700" : 
+                            "bg-gray-100 text-gray-700"
+                          )}>
+                            {user.status}
+                          </span>
+                        </td>
+                        <td className="p-3">
+                          <div className="flex space-x-2">
+                            <Button 
+                              variant="ghost" 
+                              size="sm"
+                              onClick={() => openEditDialog(user)}
+                              {...useVoiceTrigger({ 
+                                what: `Edit ${user.name}'s profile including their role and permissions.` 
+                              }).voiceProps}
+                            >
+                              Edit
+                            </Button>
+                            <AlertDialog>
+                              <AlertDialogTrigger asChild>
+                                <Button 
+                                  variant="ghost" 
+                                  size="sm"
+                                  className="text-red-500 hover:text-red-700"
+                                  {...useVoiceTrigger({ 
+                                    what: `Remove ${user.name} from the system. This will revoke all their access.` 
+                                  }).voiceProps}
+                                >
+                                  Remove
+                                </Button>
+                              </AlertDialogTrigger>
+                              <AlertDialogContent>
+                                <AlertDialogHeader>
+                                  <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                                  <AlertDialogDescription>
+                                    This will remove {user.name} from the system and revoke all access. This action cannot be undone.
+                                  </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                  <AlertDialogAction onClick={() => handleDeleteUser(user.id)}>Remove</AlertDialogAction>
+                                </AlertDialogFooter>
+                              </AlertDialogContent>
+                            </AlertDialog>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </ScrollArea>
+            </div>
+            
+            <Button {...addUserProps} onClick={() => setIsAddUserDialogOpen(true)}>
+              Invite User
+            </Button>
+          </TabsContent>
+          
+          <TabsContent value="roles" {...rolePermissionsProps}>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {Object.keys(getRolePermissions("admin")).map((role) => (
+                <Card key={role} className="overflow-hidden">
+                  <CardHeader className="bg-gray-50 py-3">
+                    <CardTitle className="capitalize text-base">{role.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}</CardTitle>
+                  </CardHeader>
+                  <CardContent className="p-4">
+                    <Button 
+                      onClick={() => openRolePermissionsDialog(role as UserRole)}
+                      variant="outline"
+                    >
+                      Configure Permissions
+                    </Button>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </TabsContent>
+        </Tabs>
 
         {/* Add User Dialog */}
         <Dialog open={isAddUserDialogOpen} onOpenChange={setIsAddUserDialogOpen}>
@@ -365,6 +480,102 @@ export default function UserSettings() {
             <DialogFooter>
               <Button variant="outline" onClick={() => setIsEditUserDialogOpen(false)}>Cancel</Button>
               <Button onClick={handleEditUser}>Save Changes</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Role Permissions Dialog */}
+        <Dialog open={isRolePermissionDialogOpen} onOpenChange={setIsRolePermissionDialogOpen}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle>
+                {selectedRole && `${selectedRole.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())} Permissions`}
+              </DialogTitle>
+              <DialogDescription>
+                Configure what users with this role can do in the system.
+              </DialogDescription>
+            </DialogHeader>
+            {rolePermissions && (
+              <div className="space-y-4 py-2">
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="canViewCandidates" className="flex-1">View Candidates</Label>
+                    <Switch 
+                      id="canViewCandidates" 
+                      checked={rolePermissions.canViewCandidates}
+                      onCheckedChange={(checked) => setRolePermissions({...rolePermissions, canViewCandidates: checked})}
+                    />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="canEditCandidates" className="flex-1">Edit Candidates</Label>
+                    <Switch 
+                      id="canEditCandidates" 
+                      checked={rolePermissions.canEditCandidates}
+                      onCheckedChange={(checked) => setRolePermissions({...rolePermissions, canEditCandidates: checked})}
+                    />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="canCreateJob" className="flex-1">Create Jobs</Label>
+                    <Switch 
+                      id="canCreateJob" 
+                      checked={rolePermissions.canCreateJob}
+                      onCheckedChange={(checked) => setRolePermissions({...rolePermissions, canCreateJob: checked})}
+                    />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="canEditJob" className="flex-1">Edit Jobs</Label>
+                    <Switch 
+                      id="canEditJob" 
+                      checked={rolePermissions.canEditJob}
+                      onCheckedChange={(checked) => setRolePermissions({...rolePermissions, canEditJob: checked})}
+                    />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="canDeleteJob" className="flex-1">Delete Jobs</Label>
+                    <Switch 
+                      id="canDeleteJob" 
+                      checked={rolePermissions.canDeleteJob}
+                      onCheckedChange={(checked) => setRolePermissions({...rolePermissions, canDeleteJob: checked})}
+                    />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="canScheduleInterviews" className="flex-1">Schedule Interviews</Label>
+                    <Switch 
+                      id="canScheduleInterviews" 
+                      checked={rolePermissions.canScheduleInterviews}
+                      onCheckedChange={(checked) => setRolePermissions({...rolePermissions, canScheduleInterviews: checked})}
+                    />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="canViewReports" className="flex-1">View Reports</Label>
+                    <Switch 
+                      id="canViewReports" 
+                      checked={rolePermissions.canViewReports}
+                      onCheckedChange={(checked) => setRolePermissions({...rolePermissions, canViewReports: checked})}
+                    />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="canManageUsers" className="flex-1">Manage Users</Label>
+                    <Switch 
+                      id="canManageUsers" 
+                      checked={rolePermissions.canManageUsers}
+                      onCheckedChange={(checked) => setRolePermissions({...rolePermissions, canManageUsers: checked})}
+                    />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="canIntegrateExternalServices" className="flex-1">Integrate External Services</Label>
+                    <Switch 
+                      id="canIntegrateExternalServices" 
+                      checked={rolePermissions.canIntegrateExternalServices}
+                      onCheckedChange={(checked) => setRolePermissions({...rolePermissions, canIntegrateExternalServices: checked})}
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setIsRolePermissionDialogOpen(false)}>Cancel</Button>
+              <Button onClick={handleUpdateRolePermissions}>Save Changes</Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>

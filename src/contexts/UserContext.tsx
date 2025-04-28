@@ -14,9 +14,10 @@ export interface Permissions {
   canViewCandidates: boolean;
   canEditCandidates: boolean;
   canScheduleInterviews: boolean;
+  canIntegrateExternalServices: boolean;
 }
 
-interface User {
+export interface User {
   id: string;
   name: string;
   email: string;
@@ -30,6 +31,10 @@ interface UserContextType {
   permissions: Permissions;
   hasPermission: (permission: keyof Permissions) => boolean;
   logout: () => void;
+  switchUser: (userId: string) => void;
+  availableUsers: User[];
+  updateUserPermissions: (role: UserRole, updatedPermissions: Partial<Permissions>) => void;
+  getRolePermissions: (role: UserRole) => Permissions;
 }
 
 // Define role-based permissions
@@ -42,7 +47,8 @@ const rolePermissions: Record<UserRole, Permissions> = {
     canManageUsers: true,
     canViewCandidates: true,
     canEditCandidates: true,
-    canScheduleInterviews: true
+    canScheduleInterviews: true,
+    canIntegrateExternalServices: true
   },
   hr_manager: {
     canCreateJob: true,
@@ -52,7 +58,8 @@ const rolePermissions: Record<UserRole, Permissions> = {
     canManageUsers: false,
     canViewCandidates: true,
     canEditCandidates: true,
-    canScheduleInterviews: true
+    canScheduleInterviews: true,
+    canIntegrateExternalServices: false
   },
   interviewer: {
     canCreateJob: false,
@@ -62,7 +69,8 @@ const rolePermissions: Record<UserRole, Permissions> = {
     canManageUsers: false,
     canViewCandidates: true,
     canEditCandidates: false,
-    canScheduleInterviews: true
+    canScheduleInterviews: true,
+    canIntegrateExternalServices: false
   },
   hiring_manager: {
     canCreateJob: true,
@@ -72,7 +80,8 @@ const rolePermissions: Record<UserRole, Permissions> = {
     canManageUsers: false,
     canViewCandidates: true,
     canEditCandidates: false,
-    canScheduleInterviews: true
+    canScheduleInterviews: true,
+    canIntegrateExternalServices: false
   },
   viewer: {
     canCreateJob: false,
@@ -82,41 +91,99 @@ const rolePermissions: Record<UserRole, Permissions> = {
     canManageUsers: false,
     canViewCandidates: true,
     canEditCandidates: false,
-    canScheduleInterviews: false
+    canScheduleInterviews: false,
+    canIntegrateExternalServices: false
   }
 };
 
-// Default admin user
-const defaultUser: User = {
-  id: "admin-1",
-  name: "Admin User",
-  email: "admin@example.com",
-  role: "admin",
-  avatar: "",
-};
+// List of demo users
+const demoUsers: User[] = [
+  {
+    id: "admin-1",
+    name: "Admin User",
+    email: "admin@example.com",
+    role: "admin",
+    avatar: "https://i.pravatar.cc/150?img=12",
+  },
+  {
+    id: "hrm-1",
+    name: "Sarah Johnson",
+    email: "sarah@example.com",
+    role: "hr_manager",
+    avatar: "https://i.pravatar.cc/150?img=5",
+  },
+  {
+    id: "int-1",
+    name: "David Wong",
+    email: "david@example.com",
+    role: "interviewer",
+    avatar: "https://i.pravatar.cc/150?img=68",
+  },
+  {
+    id: "hmg-1",
+    name: "Emily Chen",
+    email: "emily@example.com",
+    role: "hiring_manager",
+    avatar: "https://i.pravatar.cc/150?img=32",
+  },
+  {
+    id: "view-1",
+    name: "Mike Roberts",
+    email: "mike@example.com",
+    role: "viewer",
+    avatar: "https://i.pravatar.cc/150?img=53",
+  }
+];
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export const UserProvider = ({ children }: { children: ReactNode }) => {
-  const [currentUser, setCurrentUser] = useState<User>(defaultUser);
+  // Default user is now the admin
+  const [currentUser, setCurrentUser] = useState<User>(demoUsers[0]);
+  const [localRolePermissions, setLocalRolePermissions] = useState<Record<UserRole, Permissions>>({...rolePermissions});
   
-  const permissions = rolePermissions[currentUser.role];
+  const permissions = localRolePermissions[currentUser.role];
   
   const hasPermission = (permission: keyof Permissions) => {
     return permissions[permission];
   };
   
   const logout = () => {
-    setCurrentUser(defaultUser);
+    setCurrentUser(demoUsers[0]);
+  };
+
+  const switchUser = (userId: string) => {
+    const user = demoUsers.find(u => u.id === userId);
+    if (user) {
+      setCurrentUser(user);
+    }
+  };
+
+  const updateUserPermissions = (role: UserRole, updatedPermissions: Partial<Permissions>) => {
+    setLocalRolePermissions(prev => ({
+      ...prev,
+      [role]: {
+        ...prev[role],
+        ...updatedPermissions
+      }
+    }));
+  };
+
+  const getRolePermissions = (role: UserRole): Permissions => {
+    return localRolePermissions[role];
   };
 
   return (
     <UserContext.Provider value={{ 
       currentUser, 
-      setCurrentUser, 
-      permissions, 
+      setCurrentUser,
+      permissions,
       hasPermission,
-      logout
+      logout,
+      switchUser,
+      availableUsers: demoUsers,
+      updateUserPermissions,
+      getRolePermissions
     }}>
       {children}
     </UserContext.Provider>

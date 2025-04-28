@@ -1,90 +1,371 @@
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { useVoiceTrigger } from "@/hooks/useVoiceTrigger";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useToast } from "@/hooks/use-toast";
+import { useState } from "react";
+import { useUser } from "@/contexts/UserContext";
+import { Globe, Linkedin, FileStack, Mail, Check, FilePlus, ExternalLink } from "lucide-react";
 
 export default function IntegrationSettings() {
+  const { toast } = useToast();
+  const { hasPermission } = useUser();
+  const [linkedInApiKey, setLinkedInApiKey] = useState("");
+  const [indeedWebhook, setIndeedWebhook] = useState("");
+  const [resumeParserKey, setResumeParserKey] = useState("");
+  const [emailServiceKey, setEmailServiceKey] = useState("");
+  const [isLinkedInConnected, setIsLinkedInConnected] = useState(false);
+  const [isIndeedConnected, setIsIndeedConnected] = useState(false);
+  const [isResumeParserConnected, setIsResumeParserConnected] = useState(false);
+  const [isEmailServiceConnected, setIsEmailServiceConnected] = useState(false);
+  
   const { voiceProps } = useVoiceTrigger({
-    what: "Connect your ATS to external services like calendar systems, messaging platforms, and social networks."
+    what: "Here you can integrate external job boards, resume parsers, and other services with your ATS system to automate the recruitment process."
   });
-
+  
+  const { voiceProps: linkedInProps } = useVoiceTrigger({
+    what: "Connect your LinkedIn Recruiter account to automatically import candidates from LinkedIn."
+  });
+  
+  const { voiceProps: indeedProps } = useVoiceTrigger({
+    what: "Set up an Indeed integration to post jobs and receive applications directly from Indeed."
+  });
+  
+  const { voiceProps: resumeParserProps } = useVoiceTrigger({
+    what: "Connect to a resume parsing service to automatically extract candidate information from resumes."
+  });
+  
+  const { voiceProps: emailServiceProps } = useVoiceTrigger({
+    what: "Integrate with an email service to send automated emails to candidates."
+  });
+  
+  const handleLinkedInConnect = () => {
+    if (!linkedInApiKey) {
+      toast({
+        title: "Error",
+        description: "Please enter a valid API key",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    setIsLinkedInConnected(true);
+    toast({
+      title: "LinkedIn Connected",
+      description: "Your LinkedIn Recruiter account has been connected successfully."
+    });
+  };
+  
+  const handleIndeedConnect = () => {
+    if (!indeedWebhook) {
+      toast({
+        title: "Error",
+        description: "Please enter a valid webhook URL",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    setIsIndeedConnected(true);
+    toast({
+      title: "Indeed Connected",
+      description: "Your Indeed account has been connected successfully."
+    });
+  };
+  
+  const handleResumeParserConnect = () => {
+    if (!resumeParserKey) {
+      toast({
+        title: "Error",
+        description: "Please enter a valid API key",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    setIsResumeParserConnected(true);
+    toast({
+      title: "Resume Parser Connected",
+      description: "The resume parsing service has been connected successfully."
+    });
+  };
+  
+  const handleEmailServiceConnect = () => {
+    if (!emailServiceKey) {
+      toast({
+        title: "Error",
+        description: "Please enter a valid API key",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    setIsEmailServiceConnected(true);
+    toast({
+      title: "Email Service Connected",
+      description: "The email service has been connected successfully."
+    });
+  };
+  
+  if (!hasPermission("canIntegrateExternalServices")) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>External Integrations</CardTitle>
+          <CardDescription>Connect to external services and job boards</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-col items-center justify-center py-8">
+            <p className="text-gray-500 mb-2">You don't have permission to manage integrations</p>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+  
   return (
-    <Card {...voiceProps}>
-      <CardHeader>
-        <CardTitle>Integrations</CardTitle>
-        <CardDescription>Connect external services and tools</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-6">
-          <div className="border rounded-md p-4 flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="24" height="24">
-                  <path fill="#1976D2" d="M38 24v-4H14v-4h24v-4L48 22 38 32v-4h-4v16H10V28H0V8h34v16h4z"/>
-                </svg>
-              </div>
+    <div {...voiceProps}>
+      <Tabs defaultValue="job-boards" className="space-y-6">
+        <TabsList className="grid grid-cols-2 md:grid-cols-4 w-full md:w-auto">
+          <TabsTrigger value="job-boards">Job Boards</TabsTrigger>
+          <TabsTrigger value="resume-parsing">Resume Parsing</TabsTrigger>
+          <TabsTrigger value="email">Email Services</TabsTrigger>
+          <TabsTrigger value="webhooks">Webhooks</TabsTrigger>
+        </TabsList>
+        
+        <TabsContent value="job-boards" className="space-y-4">
+          <Card {...linkedInProps}>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <div>
-                <h3 className="font-medium">Google Calendar</h3>
-                <p className="text-gray-500 text-sm">Connect calendar for interview scheduling</p>
+                <CardTitle className="text-lg font-semibold">LinkedIn Integration</CardTitle>
+                <CardDescription>Connect to LinkedIn Recruiter to import candidates</CardDescription>
               </div>
-            </div>
-            <Button variant="outline">Connect</Button>
-          </div>
+              <Linkedin className="h-10 w-10 text-blue-600" />
+            </CardHeader>
+            <CardContent>
+              {isLinkedInConnected ? (
+                <div className="flex items-center space-x-2 text-green-600">
+                  <Check className="h-5 w-5" />
+                  <span>Connected to LinkedIn Recruiter</span>
+                </div>
+              ) : (
+                <div className="grid gap-6">
+                  <div className="grid gap-3">
+                    <Label htmlFor="linkedin-api-key">LinkedIn Recruiter API Key</Label>
+                    <Input 
+                      id="linkedin-api-key" 
+                      type="password" 
+                      placeholder="Enter your LinkedIn API key" 
+                      value={linkedInApiKey} 
+                      onChange={(e) => setLinkedInApiKey(e.target.value)} 
+                    />
+                  </div>
+                  <Button onClick={handleLinkedInConnect}>Connect LinkedIn</Button>
+                </div>
+              )}
+            </CardContent>
+          </Card>
           
-          <div className="border rounded-md p-4 flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <div className="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center">
-                <svg width="24" height="24" viewBox="0 0 54 54" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M19.712 33.7936L23.2932 42.0964L28.3569 36.8201L38.4526 45.3721L45.1869 9.45557L8.02014 25.0355L16.3161 29.3371L19.712 33.7936Z" fill="#229ED9"/>
-                  <path d="M16.3159 29.3371L43.5528 14.5917L19.712 33.7934L16.3159 29.3371Z" fill="#229ED9"/>
-                  <path d="M19.712 33.7936L29.3829 39.2854L23.2932 42.0964L19.712 33.7936Z" fill="#229ED9"/>
-                </svg>
-              </div>
+          <Card {...indeedProps}>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <div>
-                <h3 className="font-medium">Telegram</h3>
-                <p className="text-gray-500 text-sm">Send notifications via Telegram</p>
+                <CardTitle className="text-lg font-semibold">Indeed Integration</CardTitle>
+                <CardDescription>Post jobs and receive applications from Indeed</CardDescription>
               </div>
-            </div>
-            <Button variant="outline">Connect</Button>
-          </div>
+              <Globe className="h-10 w-10 text-blue-600" />
+            </CardHeader>
+            <CardContent>
+              {isIndeedConnected ? (
+                <div className="flex items-center space-x-2 text-green-600">
+                  <Check className="h-5 w-5" />
+                  <span>Connected to Indeed</span>
+                </div>
+              ) : (
+                <div className="grid gap-6">
+                  <div className="grid gap-3">
+                    <Label htmlFor="indeed-webhook">Indeed Webhook URL</Label>
+                    <Input 
+                      id="indeed-webhook" 
+                      placeholder="Enter your Indeed webhook URL" 
+                      value={indeedWebhook} 
+                      onChange={(e) => setIndeedWebhook(e.target.value)} 
+                    />
+                  </div>
+                  <Button onClick={handleIndeedConnect}>Connect Indeed</Button>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+        
+        <TabsContent value="resume-parsing" className="space-y-4">
+          <Card {...resumeParserProps}>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <div>
+                <CardTitle className="text-lg font-semibold">Resume Parser</CardTitle>
+                <CardDescription>Automatically extract information from resumes</CardDescription>
+              </div>
+              <FileStack className="h-10 w-10 text-purple-600" />
+            </CardHeader>
+            <CardContent>
+              {isResumeParserConnected ? (
+                <div className="flex items-center space-x-2 text-green-600">
+                  <Check className="h-5 w-5" />
+                  <span>Connected to Resume Parser</span>
+                </div>
+              ) : (
+                <div className="grid gap-6">
+                  <div className="grid gap-3">
+                    <Label htmlFor="resume-parser-key">Resume Parser API Key</Label>
+                    <Input 
+                      id="resume-parser-key" 
+                      type="password" 
+                      placeholder="Enter your resume parser API key" 
+                      value={resumeParserKey} 
+                      onChange={(e) => setResumeParserKey(e.target.value)} 
+                    />
+                  </div>
+                  <Button onClick={handleResumeParserConnect}>Connect Resume Parser</Button>
+                </div>
+              )}
+            </CardContent>
+            <CardFooter className="bg-gray-50 px-6 py-3">
+              <div className="flex items-center justify-between w-full">
+                <div className="flex items-center space-x-2">
+                  <Switch id="accept-resumes" defaultChecked />
+                  <Label htmlFor="accept-resumes">Accept resumes via email</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Switch id="parse-pdfs" defaultChecked />
+                  <Label htmlFor="parse-pdfs">Parse PDF resumes</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Switch id="parse-docx" defaultChecked />
+                  <Label htmlFor="parse-docx">Parse DOCX resumes</Label>
+                </div>
+              </div>
+            </CardFooter>
+          </Card>
           
-          <div className="border rounded-md p-4 flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 120 120">
-                  <path d="M99.4 80C99.4 81.1 98.5 82 97.4 82H67.5C66.4 82 65.5 81.1 65.5 80V46.8C65.5 45.7 66.4 44.8 67.5 44.8H97.4C98.5 44.8 99.4 45.7 99.4 46.8V80Z" fill="#4A154B"/>
-                  <path d="M54.5 26C54.5 24.9 53.6 24 52.5 24H22.6C21.5 24 20.6 24.9 20.6 26V59.2C20.6 60.3 21.5 61.2 22.6 61.2H52.5C53.6 61.2 54.5 60.3 54.5 59.2V26Z" fill="#4A154B"/>
-                  <path d="M99.4 26C99.4 24.9 98.5 24 97.4 24H67.5C66.4 24 65.5 24.9 65.5 26V35.9C65.5 37 66.4 37.9 67.5 37.9H97.4C98.5 37.9 99.4 37 99.4 35.9V26Z" fill="#4A154B"/>
-                  <path d="M54.5 69.9C54.5 68.8 53.6 67.9 52.5 67.9H22.6C21.5 67.9 20.6 68.8 20.6 69.9V79.8C20.6 80.9 21.5 81.8 22.6 81.8H52.5C53.6 81.8 54.5 80.9 54.5 79.8V69.9Z" fill="#4A154B"/>
-                </svg>
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg font-semibold">Resume Upload Demo</CardTitle>
+              <CardDescription>Test the resume parsing functionality</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center justify-center w-full">
+                <label
+                  htmlFor="dropzone-file"
+                  className="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100"
+                >
+                  <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                    <FilePlus className="w-10 h-10 mb-3 text-gray-400" />
+                    <p className="mb-2 text-sm text-gray-500">
+                      <span className="font-semibold">Click to upload</span> or drag and drop
+                    </p>
+                    <p className="text-xs text-gray-500">PDF, DOCX or TXT (MAX. 10MB)</p>
+                  </div>
+                  <input id="dropzone-file" type="file" className="hidden" />
+                </label>
               </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+        
+        <TabsContent value="email" className="space-y-4">
+          <Card {...emailServiceProps}>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <div>
-                <h3 className="font-medium">Slack</h3>
-                <p className="text-gray-500 text-sm">Connect with Slack for notifications</p>
+                <CardTitle className="text-lg font-semibold">Email Service</CardTitle>
+                <CardDescription>Send automated emails to candidates</CardDescription>
               </div>
-            </div>
-            <Button variant="outline">Connect</Button>
-          </div>
-          
-          <div className="border rounded-md p-4 flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 256 256">
-                  <path fill="#0A66C2" d="M218.123 218.127h-37.931v-59.403c0-14.165-.253-32.4-19.728-32.4c-19.756 0-22.779 15.434-22.779 31.369v60.43h-37.93V95.967h36.413v16.694h.51a39.907 39.907 0 0 1 35.928-19.733c38.445 0 45.533 25.288 45.533 58.186l-.016 67.013ZM56.955 79.27c-12.157.002-22.014-9.852-22.016-22.009c-.002-12.157 9.851-22.014 22.008-22.016c12.157-.003 22.014 9.851 22.016 22.008A22.013 22.013 0 0 1 56.955 79.27m18.966 138.858H37.95V95.967h37.97v122.16ZM237.033.018H18.89C8.58-.098.125 8.161-.001 18.471v219.053c.122 10.315 8.576 18.582 18.89 18.474h218.144c10.336.128 18.823-8.139 18.966-18.474V18.454c-.147-10.33-8.635-18.588-18.966-18.453"/>
-                </svg>
+              <Mail className="h-10 w-10 text-green-600" />
+            </CardHeader>
+            <CardContent>
+              {isEmailServiceConnected ? (
+                <div className="flex items-center space-x-2 text-green-600">
+                  <Check className="h-5 w-5" />
+                  <span>Connected to Email Service</span>
+                </div>
+              ) : (
+                <div className="grid gap-6">
+                  <div className="grid gap-3">
+                    <Label htmlFor="email-service-key">Email Service API Key</Label>
+                    <Input 
+                      id="email-service-key" 
+                      type="password" 
+                      placeholder="Enter your email service API key" 
+                      value={emailServiceKey} 
+                      onChange={(e) => setEmailServiceKey(e.target.value)} 
+                    />
+                  </div>
+                  <Button onClick={handleEmailServiceConnect}>Connect Email Service</Button>
+                </div>
+              )}
+            </CardContent>
+            <CardFooter className="flex justify-between bg-gray-50 px-6 py-3">
+              <div className="flex items-center space-x-2">
+                <Switch id="email-templates" defaultChecked />
+                <Label htmlFor="email-templates">Use email templates</Label>
               </div>
-              <div>
-                <h3 className="font-medium">LinkedIn</h3>
-                <p className="text-gray-500 text-sm">Connect for candidate sourcing</p>
+              <Button variant="link" size="sm" className="flex items-center">
+                Edit templates <ExternalLink className="ml-1 h-3 w-3" />
+              </Button>
+            </CardFooter>
+          </Card>
+        </TabsContent>
+        
+        <TabsContent value="webhooks" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg font-semibold">Webhooks</CardTitle>
+              <CardDescription>Connect to your own systems via webhooks</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="grid gap-3">
+                  <Label htmlFor="new-candidate-webhook">New Candidate Webhook</Label>
+                  <Input 
+                    id="new-candidate-webhook" 
+                    placeholder="https://your-system.com/webhooks/candidates" 
+                  />
+                </div>
+                
+                <div className="grid gap-3">
+                  <Label htmlFor="new-job-webhook">New Job Webhook</Label>
+                  <Input 
+                    id="new-job-webhook" 
+                    placeholder="https://your-system.com/webhooks/jobs" 
+                  />
+                </div>
+                
+                <div className="grid gap-3">
+                  <Label htmlFor="interview-scheduled-webhook">Interview Scheduled Webhook</Label>
+                  <Input 
+                    id="interview-scheduled-webhook" 
+                    placeholder="https://your-system.com/webhooks/interviews" 
+                  />
+                </div>
+                
+                <div className="grid gap-3">
+                  <Label htmlFor="offer-made-webhook">Offer Made Webhook</Label>
+                  <Input 
+                    id="offer-made-webhook" 
+                    placeholder="https://your-system.com/webhooks/offers" 
+                  />
+                </div>
               </div>
-            </div>
-            <div className="flex items-center space-x-2">
-              <span className="text-green-600 text-sm">Connected</span>
-              <Button variant="outline">Disconnect</Button>
-            </div>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
+            </CardContent>
+            <CardFooter>
+              <Button>Save Webhook Settings</Button>
+            </CardFooter>
+          </Card>
+        </TabsContent>
+      </Tabs>
+    </div>
   );
 }
