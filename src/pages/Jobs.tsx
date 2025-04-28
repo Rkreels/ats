@@ -7,18 +7,21 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Calendar } from "@/components/ui/calendar";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, Pencil, Trash2 } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { mockDataService } from "@/data/mockData";
 import { Job } from "@/types";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useToast } from "@/hooks/use-toast";
+import { useUser } from "@/contexts/UserContext";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 
 const jobTypes = ["Full-time", "Part-time", "Contract", "Temporary", "Internship"];
 
 export default function Jobs() {
   const { toast } = useToast();
+  const { hasPermission } = useUser();
   const [jobs, setJobs] = useState<Job[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterDepartment, setFilterDepartment] = useState("");
@@ -26,6 +29,8 @@ export default function Jobs() {
   const [filterStatus, setFilterStatus] = useState("");
   const [date, setDate] = useState<Date | undefined>(undefined);
   const [isCreateJobModalOpen, setIsCreateJobModalOpen] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [selectedJob, setSelectedJob] = useState<Job | null>(null);
   const [newJob, setNewJob] = useState<Omit<Job, 'id'>>({
     title: "",
     department: "",
@@ -47,16 +52,80 @@ export default function Jobs() {
     setJobs(mockDataService.getAllJobs());
   }, []);
   
+  // Reset form state when opening the modal
+  useEffect(() => {
+    if (isCreateJobModalOpen && !isEditMode) {
+      setNewJob({
+        title: "",
+        department: "",
+        location: "",
+        type: "Full-time",
+        description: "",
+        responsibilities: [],
+        requirements: [],
+        postedDate: new Date().toLocaleDateString(),
+        closingDate: new Date().toLocaleDateString(),
+        salary: "",
+        status: "Draft",
+        hiringManager: "",
+        applicants: 0,
+        skills: [],
+      });
+    }
+  }, [isCreateJobModalOpen, isEditMode]);
+
   const handleCreateJob = () => {
-    const newJobWithId = { ...newJob, id: `j-${jobs.length + 1}` };
-    setJobs([...jobs, newJobWithId]);
-    // We need to modify this line as mockDataService doesn't have addJob method
-    // Let's simulate adding the job to our local state only
-    toast({
-      title: "Job created",
-      description: `The job "${newJob.title}" has been created.`
-    });
+    if (isEditMode && selectedJob) {
+      // Update existing job
+      const updatedJob = { ...selectedJob, ...newJob };
+      setJobs(jobs.map(job => job.id === selectedJob.id ? updatedJob : job));
+      toast({
+        title: "Job updated",
+        description: `The job "${newJob.title}" has been updated.`
+      });
+    } else {
+      // Create new job
+      const newJobWithId = { ...newJob, id: `j-${Date.now()}` };
+      setJobs([...jobs, newJobWithId]);
+      toast({
+        title: "Job created",
+        description: `The job "${newJob.title}" has been created.`
+      });
+    }
+    
     setIsCreateJobModalOpen(false);
+    setIsEditMode(false);
+    setSelectedJob(null);
+  };
+
+  const handleEditJob = (job: Job) => {
+    setSelectedJob(job);
+    setNewJob({
+      title: job.title,
+      department: job.department,
+      location: job.location,
+      type: job.type,
+      description: job.description,
+      responsibilities: job.responsibilities,
+      requirements: job.requirements,
+      postedDate: job.postedDate,
+      closingDate: job.closingDate,
+      salary: job.salary,
+      status: job.status,
+      hiringManager: job.hiringManager,
+      applicants: job.applicants,
+      skills: job.skills,
+    });
+    setIsEditMode(true);
+    setIsCreateJobModalOpen(true);
+  };
+
+  const handleDeleteJob = (jobId: string) => {
+    setJobs(jobs.filter(job => job.id !== jobId));
+    toast({
+      title: "Job deleted",
+      description: "The job has been deleted."
+    });
   };
   
   const filteredJobs = jobs.filter(job => {
@@ -82,7 +151,7 @@ export default function Jobs() {
   });
   
   const { voiceProps: createVoiceProps } = useVoiceTrigger({
-    what: "Click this button to create a new job posting."
+    what: "Click this button to create a new job posting. Only users with job creation permissions can use this feature."
   });
   
   return (
@@ -92,9 +161,15 @@ export default function Jobs() {
           <h1 className="text-2xl font-bold text-gray-800">Job Postings</h1>
           <p className="text-gray-600">Manage your job openings and track applicants</p>
         </div>
-        <Button onClick={() => setIsCreateJobModalOpen(true)} {...createVoiceProps}>
-          Create Job
-        </Button>
+        {hasPermission('canCreateJob') && (
+          <Button onClick={() => {
+            setIsEditMode(false);
+            setSelectedJob(null);
+            setIsCreateJobModalOpen(true);
+          }} {...createVoiceProps}>
+            Create Job
+          </Button>
+        )}
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6" {...jobsOverviewProps}>
@@ -108,36 +183,36 @@ export default function Jobs() {
         />
         
         <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-3 gap-4" {...filterVoiceProps}>
-          <Select onValueChange={setFilterDepartment}>
+          <Select onValueChange={setFilterDepartment} value={filterDepartment}>
             <SelectTrigger>
               <SelectValue placeholder="Filter by Department" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Departments</SelectItem>
+              <SelectItem value="">All Departments</SelectItem>
               {[...new Set(jobs.map(job => job.department))].map(department => (
                 <SelectItem key={department} value={department}>{department}</SelectItem>
               ))}
             </SelectContent>
           </Select>
           
-          <Select onValueChange={setFilterType}>
+          <Select onValueChange={setFilterType} value={filterType}>
             <SelectTrigger>
               <SelectValue placeholder="Filter by Type" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Types</SelectItem>
+              <SelectItem value="">All Types</SelectItem>
               {jobTypes.map(type => (
                 <SelectItem key={type} value={type}>{type}</SelectItem>
               ))}
             </SelectContent>
           </Select>
           
-          <Select onValueChange={setFilterStatus}>
+          <Select onValueChange={setFilterStatus} value={filterStatus}>
             <SelectTrigger>
               <SelectValue placeholder="Filter by Status" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Statuses</SelectItem>
+              <SelectItem value="">All Statuses</SelectItem>
               {[...new Set(jobs.map(job => job.status))].map(status => (
                 <SelectItem key={status} value={status}>{status}</SelectItem>
               ))}
@@ -172,16 +247,21 @@ export default function Jobs() {
       <ScrollArea>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredJobs.map(job => (
-            <JobCard key={job.id} job={job} />
+            <JobCard 
+              key={job.id} 
+              job={job} 
+              onEdit={hasPermission('canEditJob') ? handleEditJob : undefined} 
+              onDelete={hasPermission('canDeleteJob') ? handleDeleteJob : undefined} 
+            />
           ))}
         </div>
       </ScrollArea>
       
-      {/* Create Job Modal */}
+      {/* Create/Edit Job Modal */}
       {isCreateJobModalOpen && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
           <div className="bg-white rounded-lg p-8 w-full max-w-md">
-            <h2 className="text-xl font-bold mb-4">Create New Job</h2>
+            <h2 className="text-xl font-bold mb-4">{isEditMode ? 'Edit Job' : 'Create New Job'}</h2>
             
             <div className="space-y-4">
               <div>
@@ -216,7 +296,7 @@ export default function Jobs() {
               
               <div>
                 <Label htmlFor="type">Type</Label>
-                <Select defaultValue={newJob.type} onValueChange={(value) => setNewJob({ ...newJob, type: value as "Full-time" | "Part-time" | "Contract" | "Temporary" | "Internship" })}>
+                <Select defaultValue={newJob.type} onValueChange={(value) => setNewJob({ ...newJob, type: value as any })}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select a job type" />
                   </SelectTrigger>
@@ -224,6 +304,20 @@ export default function Jobs() {
                     {jobTypes.map(type => (
                       <SelectItem key={type} value={type}>{type}</SelectItem>
                     ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div>
+                <Label htmlFor="status">Status</Label>
+                <Select defaultValue={newJob.status} onValueChange={(value) => setNewJob({ ...newJob, status: value as any })}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select a job status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Draft">Draft</SelectItem>
+                    <SelectItem value="Published">Published</SelectItem>
+                    <SelectItem value="Closed">Closed</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -251,7 +345,7 @@ export default function Jobs() {
             
             <div className="flex justify-end gap-4 mt-6">
               <Button variant="ghost" onClick={() => setIsCreateJobModalOpen(false)}>Cancel</Button>
-              <Button onClick={handleCreateJob}>Create</Button>
+              <Button onClick={handleCreateJob}>{isEditMode ? 'Save Changes' : 'Create'}</Button>
             </div>
           </div>
         </div>
@@ -262,22 +356,72 @@ export default function Jobs() {
 
 interface JobCardProps {
   job: Job;
+  onEdit?: (job: Job) => void;
+  onDelete?: (jobId: string) => void;
 }
 
-const JobCard: React.FC<JobCardProps> = ({ job }) => {
+const JobCard: React.FC<JobCardProps> = ({ job, onEdit, onDelete }) => {
   const { voiceProps } = useVoiceTrigger({
     what: `This is a job posting for the position of ${job.title} in the ${job.department} department. It is a ${job.type} position with a salary range of ${job.salary}.`
   });
   
   return (
     <Card {...voiceProps}>
-      <CardHeader>
-        <CardTitle>{job.title}</CardTitle>
-        <CardDescription>{job.department}</CardDescription>
+      <CardHeader className="pb-2">
+        <div className="flex justify-between">
+          <div>
+            <CardTitle>{job.title}</CardTitle>
+            <CardDescription>{job.department}</CardDescription>
+          </div>
+          <div className="flex space-x-1">
+            {onEdit && (
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="h-8 w-8 p-0" 
+                onClick={() => onEdit(job)}
+                {...useVoiceTrigger({ what: "Edit this job posting" }).voiceProps}
+              >
+                <Pencil size={16} />
+                <span className="sr-only">Edit</span>
+              </Button>
+            )}
+            {onDelete && (
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="h-8 w-8 p-0 text-red-500 hover:text-red-600 hover:bg-red-50" 
+                    {...useVoiceTrigger({ what: "Delete this job posting" }).voiceProps}
+                  >
+                    <Trash2 size={16} />
+                    <span className="sr-only">Delete</span>
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      This will permanently delete the job posting for "{job.title}". This action cannot be undone.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={() => onDelete(job.id)}>Delete</AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            )}
+          </div>
+        </div>
       </CardHeader>
       <CardContent className="space-y-2">
-        <p>{job.location}</p>
+        <p className="text-sm">{job.location}</p>
         <Badge>{job.type}</Badge>
+        <Badge variant={job.status === "Published" ? "default" : job.status === "Draft" ? "secondary" : "outline"}>
+          {job.status}
+        </Badge>
         <p className="text-sm text-gray-500">{job.applicants} applicants</p>
       </CardContent>
     </Card>

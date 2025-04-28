@@ -28,7 +28,7 @@ export const useVoiceTrigger = ({
   // Handlers for different events
   const handleMouseEnter = useCallback(() => {
     if (what) {
-      // Clear any existing audio first
+      // Clear any existing audio first - immediately stop any playing audio
       clearTutorial();
       
       // Clear any existing timeout to avoid overlapping instructions
@@ -36,7 +36,7 @@ export const useVoiceTrigger = ({
         clearTimeout(timeoutRef.current);
       }
       
-      // Immediate voice feedback with no delay
+      // Set the tutorial immediately - no delay
       setTutorial(what, "what");
     }
   }, [what, setTutorial, clearTutorial]);
@@ -61,8 +61,9 @@ export const useVoiceTrigger = ({
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
     }
-    // We could add clearTutorial() here but that might interrupt too aggressively
-  }, []);
+    // Immediately clear the tutorial when leaving the component
+    clearTutorial();
+  }, [clearTutorial]);
   
   // For decision support (manually triggered)
   const triggerDecision = useCallback(() => {
@@ -73,6 +74,8 @@ export const useVoiceTrigger = ({
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
       }
+      
+      // Set the tutorial immediately
       setTutorial(decision, "decision");
     }
   }, [decision, setTutorial, clearTutorial]);

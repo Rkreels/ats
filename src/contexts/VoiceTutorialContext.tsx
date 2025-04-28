@@ -48,19 +48,13 @@ export const VoiceTutorialProvider = ({ children }: { children: ReactNode }) => 
   };
   
   const clearTutorial = () => {
-    setActiveTutorial(null);
+    // Immediately cancel any playing speech
     if (synth) synth.cancel();
     setIsPlaying(false);
+    setActiveTutorial(null);
     
-    // Process next item in queue if available
-    if (voiceQueue.length > 0) {
-      // Add a small delay before playing the next item to prevent overlapping
-      setTimeout(() => {
-        const nextTutorial = voiceQueue[0];
-        setVoiceQueue(prev => prev.slice(1));
-        setActiveTutorial(nextTutorial);
-      }, 500);
-    }
+    // Clear the queue as well to prevent unwanted playback
+    setVoiceQueue([]);
   };
   
   const toggleVoice = () => {
@@ -128,11 +122,10 @@ export const VoiceTutorialProvider = ({ children }: { children: ReactNode }) => 
       utterance.onstart = () => setIsPlaying(true);
       utterance.onend = () => {
         setIsPlaying(false);
-        clearTutorial(); // Auto-clear after speaking
       };
       utterance.onerror = () => {
         setIsPlaying(false);
-        clearTutorial();
+        setActiveTutorial(null);
       };
       
       // Speak the tutorial immediately

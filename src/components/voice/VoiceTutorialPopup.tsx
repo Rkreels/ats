@@ -18,15 +18,17 @@ export const VoiceTutorialPopup = () => {
   useEffect(() => {
     if (activeTutorial) {
       setIsVisible(true);
+    } else {
+      setIsVisible(false);
     }
   }, [activeTutorial]);
 
   if (!activeTutorial) return null;
   
   const handleClose = () => {
-    setIsVisible(false);
-    // Immediately clear the tutorial instead of waiting
+    // Immediately clear the tutorial and close popup
     clearTutorial();
+    setIsVisible(false);
   };
   
   return (
