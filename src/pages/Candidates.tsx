@@ -1,5 +1,6 @@
 
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { useVoiceTrigger } from "@/hooks/useVoiceTrigger";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -10,7 +11,7 @@ import { mockDataService } from "@/data/mockData";
 import { Candidate } from "@/types";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { MoreVertical, Edit, Trash2, Search } from "lucide-react";
+import { MoreVertical, Edit, Trash2, Search, Eye } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -23,6 +24,7 @@ import { useToast } from "@/hooks/use-toast";
 
 export default function Candidates() {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [candidates, setCandidates] = useState<Candidate[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
@@ -78,6 +80,10 @@ export default function Candidates() {
 
   // Candidate status options
   const statusOptions = ["All", "Applied", "Screen", "Interview", "Offer", "Hired", "Rejected"];
+
+  const viewCandidateDetails = (id: string) => {
+    navigate(`/candidates/${id}`);
+  };
 
   return (
     <>
@@ -173,7 +179,11 @@ export default function Candidates() {
                 </thead>
                 <tbody>
                   {filteredCandidates.map(candidate => (
-                    <tr key={candidate.id} className="bg-white border-b hover:bg-gray-50">
+                    <tr 
+                      key={candidate.id} 
+                      className="bg-white border-b hover:bg-gray-50 cursor-pointer"
+                      onClick={() => viewCandidateDetails(candidate.id)}
+                    >
                       <th scope="row" className="flex items-center px-6 py-4 text-gray-900 whitespace-nowrap">
                         <Avatar className="mr-3">
                           <AvatarImage src={candidate.avatar} alt={candidate.name} />
@@ -190,7 +200,7 @@ export default function Candidates() {
                       <td className="px-6 py-4">
                         {candidate.appliedDate}
                       </td>
-                      <td className="px-6 py-4">
+                      <td className="px-6 py-4" onClick={(e) => e.stopPropagation()}>
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
                             <Button variant="ghost" className="h-8 w-8 p-0">
@@ -200,6 +210,9 @@ export default function Candidates() {
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
                             <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                            <DropdownMenuItem onClick={() => viewCandidateDetails(candidate.id)}>
+                              <Eye className="mr-2 h-4 w-4" /> View Details
+                            </DropdownMenuItem>
                             <DropdownMenuItem>
                               <Edit className="mr-2 h-4 w-4" /> Edit
                             </DropdownMenuItem>

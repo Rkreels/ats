@@ -1,317 +1,231 @@
-import { useVoiceTrigger } from "@/hooks/useVoiceTrigger";
+
+import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell, Legend } from "recharts";
-import { ArrowUpRight, ArrowDownRight, Users, Briefcase, Calendar, Clock } from "lucide-react";
-import { mockDataService } from "@/data/mockData";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useVoiceTrigger } from "@/hooks/useVoiceTrigger";
+import { LineChart, BarChart } from "@/components/ui/chart";
+import { Download } from "lucide-react";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { format } from "date-fns";
+import { CalendarIcon } from "lucide-react";
+import { cn } from "@/lib/utils";
 
-const COLORS = ['#4cc9f0', '#4361ee', '#3a0ca3', '#7209b7', '#f72585', '#4bb543'];
-
-export default function Dashboard() {
-  // Get mock data
-  const timeToHireData = mockDataService.getTimeToHireData();
-  const diversityData = mockDataService.getDiversityData();
+const Reports = () => {
+  const [startDate, setStartDate] = useState<Date>();
+  const [endDate, setEndDate] = useState<Date>();
+  const [reportType, setReportType] = useState("hiring");
   
-  // Convert diversity data for pie chart
-  const genderData = Object.entries(diversityData.gender).map(([name, value]) => ({ name, value }));
-  const ethnicityData = Object.entries(diversityData.ethnicity).map(([name, value]) => ({ name, value }));
-  const sourceData = Object.entries(diversityData.hiringSource).map(([name, value]) => ({ name, value }));
+  // Sample data for reports - in a real app these would come from API calls
+  const hiringData = [
+    { month: "Jan", applications: 120, interviews: 45, hires: 10 },
+    { month: "Feb", applications: 150, interviews: 55, hires: 12 },
+    { month: "Mar", applications: 180, interviews: 70, hires: 15 },
+    { month: "Apr", applications: 200, interviews: 80, hires: 18 },
+    { month: "May", applications: 220, interviews: 90, hires: 25 },
+    { month: "Jun", applications: 260, interviews: 100, hires: 30 },
+  ];
   
-  // Voice tutorials
-  const { voiceProps: overviewVoiceProps } = useVoiceTrigger({
-    what: "This is your recruitment dashboard showing key metrics like active jobs, candidates in pipeline, and upcoming interviews."
+  const timeToHireData = [
+    { department: "Engineering", days: 45 },
+    { department: "Marketing", days: 32 },
+    { department: "Sales", days: 28 },
+    { department: "Product", days: 40 },
+    { department: "Design", days: 35 },
+    { department: "Finance", days: 30 },
+  ];
+  
+  const sourceEfficiencyData = [
+    { source: "LinkedIn", applications: 250, qualifiedCandidates: 120, hires: 25 },
+    { source: "Indeed", applications: 320, qualifiedCandidates: 150, hires: 30 },
+    { source: "Company Website", applications: 150, qualifiedCandidates: 70, hires: 15 },
+    { source: "Referrals", applications: 100, qualifiedCandidates: 80, hires: 40 },
+    { source: "Job Fairs", applications: 80, qualifiedCandidates: 30, hires: 8 },
+  ];
+  
+  const { voiceProps: reportsOverviewProps } = useVoiceTrigger({
+    what: "The reports section allows you to analyze your recruiting data. Generate different types of reports by selecting parameters and date ranges, and export the data for further analysis."
   });
-  
-  const { voiceProps: timeChartVoiceProps } = useVoiceTrigger({
-    what: "This chart shows average time-to-hire in days across different departments over time.",
-    decision: "Engineering hiring is taking 10 days longer this month than last. Consider reviewing the technical interview process for bottlenecks."
-  });
-  
-  const { voiceProps: diversityVoiceProps } = useVoiceTrigger({
-    what: "These charts show the diversity breakdown of your candidate pipeline by gender and ethnicity.",
-    decision: "Your gender diversity ratio shows a 60/40 male-to-female split. Consider diversifying job boards or using inclusive language in job descriptions."
-  });
-  
-  // Count candidates by status
-  const candidates = mockDataService.getAllCandidates();
-  const candidatesByStatus = {
-    Applied: candidates.filter(c => c.status === 'Applied').length,
-    Screen: candidates.filter(c => c.status === 'Screen').length,
-    Interview: candidates.filter(c => c.status === 'Interview').length,
-    Offer: candidates.filter(c => c.status === 'Offer').length,
-    Hired: candidates.filter(c => c.status === 'Hired').length,
-  };
-  
-  // Count jobs by status
-  const jobs = mockDataService.getAllJobs();
-  const activeJobs = jobs.filter(j => j.status === 'Published').length;
-  
-  // Count upcoming interviews
-  const upcomingInterviews = candidates
-    .flatMap(c => c.interviews || [])
-    .filter(i => i.status === 'Scheduled')
-    .length;
-  
-  // Calculate time-to-hire
-  const avgTimeToHire = 32; // Let's pretend we calculated this
   
   return (
     <>
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-800">Recruitment Dashboard</h1>
-          <p className="text-gray-600">Welcome back! Here's what's happening with your hiring pipeline.</p>
-        </div>
-        <div>
-          <button 
-            className="bg-ats-primary text-white px-4 py-2 rounded-md hover:bg-opacity-90 transition-colors"
-            onClick={() => mockDataService.generateMoreCandidates(5)}
-          >
-            Generate More Candidates
-          </button>
+          <h1 className="text-2xl font-bold text-gray-800">Reports</h1>
+          <p className="text-gray-600">Analyze your recruiting metrics and performance</p>
         </div>
       </div>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8" {...overviewVoiceProps}>
+      <div className="mb-6" {...reportsOverviewProps}>
         <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-gray-500">Active Jobs</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex justify-between items-center">
-              <div className="flex items-center space-x-2">
-                <Briefcase className="text-ats-primary" />
-                <span className="text-2xl font-bold">{activeJobs}</span>
-              </div>
-              <div className="flex items-center text-green-500 text-sm">
-                <ArrowUpRight size={16} />
-                <span>12%</span>
-              </div>
-            </div>
-            <p className="text-xs text-gray-500 mt-2">vs previous month</p>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-gray-500">Total Candidates</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex justify-between items-center">
-              <div className="flex items-center space-x-2">
-                <Users className="text-ats-info" />
-                <span className="text-2xl font-bold">{candidates.length}</span>
-              </div>
-              <div className="flex items-center text-green-500 text-sm">
-                <ArrowUpRight size={16} />
-                <span>8%</span>
-              </div>
-            </div>
-            <p className="text-xs text-gray-500 mt-2">vs previous month</p>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-gray-500">Upcoming Interviews</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex justify-between items-center">
-              <div className="flex items-center space-x-2">
-                <Calendar className="text-ats-warning" />
-                <span className="text-2xl font-bold">{upcomingInterviews}</span>
-              </div>
-              <div className="flex items-center text-red-500 text-sm">
-                <ArrowDownRight size={16} />
-                <span>3%</span>
-              </div>
-            </div>
-            <p className="text-xs text-gray-500 mt-2">vs previous month</p>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-gray-500">Avg. Time to Hire</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex justify-between items-center">
-              <div className="flex items-center space-x-2">
-                <Clock className="text-ats-danger" />
-                <span className="text-2xl font-bold">{avgTimeToHire} days</span>
-              </div>
-              <div className="flex items-center text-green-500 text-sm">
-                <ArrowUpRight size={16} />
-                <span>5%</span>
-              </div>
-            </div>
-            <p className="text-xs text-gray-500 mt-2">vs previous month</p>
-          </CardContent>
-        </Card>
-      </div>
-      
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
-        <Card className="lg:col-span-2" {...timeChartVoiceProps}>
           <CardHeader>
-            <CardTitle>Time to Hire by Department</CardTitle>
-            <CardDescription>Average days from application to hire</CardDescription>
+            <CardTitle>Generate Report</CardTitle>
+            <CardDescription>Select parameters to generate a custom report</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="h-[300px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={timeToHireData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="month" />
-                  <YAxis />
-                  <Tooltip />
-                  <Legend />
-                  <Line type="monotone" dataKey="Engineering" stroke="#4cc9f0" strokeWidth={2} />
-                  <Line type="monotone" dataKey="Product" stroke="#4361ee" strokeWidth={2} />
-                  <Line type="monotone" dataKey="Marketing" stroke="#3a0ca3" strokeWidth={2} />
-                  <Line type="monotone" dataKey="Sales" stroke="#7209b7" strokeWidth={2} />
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
-          </CardContent>
-        </Card>
-        
-        <Card className="lg:row-span-2" {...diversityVoiceProps}>
-          <CardHeader>
-            <CardTitle>Diversity Metrics</CardTitle>
-            <CardDescription>Candidate pipeline demographics</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div>
-              <h4 className="font-medium mb-2 text-sm text-gray-600">Gender Distribution</h4>
-              <div className="h-[200px]">
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={genderData}
-                      cx="50%"
-                      cy="50%"
-                      innerRadius={60}
-                      outerRadius={80}
-                      paddingAngle={2}
-                      dataKey="value"
-                      label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="reportType">Report Type</Label>
+                <Select value={reportType} onValueChange={setReportType}>
+                  <SelectTrigger id="reportType">
+                    <SelectValue placeholder="Select report type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="hiring">Hiring Overview</SelectItem>
+                    <SelectItem value="timeToHire">Time to Hire</SelectItem>
+                    <SelectItem value="sourceEfficiency">Source Efficiency</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div className="space-y-2">
+                <Label>Start Date</Label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant={"outline"}
+                      className={cn(
+                        "w-full justify-start text-left font-normal",
+                        !startDate && "text-muted-foreground"
+                      )}
                     >
-                      {genderData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                      ))}
-                    </Pie>
-                    <Tooltip formatter={(value) => [`${value}%`, 'Percentage']} />
-                  </PieChart>
-                </ResponsiveContainer>
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {startDate ? format(startDate, "PPP") : <span>Pick a date</span>}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0">
+                    <Calendar
+                      mode="single"
+                      selected={startDate}
+                      onSelect={setStartDate}
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
               </div>
-            </div>
-            <div>
-              <h4 className="font-medium mb-2 text-sm text-gray-600">Ethnicity Distribution</h4>
-              <div className="h-[200px]">
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={ethnicityData}
-                      cx="50%"
-                      cy="50%"
-                      innerRadius={60}
-                      outerRadius={80}
-                      paddingAngle={2}
-                      dataKey="value"
+              
+              <div className="space-y-2">
+                <Label>End Date</Label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant={"outline"}
+                      className={cn(
+                        "w-full justify-start text-left font-normal",
+                        !endDate && "text-muted-foreground"
+                      )}
                     >
-                      {ethnicityData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                      ))}
-                    </Pie>
-                    <Legend layout="vertical" align="right" verticalAlign="middle" />
-                    <Tooltip formatter={(value) => [`${value}%`, 'Percentage']} />
-                  </PieChart>
-                </ResponsiveContainer>
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {endDate ? format(endDate, "PPP") : <span>Pick a date</span>}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0">
+                    <Calendar
+                      mode="single"
+                      selected={endDate}
+                      onSelect={setEndDate}
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
               </div>
-            </div>
-          </CardContent>
-        </Card>
-        
-        <Card className="lg:col-span-2">
-          <CardHeader>
-            <CardTitle>Candidates by Stage</CardTitle>
-            <CardDescription>Current pipeline distribution</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="h-[300px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={Object.entries(candidatesByStatus).map(([name, value]) => ({ name, value }))}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" />
-                  <YAxis />
-                  <Tooltip />
-                  <Bar dataKey="value" fill="#4361ee">
-                    {Object.entries(candidatesByStatus).map(([name, _], index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
+              
+              <div className="flex items-end">
+                <Button className="w-full">Generate Report</Button>
+              </div>
             </div>
           </CardContent>
         </Card>
       </div>
       
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-        <Card>
-          <CardHeader>
-            <CardTitle>Hiring Sources</CardTitle>
-            <CardDescription>Where candidates are coming from</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="h-[300px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={sourceData}
-                    cx="50%"
-                    cy="50%"
-                    outerRadius={100}
-                    fill="#8884d8"
-                    dataKey="value"
-                    label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                  >
-                    {sourceData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                    ))}
-                  </Pie>
-                  <Tooltip formatter={(value) => [`${value}%`, 'Percentage']} />
-                </PieChart>
-              </ResponsiveContainer>
-            </div>
-          </CardContent>
-        </Card>
+      <Tabs defaultValue="hiring" value={reportType} onValueChange={setReportType}>
+        <TabsList className="mb-6">
+          <TabsTrigger value="hiring">Hiring Overview</TabsTrigger>
+          <TabsTrigger value="timeToHire">Time to Hire</TabsTrigger>
+          <TabsTrigger value="sourceEfficiency">Source Efficiency</TabsTrigger>
+        </TabsList>
         
-        <Card>
-          <CardHeader>
-            <CardTitle>Recent Activity</CardTitle>
-            <CardDescription>Latest updates in your hiring pipeline</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <ul className="space-y-4">
-              {[...candidates]
-                .sort((a, b) => new Date(b.lastUpdated).getTime() - new Date(a.lastUpdated).getTime())
-                .slice(0, 5)
-                .map(candidate => (
-                <li key={candidate.id} className="flex items-start space-x-3 p-3 bg-gray-50 rounded-md">
-                  <div className="w-10 h-10 rounded-full flex-shrink-0 overflow-hidden">
-                    <img src={candidate.avatar} alt={candidate.name} className="w-full h-full object-cover" />
-                  </div>
-                  <div className="flex-1">
-                    <p className="font-medium">{candidate.name}</p>
-                    <p className="text-sm text-gray-600">Moved to <span className="font-medium">{candidate.status}</span> stage</p>
-                    <p className="text-xs text-gray-500">{candidate.lastUpdated}</p>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          </CardContent>
-        </Card>
-      </div>
+        <TabsContent value="hiring">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between">
+              <div>
+                <CardTitle>Hiring Overview</CardTitle>
+                <CardDescription>Applications, interviews and hires over time</CardDescription>
+              </div>
+              <Button size="sm" variant="outline">
+                <Download className="mr-2 h-4 w-4" />
+                Export CSV
+              </Button>
+            </CardHeader>
+            <CardContent>
+              <LineChart 
+                data={hiringData}
+                index="month"
+                categories={["applications", "interviews", "hires"]}
+                colors={["blue", "green", "purple"]}
+                valueFormatter={(value) => `${value}`}
+                className="h-[400px]"
+              />
+            </CardContent>
+          </Card>
+        </TabsContent>
+        
+        <TabsContent value="timeToHire">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between">
+              <div>
+                <CardTitle>Time to Hire by Department</CardTitle>
+                <CardDescription>Average days from job posting to hiring</CardDescription>
+              </div>
+              <Button size="sm" variant="outline">
+                <Download className="mr-2 h-4 w-4" />
+                Export CSV
+              </Button>
+            </CardHeader>
+            <CardContent>
+              <BarChart 
+                data={timeToHireData}
+                index="department"
+                categories={["days"]}
+                colors={["blue"]}
+                valueFormatter={(value) => `${value} days`}
+                className="h-[400px]"
+              />
+            </CardContent>
+          </Card>
+        </TabsContent>
+        
+        <TabsContent value="sourceEfficiency">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between">
+              <div>
+                <CardTitle>Recruiting Source Efficiency</CardTitle>
+                <CardDescription>Compare recruiting sources by applications and hires</CardDescription>
+              </div>
+              <Button size="sm" variant="outline">
+                <Download className="mr-2 h-4 w-4" />
+                Export CSV
+              </Button>
+            </CardHeader>
+            <CardContent>
+              <BarChart 
+                data={sourceEfficiencyData}
+                index="source"
+                categories={["applications", "qualifiedCandidates", "hires"]}
+                colors={["gray", "blue", "green"]}
+                valueFormatter={(value) => `${value}`}
+                className="h-[400px]"
+              />
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
     </>
   );
-}
+};
+
+export default Reports;
