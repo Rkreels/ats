@@ -1,251 +1,509 @@
-import { Candidate, Interview, Job, TimeToHireData, DiversityData } from "@/types";
+import { Candidate, Job, TimeToHireData, DiversityData, Interview } from "@/types";
+import { v4 as uuidv4 } from 'uuid';
 
-const firstNames = ["Alice", "Bob", "Charlie", "David", "Emily", "Finn", "Grace", "Harry", "Ivy", "Jack", "Chloe", "Liam", "Mia", "Noah", "Olivia", "Owen", "Sophia", "William", "Ava", "James"];
-const lastNames = ["Smith", "Johnson", "Williams", "Brown", "Jones", "Garcia", "Miller", "Davis", "Rodriguez", "Martinez", "Hernandez", "Lopez", "Gonzalez", "Wilson", "Anderson", "Thomas", "Taylor", "Moore", "Jackson", "White"];
-const jobTitles = ["Software Engineer", "Product Manager", "UX Designer", "Data Scientist", "Marketing Manager", "Sales Representative", "HR Manager", "Financial Analyst", "Project Manager", "Business Analyst"];
-const departments = ["Engineering", "Product", "Design", "Data Science", "Marketing", "Sales", "Human Resources", "Finance", "Operations"];
-const cities = ["New York", "Los Angeles", "Chicago", "Houston", "Phoenix", "Philadelphia", "San Antonio", "San Diego", "Dallas", "San Jose"];
-const jobTypes = ["Full-time", "Part-time", "Contract", "Temporary", "Internship"];
-const skillsList = ["JavaScript", "React", "Node.js", "Python", "SQL", "HTML", "CSS", "Java", "C++", "C#", "AWS", "Azure", "GCP", "Docker", "Kubernetes", "Git", "Agile", "Scrum", "Leadership", "Communication"];
-const educationLevels = ["Bachelor's Degree", "Master's Degree", "PhD", "Associate's Degree", "High School Diploma"];
-const sources = ["LinkedIn", "Indeed", "Glassdoor", "Company Website", "Referral", "University Career Fair"];
-
-type CandidateStatus = "Applied" | "Screen" | "Interview" | "Offer" | "Hired" | "Rejected";
-type JobStatus = "Draft" | "Pending Approval" | "Published" | "Closed" | "On Hold";
-
-const getRandomCandidateStatus = (): CandidateStatus => {
-  const statuses: CandidateStatus[] = ["Applied", "Screen", "Interview", "Offer", "Hired", "Rejected"];
-  return statuses[Math.floor(Math.random() * statuses.length)];
-};
-
-const getRandomJobStatus = (): JobStatus => {
-  const statuses: JobStatus[] = ["Draft", "Pending Approval", "Published", "Closed", "On Hold"];
-  return statuses[Math.floor(Math.random() * statuses.length)];
-};
-
-const getRandomSkills = (): string[] => {
-  const numSkills = Math.floor(Math.random() * 5) + 3;
-  const skills: string[] = [];
-  for (let i = 0; i < numSkills; i++) {
-    skills.push(skillsList[Math.floor(Math.random() * skillsList.length)]);
+// Sample candidates
+const candidates: Candidate[] = [
+  {
+    id: "c1",
+    name: "Alex Johnson",
+    role: "Frontend Developer",
+    email: "alex.johnson@example.com",
+    phone: "+1 (555) 123-4567",
+    location: "San Francisco, CA",
+    experience: 5,
+    skills: ["React", "TypeScript", "CSS", "HTML", "JavaScript"],
+    education: "BS Computer Science, Stanford University",
+    source: "LinkedIn",
+    salary: "$120,000 - $140,000",
+    status: "Interview",
+    appliedDate: "2023-04-15",
+    resumeUrl: "#",
+    coverLetterUrl: "#",
+    notes: "Strong frontend skills, good cultural fit. Enthusiastic about our product.",
+    feedback: "Performed well in technical interview. Team recommended moving forward.",
+    avatar: "https://i.pravatar.cc/150?img=1",
+    lastUpdated: "2023-04-20",
+    interviews: [
+      {
+        id: "i1",
+        candidateId: "c1",
+        interviewerId: "e1",
+        interviewerName: "Sarah Chen",
+        date: "2023-04-25",
+        time: "2:00 PM",
+        duration: "45 minutes",
+        type: "Video",
+        status: "Scheduled",
+      }
+    ]
+  },
+  {
+    id: "c2",
+    name: "Emily White",
+    role: "Backend Developer",
+    email: "emily.white@example.com",
+    phone: "+1 (555) 234-5678",
+    location: "New York, NY",
+    experience: 3,
+    skills: ["Node.js", "Express", "PostgreSQL", "JavaScript"],
+    education: "MS Computer Science, MIT",
+    source: "Indeed",
+    salary: "$110,000 - $130,000",
+    status: "Offer",
+    appliedDate: "2023-03-01",
+    resumeUrl: "#",
+    coverLetterUrl: "#",
+    notes: "Solid backend skills, experience with large-scale systems.",
+    feedback: "Excellent problem-solving skills. Strong understanding of system architecture.",
+    avatar: "https://i.pravatar.cc/150?img=2",
+    lastUpdated: "2023-03-15",
+    interviews: [
+      {
+        id: "i2",
+        candidateId: "c2",
+        interviewerId: "e2",
+        interviewerName: "David Lee",
+        date: "2023-03-10",
+        time: "10:00 AM",
+        duration: "60 minutes",
+        type: "In-person",
+        status: "Completed",
+        feedback: "Candidate demonstrated strong technical abilities and a good understanding of backend development principles."
+      }
+    ]
+  },
+  {
+    id: "c3",
+    name: "Carlos Rodriguez",
+    role: "Data Scientist",
+    email: "carlos.rodriguez@example.com",
+    phone: "+1 (555) 345-6789",
+    location: "Chicago, IL",
+    experience: 7,
+    skills: ["Python", "Machine Learning", "Data Analysis", "SQL"],
+    education: "PhD Statistics, University of Chicago",
+    source: "Referral",
+    salary: "$140,000 - $160,000",
+    status: "Hired",
+    appliedDate: "2022-11-01",
+    resumeUrl: "#",
+    coverLetterUrl: "#",
+    notes: "Expert in machine learning, extensive research experience.",
+    feedback: "Exceptional analytical skills. Published several papers in top journals.",
+    avatar: "https://i.pravatar.cc/150?img=3",
+    lastUpdated: "2022-12-01",
+    interviews: [
+      {
+        id: "i3",
+        candidateId: "c3",
+        interviewerId: "e3",
+        interviewerName: "Linda Brown",
+        date: "2022-11-15",
+        time: "1:00 PM",
+        duration: "75 minutes",
+        type: "Video",
+        status: "Completed",
+        feedback: "Candidate's expertise in machine learning and data analysis was evident. A strong addition to the team."
+      }
+    ]
+  },
+  {
+    id: "c4",
+    name: "Priya Sharma",
+    role: "Product Manager",
+    email: "priya.sharma@example.com",
+    phone: "+1 (555) 456-7890",
+    location: "Seattle, WA",
+    experience: 4,
+    skills: ["Product Strategy", "Market Analysis", "Agile", "User Experience"],
+    education: "MBA, Harvard Business School",
+    source: "LinkedIn",
+    salary: "$130,000 - $150,000",
+    status: "Rejected",
+    appliedDate: "2023-01-15",
+    resumeUrl: "#",
+    coverLetterUrl: "#",
+    notes: "Good understanding of product management principles, but lacks experience in our industry.",
+    feedback: "Candidate's interview performance was satisfactory, but other candidates had more relevant experience.",
+    avatar: "https://i.pravatar.cc/150?img=4",
+    lastUpdated: "2023-02-01",
+    interviews: [
+      {
+        id: "i4",
+        candidateId: "c4",
+        interviewerId: "e4",
+        interviewerName: "Michael Green",
+        date: "2023-01-25",
+        time: "3:00 PM",
+        duration: "60 minutes",
+        type: "Video",
+        status: "Completed",
+        feedback: "Candidate displayed a solid understanding of product management concepts but lacked specific experience in our target market."
+      }
+    ]
+  },
+  {
+    id: "c5",
+    name: "David Kim",
+    role: "Software Engineer",
+    email: "david.kim@example.com",
+    phone: "+1 (555) 567-8901",
+    location: "Austin, TX",
+    experience: 2,
+    skills: ["Java", "Spring", "RESTful APIs", "SQL"],
+    education: "BS Computer Engineering, UT Austin",
+    source: "Company Website",
+    salary: "$100,000 - $120,000",
+    status: "Applied",
+    appliedDate: "2023-05-01",
+    resumeUrl: "#",
+    coverLetterUrl: "#",
+    notes: "Recent graduate, eager to learn. Some internship experience.",
+    feedback: null,
+    avatar: "https://i.pravatar.cc/150?img=5",
+    lastUpdated: "2023-05-05",
+    interviews: []
+  },
+  {
+    id: "c6",
+    name: "Laura Smith",
+    role: "UX Designer",
+    email: "laura.smith@example.com",
+    phone: "+1 (555) 678-9012",
+    location: "Los Angeles, CA",
+    experience: 6,
+    skills: ["User Research", "Wireframing", "Prototyping", "UI Design"],
+    education: "MFA Design, UCLA",
+    source: "Behance",
+    salary: "$120,000 - $140,000",
+    status: "Screen",
+    appliedDate: "2023-02-15",
+    resumeUrl: "#",
+    coverLetterUrl: "#",
+    notes: "Creative designer, strong portfolio. Needs to improve communication skills.",
+    feedback: null,
+    avatar: "https://i.pravatar.cc/150?img=6",
+    lastUpdated: "2023-02-28",
+    interviews: []
+  },
+  {
+    id: "c7",
+    name: "Kevin Brown",
+    role: "Technical Lead",
+    email: "kevin.brown@example.com",
+    phone: "+1 (555) 789-0123",
+    location: "Denver, CO",
+    experience: 8,
+    skills: ["Leadership", "System Design", "Cloud Computing", "Agile"],
+    education: "BS Electrical Engineering, CU Boulder",
+    source: "Referral",
+    salary: "$150,000 - $170,000",
+    status: "Interview",
+    appliedDate: "2022-12-01",
+    resumeUrl: "#",
+    coverLetterUrl: "#",
+    notes: "Experienced leader, deep technical knowledge. Excellent communication skills.",
+    feedback: null,
+    avatar: "https://i.pravatar.cc/150?img=7",
+    lastUpdated: "2022-12-15",
+    interviews: []
+  },
+  {
+    id: "c8",
+    name: "Ashley Taylor",
+    role: "Marketing Manager",
+    email: "ashley.taylor@example.com",
+    phone: "+1 (555) 890-1234",
+    location: "Miami, FL",
+    experience: 5,
+    skills: ["Digital Marketing", "Social Media", "SEO", "Content Strategy"],
+    education: "BA Marketing, University of Florida",
+    source: "LinkedIn",
+    salary: "$110,000 - $130,000",
+    status: "Offer",
+    appliedDate: "2023-03-15",
+    resumeUrl: "#",
+    coverLetterUrl: "#",
+    notes: "Creative marketer, data-driven approach. Strong communication skills.",
+    feedback: null,
+    avatar: "https://i.pravatar.cc/150?img=8",
+    lastUpdated: "2023-03-30",
+    interviews: []
+  },
+  {
+    id: "c9",
+    name: "Ryan Garcia",
+    role: "Financial Analyst",
+    email: "ryan.garcia@example.com",
+    phone: "+1 (555) 901-2345",
+    location: "Houston, TX",
+    experience: 3,
+    skills: ["Financial Modeling", "Data Analysis", "Accounting", "Excel"],
+    education: "MS Finance, Rice University",
+    source: "Indeed",
+    salary: "$90,000 - $110,000",
+    status: "Hired",
+    appliedDate: "2023-01-01",
+    resumeUrl: "#",
+    coverLetterUrl: "#",
+    notes: "Detail-oriented analyst, strong financial acumen. Excellent analytical skills.",
+    feedback: null,
+    avatar: "https://i.pravatar.cc/150?img=9",
+    lastUpdated: "2023-01-15",
+    interviews: []
+  },
+  {
+    id: "c10",
+    name: "Jessica Martinez",
+    role: "HR Manager",
+    email: "jessica.martinez@example.com",
+    phone: "+1 (555) 012-3456",
+    location: "Phoenix, AZ",
+    experience: 7,
+    skills: ["HR Management", "Employee Relations", "Recruiting", "Compensation"],
+    education: "BA Human Resources, ASU",
+    source: "Company Website",
+    salary: "$120,000 - $140,000",
+    status: "Rejected",
+    appliedDate: "2022-11-15",
+    resumeUrl: "#",
+    coverLetterUrl: "#",
+    notes: "Experienced HR professional, good understanding of employment law. Strong communication skills.",
+    feedback: null,
+    avatar: "https://i.pravatar.cc/150?img=10",
+    lastUpdated: "2022-11-30",
+    interviews: []
   }
-  return [...new Set(skills)];
-};
-
-const getRandomPastDate = (): string => {
-  const now = new Date();
-  const past = new Date(now.getTime() - Math.random() * 30 * 24 * 60 * 60 * 1000);
-  return past.toLocaleDateString();
-};
-
-const getRandomFutureDate = (): string => {
-  const now = new Date();
-  const future = new Date(now.getTime() + Math.random() * 30 * 24 * 60 * 60 * 1000);
-  return future.toLocaleDateString();
-};
-
-const getRandomNote = (): string => {
-  const notes = [
-    "Promising candidate with relevant experience.",
-    "Needs further screening to assess technical skills.",
-    "Strong communication skills, good cultural fit.",
-    "Potential for growth within the company.",
-    "Expressed interest in learning new technologies."
-  ];
-  return notes[Math.floor(Math.random() * notes.length)];
-};
-
-const getRandomFeedback = (): string => {
-  const feedback = [
-    "Excellent technical skills, strong problem-solving abilities.",
-    "Good understanding of product development lifecycle.",
-    "Demonstrated leadership qualities, effective team player.",
-    "Needs improvement in time management and prioritization.",
-    "Overall, a highly qualified candidate with great potential."
-  ];
-  return feedback[Math.floor(Math.random() * feedback.length)];
-};
-
-const getRandomInterviews = (): Interview[] => {
-  const numInterviews = Math.floor(Math.random() * 3);
-  const interviews: Interview[] = [];
-  for (let i = 0; i < numInterviews; i++) {
-    interviews.push({
-      id: `i-${i + 1}`,
-      candidateId: `c-${Math.floor(Math.random() * 20) + 1}`,
-      interviewerId: `e-${Math.floor(Math.random() * 10) + 1}`,
-      interviewerName: `${firstNames[Math.floor(Math.random() * firstNames.length)]} ${lastNames[Math.floor(Math.random() * lastNames.length)]}`,
-      date: getRandomFutureDate(),
-      time: `${Math.floor(Math.random() * 12) + 8}:${Math.floor(Math.random() * 60).toString().padStart(2, '0')} AM`,
-      duration: `${Math.floor(Math.random() * 60) + 30} minutes`,
-      type: ["Phone", "Video", "In-person"][Math.floor(Math.random() * 3)] as "Phone" | "Video" | "In-person",
-      status: ["Scheduled", "Completed", "Canceled"][Math.floor(Math.random() * 3)] as "Scheduled" | "Completed" | "Canceled",
-      feedback: Math.random() > 0.5 ? getRandomFeedback() : null,
-      notes: Math.random() > 0.3 ? getRandomNote() : ""
-    });
-  }
-  return interviews;
-};
-
-const getRandomJobDescription = (): string => {
-  const descriptions = [
-    "We are looking for a skilled software engineer to join our team. The ideal candidate will have experience in developing and maintaining web applications.",
-    "We are seeking a product manager to lead the development of our next-generation products. The ideal candidate will have a strong understanding of customer needs and market trends.",
-    "We are hiring a UX designer to create intuitive and engaging user interfaces for our products. The ideal candidate will have a passion for user-centered design.",
-    "We are seeking a data scientist to analyze large datasets and develop insights to improve our business. The ideal candidate will have a strong background in statistics and machine learning.",
-    "We are hiring a marketing manager to develop and execute marketing campaigns to promote our products. The ideal candidate will have experience in digital marketing and social media."
-  ];
-  return descriptions[Math.floor(Math.random() * descriptions.length)];
-};
-
-const getRandomResponsibilities = (): string[] => {
-  const responsibilities = [
-    "Develop and maintain web applications",
-    "Lead the development of new products",
-    "Create intuitive and engaging user interfaces",
-    "Analyze large datasets and develop insights",
-    "Develop and execute marketing campaigns",
-    "Manage a team of software engineers",
-    "Conduct user research and usability testing",
-    "Develop and implement data-driven strategies",
-    "Manage social media accounts",
-    "Collaborate with cross-functional teams"
-  ];
-  const numResponsibilities = Math.floor(Math.random() * 5) + 3;
-  const selectedResponsibilities: string[] = [];
-  for (let i = 0; i < numResponsibilities; i++) {
-    selectedResponsibilities.push(responsibilities[Math.floor(Math.random() * responsibilities.length)]);
-  }
-  return [...new Set(selectedResponsibilities)];
-};
-
-const getRandomRequirements = (): string[] => {
-  const requirements = [
-    "Bachelor's degree in computer science or related field",
-    "3+ years of experience in software development",
-    "Experience with React, Node.js, and SQL",
-    "Strong understanding of product development lifecycle",
-    "Experience with user-centered design principles",
-    "Strong background in statistics and machine learning",
-    "Experience with digital marketing and social media",
-    "Excellent communication and collaboration skills",
-    "Ability to work independently and as part of a team",
-    "Passion for learning new technologies"
-  ];
-  const numRequirements = Math.floor(Math.random() * 5) + 3;
-  const selectedRequirements: string[] = [];
-  for (let i = 0; i < numRequirements; i++) {
-    selectedRequirements.push(requirements[Math.floor(Math.random() * requirements.length)]);
-  }
-  return [...new Set(selectedRequirements)];
-};
-
-const candidates: Candidate[] = Array.from({ length: 20 }, (_, i) => ({
-  id: `c-${i + 1}`,
-  name: `${firstNames[Math.floor(Math.random() * firstNames.length)]} ${lastNames[Math.floor(Math.random() * lastNames.length)]}`,
-  role: jobTitles[Math.floor(Math.random() * jobTitles.length)],
-  email: `candidate${i + 1}@example.com`,
-  phone: `(${Math.floor(Math.random() * 900) + 100}) ${Math.floor(Math.random() * 900) + 100}-${Math.floor(Math.random() * 9000) + 1000}`,
-  location: cities[Math.floor(Math.random() * cities.length)],
-  experience: Math.floor(Math.random() * 15) + 1,
-  skills: getRandomSkills(),
-  education: educationLevels[Math.floor(Math.random() * educationLevels.length)],
-  source: sources[Math.floor(Math.random() * sources.length)],
-  salary: `$${(Math.floor(Math.random() * 150) + 50)}k`,
-  status: getRandomCandidateStatus(),
-  appliedDate: getRandomPastDate(),
-  resumeUrl: `https://example.com/resumes/resume-${i + 1}.pdf`,
-  coverLetterUrl: Math.random() > 0.5 ? `https://example.com/cover-letters/cover-${i + 1}.pdf` : null,
-  notes: Math.random() > 0.3 ? getRandomNote() : "",
-  feedback: Math.random() > 0.5 ? getRandomFeedback() : null,
-  avatar: `https://i.pravatar.cc/150?img=${i + 10}`,
-  lastUpdated: getRandomPastDate(),
-  interviews: getRandomInterviews(),
-}));
-
-const jobs: Job[] = Array.from({ length: 12 }, (_, i) => ({
-  id: `j-${i + 1}`,
-  title: jobTitles[Math.floor(Math.random() * jobTitles.length)],
-  department: departments[Math.floor(Math.random() * departments.length)],
-  location: cities[Math.floor(Math.random() * cities.length)],
-  type: jobTypes[Math.floor(Math.random() * jobTypes.length)] as "Full-time" | "Part-time" | "Contract" | "Temporary" | "Internship",
-  description: getRandomJobDescription(),
-  responsibilities: getRandomResponsibilities(),
-  requirements: getRandomRequirements(),
-  postedDate: getRandomPastDate(),
-  closingDate: getRandomFutureDate(),
-  salary: `$${(Math.floor(Math.random() * 150) + 50)}k - $${(Math.floor(Math.random() * 50) + 60) + (Math.floor(Math.random() * 150) + 50)}k`,
-  status: getRandomJobStatus(),
-  hiringManager: `${firstNames[Math.floor(Math.random() * firstNames.length)]} ${lastNames[Math.floor(Math.random() * lastNames.length)]}`,
-  applicants: Math.floor(Math.random() * 100) + 5,
-  skills: getRandomSkills(),
-}));
-
-const timeToHireData: TimeToHireData[] = [
-  { month: "Jan", Engineering: 35, Product: 30, Marketing: 25, Sales: 40 },
-  { month: "Feb", Engineering: 32, Product: 28, Marketing: 22, Sales: 38 },
-  { month: "Mar", Engineering: 38, Product: 32, Marketing: 28, Sales: 42 },
-  { month: "Apr", Engineering: 40, Product: 35, Marketing: 30, Sales: 45 },
-  { month: "May", Engineering: 42, Product: 38, Marketing: 32, Sales: 48 }
 ];
 
+// Sample jobs
+const jobs: Job[] = [
+  {
+    id: "j1",
+    title: "Senior Frontend Developer",
+    department: "Engineering",
+    location: "San Francisco, CA",
+    type: "Full-time",
+    description: "We are looking for an experienced frontend developer to join our team...",
+    responsibilities: [
+      "Develop new user-facing features",
+      "Build reusable components and libraries",
+      "Translate designs into high-quality code",
+    ],
+    requirements: [
+      "3+ years experience with React",
+      "Strong proficiency in JavaScript and TypeScript",
+      "Experience with responsive design",
+    ],
+    postedDate: "2023-04-01",
+    closingDate: "2023-05-01",
+    salary: "$120,000 - $150,000",
+    status: "Published",
+    hiringManager: "Sarah Chen",
+    applicants: 12,
+    skills: ["React", "TypeScript", "CSS", "HTML", "JavaScript"],
+  },
+  {
+    id: "j2",
+    title: "Backend Developer",
+    department: "Engineering",
+    location: "New York, NY",
+    type: "Full-time",
+    description: "We are seeking a skilled backend developer to build and maintain our server-side logic...",
+    responsibilities: [
+      "Design and implement RESTful APIs",
+      "Write efficient and scalable code",
+      "Work with databases and cloud services",
+    ],
+    requirements: [
+      "2+ years experience with Node.js",
+      "Proficiency in JavaScript and SQL",
+      "Experience with cloud platforms like AWS or Azure",
+    ],
+    postedDate: "2023-04-15",
+    closingDate: "2023-05-15",
+    salary: "$110,000 - $140,000",
+    status: "Published",
+    hiringManager: "David Lee",
+    applicants: 8,
+    skills: ["Node.js", "JavaScript", "SQL", "AWS", "Azure"],
+  },
+  {
+    id: "j3",
+    title: "Data Scientist",
+    department: "Data Science",
+    location: "Chicago, IL",
+    type: "Full-time",
+    description: "We are looking for a data scientist to analyze large datasets and build machine learning models...",
+    responsibilities: [
+      "Collect and analyze data from various sources",
+      "Develop and implement machine learning algorithms",
+      "Communicate findings to stakeholders",
+    ],
+    requirements: [
+      "3+ years experience with Python",
+      "Strong knowledge of machine learning techniques",
+      "Experience with data visualization tools",
+    ],
+    postedDate: "2023-05-01",
+    closingDate: "2023-06-01",
+    salary: "$130,000 - $160,000",
+    status: "Published",
+    hiringManager: "Linda Brown",
+    applicants: 5,
+    skills: ["Python", "Machine Learning", "Data Analysis", "SQL"],
+  },
+  {
+    id: "j4",
+    title: "Product Manager",
+    department: "Product",
+    location: "Seattle, WA",
+    type: "Full-time",
+    description: "We are seeking a product manager to define and execute our product strategy...",
+    responsibilities: [
+      "Conduct market research and competitive analysis",
+      "Define product requirements and specifications",
+      "Work with engineering and design teams to deliver products",
+    ],
+    requirements: [
+      "2+ years experience with product management",
+      "Strong analytical and problem-solving skills",
+      "Excellent communication and interpersonal skills",
+    ],
+    postedDate: "2023-05-15",
+    closingDate: "2023-06-15",
+    salary: "$120,000 - $150,000",
+    status: "Published",
+    hiringManager: "Michael Green",
+    applicants: 10,
+    skills: ["Product Strategy", "Market Analysis", "Agile", "User Experience"],
+  },
+  {
+    id: "j5",
+    title: "Software Engineer",
+    department: "Engineering",
+    location: "Austin, TX",
+    type: "Full-time",
+    description: "Entry-level software engineer to develop and maintain software applications...",
+    responsibilities: [
+      "Write clean and efficient code",
+      "Participate in code reviews",
+      "Work with senior engineers to design solutions",
+    ],
+    requirements: [
+      "Bachelor's degree in Computer Science",
+      "Proficiency in Java or C++",
+      "Knowledge of data structures and algorithms",
+    ],
+    postedDate: "2023-06-01",
+    closingDate: "2023-07-01",
+    salary: "$80,000 - $100,000",
+    status: "Published",
+    hiringManager: "Sarah Chen",
+    applicants: 15,
+    skills: ["Java", "C++", "Data Structures", "Algorithms"],
+  }
+];
+
+// Sample time to hire data for reports
+const timeToHireData: TimeToHireData[] = [
+  {
+    month: "Jan",
+    Engineering: 32,
+    Product: 28,
+    Marketing: 25,
+    Sales: 20,
+  },
+  {
+    month: "Feb",
+    Engineering: 30,
+    Product: 26,
+    Marketing: 23,
+    Sales: 22,
+  },
+  {
+    month: "Mar",
+    Engineering: 35,
+    Product: 30,
+    Marketing: 27,
+    Sales: 24,
+  },
+  {
+    month: "Apr",
+    Engineering: 33,
+    Product: 29,
+    Marketing: 26,
+    Sales: 21,
+  },
+  {
+    month: "May",
+    Engineering: 31,
+    Product: 27,
+    Marketing: 24,
+    Sales: 23,
+  },
+  {
+    month: "Jun",
+    Engineering: 34,
+    Product: 28,
+    Marketing: 25,
+    Sales: 19,
+  }
+];
+
+// Sample diversity data for reports
 const diversityData: DiversityData = {
   gender: {
-    Male: 55,
+    Male: 45,
     Female: 40,
-    "Non-binary": 3,
-    "Prefer not to say": 2
+    "Non-binary": 10,
+    "Prefer not to say": 5,
   },
   ethnicity: {
-    White: 60,
+    White: 50,
     "Black or African American": 15,
-    Asian: 12,
-    Hispanic: 8,
+    Asian: 20,
+    Hispanic: 10,
     "Two or more races": 3,
-    "Other/Unknown": 2
+    "Other/Unknown": 2,
   },
   hiringSource: {
-    LinkedIn: 40,
+    LinkedIn: 35,
     "Job Boards": 25,
-    "Company Website": 15,
-    Referrals: 10,
-    "University Recruiting": 5,
-    Other: 5
-  }
+    "Company Website": 20,
+    Referrals: 15,
+    "University Recruiting": 3,
+    Other: 2,
+  },
 };
 
 export const mockDataService = {
-  getAllCandidates: (): Candidate[] => candidates,
-  getCandidateById: (id: string): Candidate | undefined => candidates.find(c => c.id === id),
-  getAllJobs: (): Job[] => jobs,
-  getJobById: (id: string): Job | undefined => jobs.find(j => j.id === id),
-  getTimeToHireData: (): TimeToHireData[] => timeToHireData,
-  getDiversityData: (): DiversityData => diversityData,
-  generateMoreCandidates: (num: number): void => {
-    for (let i = 0; i < num; i++) {
-      const newId = `c-${candidates.length + i + 1}`;
-      candidates.push({
-        id: newId,
-        name: `${firstNames[Math.floor(Math.random() * firstNames.length)]} ${lastNames[Math.floor(Math.random() * lastNames.length)]}`,
-        role: jobTitles[Math.floor(Math.random() * jobTitles.length)],
-        email: `candidate${candidates.length + i + 1}@example.com`,
-        phone: `(${Math.floor(Math.random() * 900) + 100}) ${Math.floor(Math.random() * 900) + 100}-${Math.floor(Math.random() * 9000) + 1000}`,
-        location: cities[Math.floor(Math.random() * cities.length)],
-        experience: Math.floor(Math.random() * 15) + 1,
-        skills: getRandomSkills(),
-        education: educationLevels[Math.floor(Math.random() * educationLevels.length)],
-        source: sources[Math.floor(Math.random() * sources.length)],
-        salary: `$${(Math.floor(Math.random() * 150) + 50)}k`,
-        status: getRandomCandidateStatus(),
-        appliedDate: getRandomPastDate(),
-        resumeUrl: `https://example.com/resumes/resume-${candidates.length + i + 1}.pdf`,
-        coverLetterUrl: Math.random() > 0.5 ? `https://example.com/cover-letters/cover-${candidates.length + i + 1}.pdf` : null,
-        notes: Math.random() > 0.3 ? getRandomNote() : "",
-        feedback: Math.random() > 0.5 ? getRandomFeedback() : null,
-        avatar: `https://i.pravatar.cc/150?img=${candidates.length + i + 10}`,
-        lastUpdated: getRandomPastDate(),
-        interviews: getRandomInterviews(),
-      });
+  getAllCandidates: () => [...candidates],
+  getCandidateById: (id: string) => {
+    return candidates.find((candidate) => candidate.id === id) as Candidate;
+  },
+  getAllJobs: () => [...jobs],
+  getJobById: (id: string) => {
+    return jobs.find((job) => job.id === id) as Job;
+  },
+  getTimeToHireData: () => [...timeToHireData],
+  getDiversityData: () => diversityData,
+  generateMoreCandidates: (num: number) => {
+    // This would generate more mock candidates
+  },
+  updateCandidate: (updatedCandidate: Candidate) => {
+    const index = candidates.findIndex(c => c.id === updatedCandidate.id);
+    if (index !== -1) {
+      candidates[index] = updatedCandidate;
     }
+    return updatedCandidate;
+  },
+  addCandidate: (newCandidate: Omit<Candidate, 'id'>) => {
+    const candidateWithId = {
+      ...newCandidate,
+      id: uuidv4(),
+    };
+    candidates.push(candidateWithId as Candidate);
+    return candidateWithId;
   }
 };

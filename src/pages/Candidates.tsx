@@ -21,6 +21,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { useToast } from "@/hooks/use-toast";
+import { AddCandidateForm } from "@/components/candidates/AddCandidateForm";
 
 export default function Candidates() {
   const { toast } = useToast();
@@ -92,6 +93,7 @@ export default function Candidates() {
           <h1 className="text-2xl font-bold text-gray-800">Candidates</h1>
           <p className="text-gray-600">Manage your candidate pipeline</p>
         </div>
+        <AddCandidateForm />
       </div>
 
       <Card className="space-y-4" {...candidateOverviewProps}>

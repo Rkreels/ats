@@ -1,0 +1,307 @@
+
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useToast } from "@/hooks/use-toast";
+import { mockDataService } from "@/data/mockData";
+import { Button } from "@/components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { UserPlus } from "lucide-react";
+
+const candidateFormSchema = z.object({
+  name: z.string().min(2, { message: "Name must be at least 2 characters." }),
+  role: z.string().min(2, { message: "Role must be at least 2 characters." }),
+  email: z.string().email({ message: "Please enter a valid email address." }),
+  phone: z.string().min(5, { message: "Phone number must be at least 5 characters." }),
+  location: z.string().min(2, { message: "Location must be at least 2 characters." }),
+  experience: z.coerce.number().min(0, { message: "Experience must be a positive number." }),
+  skills: z.string().min(2, { message: "Please enter at least one skill." }),
+  education: z.string().min(2, { message: "Education must be at least 2 characters." }),
+  source: z.string().min(2, { message: "Source must be at least 2 characters." }),
+  salary: z.string().min(2, { message: "Salary must be at least 2 characters." }),
+  status: z.enum(["Applied", "Screen", "Interview", "Offer", "Hired", "Rejected"]),
+  notes: z.string().optional(),
+});
+
+type CandidateFormValues = z.infer<typeof candidateFormSchema>;
+
+export function AddCandidateForm() {
+  const [open, setOpen] = useState(false);
+  const { toast } = useToast();
+
+  const form = useForm<CandidateFormValues>({
+    resolver: zodResolver(candidateFormSchema),
+    defaultValues: {
+      name: "",
+      role: "",
+      email: "",
+      phone: "",
+      location: "",
+      experience: 0,
+      skills: "",
+      education: "",
+      source: "LinkedIn",
+      salary: "",
+      status: "Applied",
+      notes: "",
+    },
+  });
+
+  const onSubmit = (values: CandidateFormValues) => {
+    const today = new Date().toISOString().split("T")[0];
+    
+    const newCandidate = {
+      ...values,
+      skills: values.skills.split(',').map(skill => skill.trim()),
+      appliedDate: today,
+      resumeUrl: "#",
+      coverLetterUrl: null,
+      feedback: null,
+      avatar: `https://i.pravatar.cc/150?img=${Math.floor(Math.random() * 70)}`,
+      lastUpdated: today,
+      interviews: [],
+    };
+
+    try {
+      mockDataService.addCandidate(newCandidate);
+      
+      toast({
+        title: "Candidate added successfully",
+        description: `${values.name} has been added to the candidates list.`,
+      });
+      
+      form.reset();
+      setOpen(false);
+    } catch (error) {
+      toast({
+        title: "Error adding candidate",
+        description: "There was a problem adding the candidate. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button>
+          <UserPlus className="mr-2 h-4 w-4" /> Add Candidate
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle>Add New Candidate</DialogTitle>
+          <DialogDescription>
+            Enter the candidate's details below to add them to the system.
+          </DialogDescription>
+        </DialogHeader>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Full Name</FormLabel>
+                    <FormControl>
+                      <Input placeholder="John Doe" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="role"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Role</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Frontend Developer" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email</FormLabel>
+                    <FormControl>
+                      <Input type="email" placeholder="john@example.com" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="phone"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Phone Number</FormLabel>
+                    <FormControl>
+                      <Input placeholder="+1 (555) 123-4567" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="location"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Location</FormLabel>
+                    <FormControl>
+                      <Input placeholder="New York, NY" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="experience"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Years of Experience</FormLabel>
+                    <FormControl>
+                      <Input type="number" min="0" step="1" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="education"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Education</FormLabel>
+                    <FormControl>
+                      <Input placeholder="BS Computer Science, Stanford University" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="salary"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Expected Salary</FormLabel>
+                    <FormControl>
+                      <Input placeholder="$100,000 - $120,000" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="skills"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Skills</FormLabel>
+                    <FormControl>
+                      <Input placeholder="React, TypeScript, CSS (comma separated)" {...field} />
+                    </FormControl>
+                    <FormDescription>Enter skills separated by commas</FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="source"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Source</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select source" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="LinkedIn">LinkedIn</SelectItem>
+                        <SelectItem value="Job Boards">Job Boards</SelectItem>
+                        <SelectItem value="Company Website">Company Website</SelectItem>
+                        <SelectItem value="Referrals">Referrals</SelectItem>
+                        <SelectItem value="University Recruiting">University Recruiting</SelectItem>
+                        <SelectItem value="Other">Other</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="status"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Status</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select status" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="Applied">Applied</SelectItem>
+                        <SelectItem value="Screen">Screen</SelectItem>
+                        <SelectItem value="Interview">Interview</SelectItem>
+                        <SelectItem value="Offer">Offer</SelectItem>
+                        <SelectItem value="Hired">Hired</SelectItem>
+                        <SelectItem value="Rejected">Rejected</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+            <FormField
+              control={form.control}
+              name="notes"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Notes</FormLabel>
+                  <FormControl>
+                    <Textarea placeholder="Any additional notes about this candidate..." {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <DialogFooter>
+              <Button type="button" variant="outline" onClick={() => setOpen(false)}>
+                Cancel
+              </Button>
+              <Button type="submit">Add Candidate</Button>
+            </DialogFooter>
+          </form>
+        </Form>
+      </DialogContent>
+    </Dialog>
+  );
+}
