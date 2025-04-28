@@ -54,32 +54,10 @@ export default function AppSidebar() {
   });
   
   return (
-    <>
-      {/* Mobile menu button */}
-      <button 
-        onClick={() => setIsOpen(prev => !prev)}
-        className="lg:hidden fixed top-4 left-4 z-40 p-2 bg-white rounded-md shadow-md text-gray-700 hover:bg-gray-100"
-        aria-label={isOpen ? "Close menu" : "Open menu"}
-      >
-        {isOpen ? <X size={20} /> : <Menu size={20} />}
-      </button>
-      
-      {/* Sidebar backdrop for mobile */}
-      {isOpen && (
-        <div 
-          className="lg:hidden fixed inset-0 bg-black/30 z-30"
-          onClick={() => setIsOpen(false)}
-          aria-hidden="true"
-        />
-      )}
-      
+    <div className="h-full flex flex-col">
       {/* Sidebar */}
       <aside 
-        className={cn(
-          "fixed h-full bg-white border-r border-gray-200 transition-all duration-300 ease-in-out z-30 shadow-sm",
-          isOpen ? "left-0" : "-left-64",
-          "lg:left-0 lg:w-64"
-        )}
+        className="h-full bg-white border-r border-gray-200 transition-all duration-300 ease-in-out shadow-sm w-64"
         {...sidebarVoiceProps}
       >
         <div className="flex items-center justify-between p-4 border-b border-gray-200">
@@ -94,13 +72,6 @@ export default function AppSidebar() {
               title={voiceEnabled ? "Disable voice tutorials" : "Enable voice tutorials"}
             >
               {voiceEnabled ? <Volume2 size={18} /> : <VolumeX size={18} />}
-            </button>
-            <button
-              onClick={() => setIsOpen(prev => !prev)}
-              className="lg:hidden p-2 rounded-full hover:bg-gray-100"
-              aria-label="Close menu"
-            >
-              <X size={18} />
             </button>
           </div>
         </div>
@@ -133,7 +104,7 @@ export default function AppSidebar() {
           </ul>
         </nav>
         
-        <div className="absolute bottom-0 w-full p-4 border-t border-gray-200">
+        <div className="mt-auto w-full p-4 border-t border-gray-200">
           <div className="flex items-center space-x-3">
             <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
               <Users size={20} className="text-gray-600" />
@@ -145,9 +116,6 @@ export default function AppSidebar() {
           </div>
         </div>
       </aside>
-      
-      {/* Spacer for content to align with sidebar */}
-      <div className="lg:w-64 flex-shrink-0" />
-    </>
+    </div>
   );
 }

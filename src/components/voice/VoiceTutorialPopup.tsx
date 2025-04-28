@@ -25,9 +25,8 @@ export const VoiceTutorialPopup = () => {
   
   const handleClose = () => {
     setIsVisible(false);
-    setTimeout(() => {
-      clearTutorial();
-    }, 300); // Allow animation to complete
+    // Immediately clear the tutorial instead of waiting
+    clearTutorial();
   };
   
   return (

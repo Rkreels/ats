@@ -13,7 +13,7 @@ export const useVoiceTrigger = ({
   decision,
   disableClick = false
 }: VoiceTriggerOptions = {}) => {
-  const { setTutorial } = useVoiceTutorial();
+  const { setTutorial, clearTutorial } = useVoiceTutorial();
   const timeoutRef = useRef<number | null>(null);
   
   // Clear any pending timeouts on unmount
@@ -28,6 +28,9 @@ export const useVoiceTrigger = ({
   // Handlers for different events
   const handleMouseEnter = useCallback(() => {
     if (what) {
+      // Clear any existing audio first
+      clearTutorial();
+      
       // Clear any existing timeout to avoid overlapping instructions
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
@@ -36,10 +39,13 @@ export const useVoiceTrigger = ({
       // Immediate voice feedback with no delay
       setTutorial(what, "what");
     }
-  }, [what, setTutorial]);
+  }, [what, setTutorial, clearTutorial]);
   
   const handleClick = useCallback(() => {
     if (!disableClick && what) {
+      // Clear any existing audio first
+      clearTutorial();
+      
       // Clear any existing timeout to avoid overlapping instructions  
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
@@ -48,21 +54,33 @@ export const useVoiceTrigger = ({
       // Also trigger on click for better accessibility with no delay
       setTutorial(what, "what");
     }
-  }, [what, disableClick, setTutorial]);
+  }, [what, disableClick, setTutorial, clearTutorial]);
+  
+  // Handle mouse leave - clear tutorial when leaving component
+  const handleMouseLeave = useCallback(() => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+    // We could add clearTutorial() here but that might interrupt too aggressively
+  }, []);
   
   // For decision support (manually triggered)
   const triggerDecision = useCallback(() => {
     if (decision) {
+      // Clear any existing audio first
+      clearTutorial();
+      
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
       }
       setTutorial(decision, "decision");
     }
-  }, [decision, setTutorial]);
+  }, [decision, setTutorial, clearTutorial]);
   
   return {
     voiceProps: {
       onMouseEnter: what ? handleMouseEnter : undefined,
+      onMouseLeave: what ? handleMouseLeave : undefined,
       onClick: what ? handleClick : undefined
     },
     triggerDecision: decision ? triggerDecision : undefined

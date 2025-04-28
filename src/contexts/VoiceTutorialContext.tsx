@@ -36,13 +36,14 @@ export const VoiceTutorialProvider = ({ children }: { children: ReactNode }) => 
   const synth = typeof window !== 'undefined' ? window.speechSynthesis : null;
   
   const setTutorial = (text: string, type: VoiceTutorialType) => {
-    // If currently playing, queue the new tutorial
-    if (isPlaying && voiceEnabled) {
-      setVoiceQueue(prev => [...prev, { text, type }]);
-      return;
-    }
+    // Clear any current speech and tutorial immediately
+    if (synth) synth.cancel();
+    setIsPlaying(false);
     
-    // Otherwise set it as active immediately
+    // Empty the queue to prevent backlog
+    setVoiceQueue([]);
+    
+    // Set the new tutorial immediately
     setActiveTutorial({ text, type });
   };
   
