@@ -86,3 +86,23 @@ export interface DiversityData {
     Other: number;
   };
 }
+
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+  permissions: {
+    canViewCandidates: boolean;
+    canEditCandidates: boolean;
+    canDeleteCandidates: boolean;
+    canViewJobs: boolean;
+    canEditJobs: boolean;
+    canDeleteJobs: boolean;
+    canScheduleInterviews: boolean;
+    canViewReports: boolean;
+    canEditReports: boolean;
+    canDeleteReports: boolean;
+    canManageUsers: boolean;
+  };
+}

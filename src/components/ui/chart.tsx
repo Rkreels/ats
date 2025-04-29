@@ -1,5 +1,5 @@
 
-import { Bar, BarChart, Line, LineChart, Pie, PieChart, ResponsiveContainer } from "recharts";
+import { Bar, BarChart, Line, LineChart, Pie, PieChart, ResponsiveContainer, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from "recharts";
 
 export {
   BarChart,
@@ -8,5 +8,10 @@ export {
   Bar,
   Line,
   Pie,
-  ResponsiveContainer
+  ResponsiveContainer,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend
 };

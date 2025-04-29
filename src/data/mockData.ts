@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import { Candidate, Interview, User } from '@/types';
+import { Candidate, Interview, TimeToHireData, DiversityData, Job, User } from '@/types';
 
 // Mock data service
 export const mockDataService = {
@@ -9,7 +9,143 @@ export const mockDataService = {
   getUser: (id: string): User | undefined => users.find(u => u.id === id),
   getAllInterviews: (): Interview[] => interviews,
   getInterview: (id: string): Interview | undefined => interviews.find(i => i.id === id),
+  getAllJobs: (): Job[] => jobs,
+  getTimeToHireData: (): TimeToHireData[] => timeToHireData,
+  getDiversityData: (): DiversityData => diversityData,
+  updateCandidate: (candidate: Candidate): Candidate => {
+    const index = candidates.findIndex(c => c.id === candidate.id);
+    if (index !== -1) {
+      candidates[index] = candidate;
+    }
+    return candidate;
+  },
+  addCandidate: (candidate: Omit<Candidate, "id">): Candidate => {
+    const newCandidate = createCandidate(candidate);
+    candidates.push(newCandidate);
+    return newCandidate;
+  }
 };
+
+// Time to Hire mock data
+const timeToHireData: TimeToHireData[] = [
+  { month: "Jan", Engineering: 45, Product: 32, Marketing: 28, Sales: 25 },
+  { month: "Feb", Engineering: 42, Product: 30, Marketing: 26, Sales: 22 },
+  { month: "Mar", Engineering: 38, Product: 29, Marketing: 25, Sales: 24 },
+  { month: "Apr", Engineering: 35, Product: 28, Marketing: 24, Sales: 21 },
+  { month: "May", Engineering: 32, Product: 26, Marketing: 22, Sales: 20 },
+  { month: "Jun", Engineering: 30, Product: 25, Marketing: 21, Sales: 19 }
+];
+
+// Diversity data mock
+const diversityData: DiversityData = {
+  gender: {
+    "Male": 55,
+    "Female": 40,
+    "Non-binary": 3,
+    "Prefer not to say": 2
+  },
+  ethnicity: {
+    "White": 45,
+    "Black or African American": 20,
+    "Asian": 15,
+    "Hispanic": 12,
+    "Two or more races": 5,
+    "Other/Unknown": 3
+  },
+  hiringSource: {
+    "LinkedIn": 35,
+    "Job Boards": 25,
+    "Company Website": 15,
+    "Referrals": 20,
+    "University Recruiting": 3,
+    "Other": 2
+  }
+};
+
+// Mock job data
+const jobs: Job[] = [
+  {
+    id: "1",
+    title: "Frontend Developer",
+    department: "Engineering",
+    location: "New York, NY",
+    type: "Full-time",
+    description: "We are looking for a Frontend Developer to join our team.",
+    responsibilities: [
+      "Develop new user-facing features",
+      "Build reusable code and libraries for future use",
+      "Ensure the technical feasibility of UI/UX designs",
+      "Optimize applications for maximum speed and scalability"
+    ],
+    requirements: [
+      "Strong proficiency in JavaScript, including DOM manipulation and the JavaScript object model",
+      "Thorough understanding of React.js and its core principles",
+      "Experience with popular React.js workflows (such as Flux or Redux)",
+      "Familiarity with newer specifications of ECMAScript"
+    ],
+    postedDate: "2023-01-01",
+    closingDate: "2023-03-01",
+    salary: "$100,000 - $130,000",
+    status: "Published",
+    hiringManager: "John Doe",
+    applicants: 15,
+    skills: ["React", "JavaScript", "HTML", "CSS"]
+  },
+  {
+    id: "2",
+    title: "Backend Developer",
+    department: "Engineering",
+    location: "San Francisco, CA",
+    type: "Full-time",
+    description: "We are looking for a Backend Developer to join our team.",
+    responsibilities: [
+      "Design and implement scalable and reliable backend services",
+      "Work with front-end developers to integrate user-facing elements",
+      "Improve existing codebases and processes",
+      "Manage the interchange of data between server and users"
+    ],
+    requirements: [
+      "Strong proficiency in Node.js",
+      "Experience with popular Node.js frameworks like Express",
+      "Good understanding of server-side templating languages",
+      "Basic understanding of front-end technologies"
+    ],
+    postedDate: "2023-01-15",
+    closingDate: "2023-03-15",
+    salary: "$120,000 - $150,000",
+    status: "Published",
+    hiringManager: "Jane Smith",
+    applicants: 10,
+    skills: ["Node.js", "Express", "MongoDB", "SQL"]
+  },
+  {
+    id: "3",
+    title: "Product Manager",
+    department: "Product",
+    location: "Chicago, IL",
+    type: "Full-time",
+    description: "We are looking for a Product Manager to join our team.",
+    responsibilities: [
+      "Define the product vision and strategy",
+      "Work with engineering to deliver products",
+      "Analyze market and competitive data",
+      "Drive product launches"
+    ],
+    requirements: [
+      "3+ years of product management experience",
+      "Experience with agile development methodologies",
+      "Excellent communication and leadership skills",
+      "Technical background is a plus"
+    ],
+    postedDate: "2023-02-01",
+    closingDate: "2023-04-01",
+    salary: "$130,000 - $160,000",
+    status: "Published",
+    hiringManager: "Michael Johnson",
+    applicants: 8,
+    skills: ["Product Management", "Agile", "User Research", "Roadmapping"]
+  }
+];
 
 // Mock candidate data
 const candidates: Candidate[] = [
@@ -27,7 +163,7 @@ const candidates: Candidate[] = [
     coverLetterUrl: "",
     avatar: "/placeholder.svg",
     skills: ["React", "JavaScript", "HTML", "CSS"],
-    experience: "5 years",
+    experience: 5,
     education: "Bachelor's Degree in Computer Science",
     notes: "Promising candidate with strong technical skills.",
     lastUpdated: "2023-03-01",
@@ -35,17 +171,18 @@ const candidates: Candidate[] = [
       {
         id: "101",
         date: "2023-02-01",
-        type: "Technical Interview",
-        notes: "Discussed React and JavaScript concepts.",
-        candidateId: "1"
+        time: "10:00 AM",
+        duration: "1 hour",
+        type: "Phone",
+        status: "Completed",
+        candidateId: "1",
+        interviewerId: "1",
+        interviewerName: "Jane Doe",
+        notes: "Discussed React and JavaScript concepts."
       }
     ],
-    feedback: {
-      interviewer: "Jane Doe",
-      date: "2023-02-01",
-      rating: 4,
-      comments: "Good understanding of frontend technologies."
-    }
+    feedback: "Good understanding of frontend technologies.",
+    salary: "$100,000 - $120,000"
   },
   {
     id: "2",
@@ -61,7 +198,7 @@ const candidates: Candidate[] = [
     coverLetterUrl: "",
     avatar: "/placeholder.svg",
     skills: ["Node.js", "Express", "SQL", "MongoDB"],
-    experience: "7 years",
+    experience: 7,
     education: "Master's Degree in Software Engineering",
     notes: "Experienced backend developer with a strong portfolio.",
     lastUpdated: "2023-03-05",
@@ -69,17 +206,18 @@ const candidates: Candidate[] = [
       {
         id: "102",
         date: "2023-01-10",
-        type: "Technical Interview",
-        notes: "Discussed Node.js and database design.",
-        candidateId: "2"
+        time: "2:00 PM",
+        duration: "45 minutes",
+        type: "Video",
+        status: "Completed",
+        candidateId: "2",
+        interviewerId: "2",
+        interviewerName: "Bob Smith",
+        notes: "Discussed Node.js and database design."
       }
     ],
-    feedback: {
-      interviewer: "Bob Smith",
-      date: "2023-01-10",
-      rating: 5,
-      comments: "Excellent technical skills and problem-solving abilities."
-    }
+    feedback: "Excellent technical skills and problem-solving abilities.",
+    salary: "$110,000 - $130,000"
   },
   {
     id: "3",
@@ -95,7 +233,7 @@ const candidates: Candidate[] = [
     coverLetterUrl: "",
     avatar: "/placeholder.svg",
     skills: ["Python", "Machine Learning", "Data Analysis", "Statistics"],
-    experience: "4 years",
+    experience: 4,
     education: "Bachelor's Degree in Statistics",
     notes: "Strong analytical skills and experience with machine learning.",
     lastUpdated: "2023-03-10",
@@ -103,17 +241,18 @@ const candidates: Candidate[] = [
       {
         id: "103",
         date: "2023-03-01",
-        type: "Technical Interview",
-        notes: "Discussed machine learning algorithms and data analysis techniques.",
-        candidateId: "3"
+        time: "11:00 AM",
+        duration: "1 hour",
+        type: "In-person",
+        status: "Completed",
+        candidateId: "3",
+        interviewerId: "3",
+        interviewerName: "Alice Johnson",
+        notes: "Discussed machine learning algorithms and data analysis techniques."
       }
     ],
-    feedback: {
-      interviewer: "Alice Johnson",
-      date: "2023-03-01",
-      rating: 4,
-      comments: "Good understanding of data science concepts."
-    }
+    feedback: "Good understanding of data science concepts.",
+    salary: "$95,000 - $115,000"
   },
   {
     id: "4",
@@ -129,7 +268,7 @@ const candidates: Candidate[] = [
     coverLetterUrl: "",
     avatar: "/placeholder.svg",
     skills: ["Project Management", "Leadership", "Communication", "Agile"],
-    experience: "8 years",
+    experience: 8,
     education: "Master's Degree in Business Administration",
     notes: "Experienced project manager with strong leadership skills.",
     lastUpdated: "2023-03-15",
@@ -137,17 +276,18 @@ const candidates: Candidate[] = [
       {
         id: "104",
         date: "2022-12-15",
-        type: "Behavioral Interview",
-        notes: "Discussed project management methodologies and leadership skills.",
-        candidateId: "4"
+        time: "3:00 PM",
+        duration: "1.5 hours",
+        type: "Behavioral",
+        status: "Completed",
+        candidateId: "4",
+        interviewerId: "4",
+        interviewerName: "John Smith",
+        notes: "Discussed project management methodologies and leadership skills."
       }
     ],
-    feedback: {
-      interviewer: "John Smith",
-      date: "2022-12-15",
-      rating: 3,
-      comments: "Good communication skills but lacks technical expertise."
-    }
+    feedback: "Good communication skills but lacks technical expertise.",
+    salary: "$120,000 - $140,000"
   },
   {
     id: "5",
@@ -163,12 +303,13 @@ const candidates: Candidate[] = [
     coverLetterUrl: "",
     avatar: "/placeholder.svg",
     skills: ["User Research", "Wireframing", "Prototyping", "UI Design"],
-    experience: "6 years",
+    experience: 6,
     education: "Bachelor's Degree in Design",
     notes: "Creative UX designer with a strong portfolio.",
     lastUpdated: "2023-03-20",
     interviews: [],
-    feedback: null
+    feedback: null,
+    salary: "$110,000 - $130,000"
   },
   {
     id: "6",
@@ -184,12 +325,13 @@ const candidates: Candidate[] = [
     coverLetterUrl: "",
     avatar: "/placeholder.svg",
     skills: ["Test Automation", "Manual Testing", "Bug Tracking", "Agile"],
-    experience: "3 years",
+    experience: 3,
     education: "Associate's Degree in Computer Science",
     notes: "Detail-oriented QA engineer with experience in test automation.",
     lastUpdated: "2023-03-25",
     interviews: [],
-    feedback: null
+    feedback: null,
+    salary: "$80,000 - $100,000"
   },
   {
     id: "7",
@@ -205,12 +347,13 @@ const candidates: Candidate[] = [
     coverLetterUrl: "",
     avatar: "/placeholder.svg",
     skills: ["AWS", "Docker", "Kubernetes", "CI/CD"],
-    experience: "5 years",
+    experience: 5,
     education: "Bachelor's Degree in Information Technology",
     notes: "Experienced DevOps engineer with strong cloud skills.",
     lastUpdated: "2023-03-30",
     interviews: [],
-    feedback: null
+    feedback: null,
+    salary: "$120,000 - $140,000"
   },
   {
     id: "8",
@@ -226,12 +369,13 @@ const candidates: Candidate[] = [
     coverLetterUrl: "",
     avatar: "/placeholder.svg",
     skills: ["Data Analysis", "Requirements Gathering", "Process Improvement", "SQL"],
-    experience: "7 years",
+    experience: 7,
     education: "Master's Degree in Business Analytics",
     notes: "Experienced business analyst with strong analytical skills.",
     lastUpdated: "2023-04-01",
     interviews: [],
-    feedback: null
+    feedback: null,
+    salary: "$110,000 - $130,000"
   },
   {
     id: "9",
@@ -247,12 +391,13 @@ const candidates: Candidate[] = [
     coverLetterUrl: "",
     avatar: "/placeholder.svg",
     skills: ["Digital Marketing", "Social Media", "SEO", "Content Marketing"],
-    experience: "4 years",
+    experience: 4,
     education: "Bachelor's Degree in Marketing",
     notes: "Creative marketing manager with experience in digital marketing.",
     lastUpdated: "2023-04-05",
     interviews: [],
-    feedback: null
+    feedback: null,
+    salary: "$90,000 - $110,000"
   },
   {
     id: "10",
@@ -268,12 +413,13 @@ const candidates: Candidate[] = [
     coverLetterUrl: "",
     avatar: "/placeholder.svg",
     skills: ["Sales", "Customer Service", "Communication", "Negotiation"],
-    experience: "6 years",
+    experience: 6,
     education: "Associate's Degree in Business Administration",
     notes: "Experienced sales representative with strong communication skills.",
     lastUpdated: "2023-04-10",
     interviews: [],
-    feedback: null
+    feedback: null,
+    salary: "$85,000 - $105,000"
   }
 ];
 
@@ -343,28 +489,43 @@ const interviews: Interview[] = [
   {
     id: "101",
     date: "2023-05-01",
-    type: "Technical Interview",
-    notes: "Discussed React and JavaScript concepts.",
-    candidateId: "1"
+    time: "10:00 AM",
+    duration: "1 hour",
+    type: "Phone",
+    status: "Scheduled",
+    candidateId: "1",
+    interviewerId: "1",
+    interviewerName: "Jane Doe",
+    notes: "Discussed React and JavaScript concepts."
   },
   {
     id: "102",
     date: "2023-05-03",
-    type: "Behavioral Interview",
-    notes: "Discussed team work and problem-solving skills.",
-    candidateId: "2"
+    time: "2:00 PM",
+    duration: "45 minutes",
+    type: "Video",
+    status: "Scheduled",
+    candidateId: "2",
+    interviewerId: "2",
+    interviewerName: "Bob Smith",
+    notes: "Discussed team work and problem-solving skills."
   },
   {
     id: "103",
     date: "2023-05-05",
-    type: "Final Interview",
-    notes: "Final discussion before making an offer.",
-    candidateId: "3"
+    time: "11:00 AM",
+    duration: "1 hour",
+    type: "In-person",
+    status: "Scheduled",
+    candidateId: "3",
+    interviewerId: "3",
+    interviewerName: "Alice Johnson",
+    notes: "Final discussion before making an offer."
   }
 ];
 
 // Add this patch to fix the TypeScript error in AddCandidateForm
-export const createCandidate = (candidateData: Omit<Partial<Candidate>, "id">): Candidate => {
+export const createCandidate = (candidateData: Partial<Omit<Candidate, "id">>): Candidate => {
   const id = uuidv4();
   
   // Provide default values for required fields to fix TypeScript errors
@@ -381,12 +542,13 @@ export const createCandidate = (candidateData: Omit<Partial<Candidate>, "id">): 
     coverLetterUrl: "",
     avatar: "/placeholder.svg",
     skills: [],
-    experience: "",
+    experience: 0,
     education: "",
     notes: "",
     lastUpdated: new Date().toISOString(),
     interviews: [],
-    feedback: null
+    feedback: "",
+    salary: ""
   };
   
   // Create new candidate with defaults and override with provided data
