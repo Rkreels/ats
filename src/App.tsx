@@ -12,6 +12,7 @@ import Jobs from "./pages/Jobs";
 import Interviews from "./pages/Interviews";
 import Reports from "./pages/Reports";
 import Settings from "./pages/Settings";
+import Onboarding from "./pages/Onboarding";
 import NotFound from "./pages/NotFound";
 import { VoiceTutorialProvider } from "./contexts/VoiceTutorialContext";
 import { UserProvider } from "./contexts/UserContext";
@@ -50,6 +51,11 @@ const App = () => (
               <Route path="/interviews" element={
                 <AppLayout>
                   <Interviews />
+                </AppLayout>
+              } />
+              <Route path="/onboarding" element={
+                <AppLayout>
+                  <Onboarding />
                 </AppLayout>
               } />
               <Route path="/reports" element={

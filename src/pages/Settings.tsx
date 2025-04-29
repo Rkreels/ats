@@ -14,6 +14,7 @@ import GeneralSettings from "@/settings/GeneralSettings";
 import JobTemplateSettings from "@/settings/JobTemplateSettings";
 import UserSettings from "@/settings/UserSettings";
 import IntegrationSettings from "@/settings/IntegrationSettings";
+import EmailSettings from "@/settings/EmailSettings";
 import VoiceTutorialListener from "@/components/voice/VoiceTutorialListener";
 
 export default function Settings() {
@@ -33,7 +34,7 @@ export default function Settings() {
       </div>
       
       <Tabs defaultValue="general" className="space-y-8" {...settingsVoiceProps}>
-        <TabsList className="grid grid-cols-2 md:grid-cols-5 w-full md:w-auto">
+        <TabsList className="grid grid-cols-2 md:grid-cols-6 w-full md:w-auto">
           <VoiceTutorialListener
             selector="general-settings-tab"
             description="General settings for your ATS system."
@@ -67,6 +68,14 @@ export default function Settings() {
           </VoiceTutorialListener>
           
           <VoiceTutorialListener
+            selector="email-settings-tab"
+            description="Email communication settings."
+            actionStep="Click to configure email templates, automations, and server settings."
+          >
+            <TabsTrigger value="email">Email</TabsTrigger>
+          </VoiceTutorialListener>
+          
+          <VoiceTutorialListener
             selector="integrations-settings-tab"
             description="External system integrations."
             actionStep="Click to configure integrations with job boards, HRIS systems, and other external platforms."
@@ -89,6 +98,10 @@ export default function Settings() {
         
         <TabsContent value="users">
           <UserSettings />
+        </TabsContent>
+        
+        <TabsContent value="email">
+          <EmailSettings />
         </TabsContent>
         
         <TabsContent value="integrations">

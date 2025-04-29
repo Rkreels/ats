@@ -48,7 +48,7 @@ export interface Interview {
   date: string;
   time: string;
   duration: string;
-  type: "Phone" | "Video" | "In-person";
+  type: "Phone" | "Video" | "In-person" | "Behavioral" | "Technical";
   status: "Scheduled" | "Completed" | "Canceled";
   feedback?: string;
   notes?: string;
@@ -106,3 +106,57 @@ export interface User {
     canManageUsers: boolean;
   };
 }
+
+// New interfaces for enhanced ATS functionality
+export interface EmailTemplate {
+  id: string;
+  name: string;
+  subject: string;
+  body: string;
+  category: "Interview" | "Offer" | "Rejection" | "General" | "Onboarding";
+  variables: string[];
+}
+
+export interface OnboardingTask {
+  id: string;
+  candidateId: string;
+  title: string;
+  description: string;
+  dueDate: string;
+  status: "Pending" | "In Progress" | "Completed" | "Overdue";
+  assignedTo: string;
+}
+
+export interface JobSource {
+  id: string;
+  name: string;
+  url: string;
+  candidates: number;
+  hires: number;
+  costPerHire: number;
+  isActive: boolean;
+}
+
+export interface CandidateAssessment {
+  id: string;
+  candidateId: string;
+  title: string;
+  type: "Skills" | "Personality" | "Cognitive" | "Technical";
+  score: number | null;
+  maxScore: number;
+  completed: boolean;
+  sentDate: string;
+  completedDate: string | null;
+}
+
+export interface ReferralProgram {
+  id: string;
+  name: string;
+  department: string;
+  bonus: string;
+  eligibility: string;
+  status: "Active" | "Inactive";
+  referrals: number;
+  hires: number;
+}
+
