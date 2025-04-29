@@ -7,48 +7,55 @@ import { cn } from "@/lib/utils";
 import { NavLink } from "react-router-dom";
 import { useUser } from "@/contexts/UserContext";
 import { Permissions } from "@/contexts/UserContext";
+import VoiceTutorialListener from "../voice/VoiceTutorialListener";
 
 const menuItems = [
   {
     label: "Dashboard",
     icon: Home,
     path: "/",
-    voiceWhatIs: "This is the dashboard where you can see an overview of recruitment metrics and activity.",
+    voiceWhatIs: "This is the dashboard where you can see an overview of recruitment metrics and activity. You can view key metrics like total candidates, active jobs, scheduled interviews, and time-to-hire charts.",
+    actionStep: "Click to view your recruitment analytics dashboard.",
     permission: null // everyone can access this
   },
   {
     label: "Candidates",
     icon: Users,
     path: "/candidates",
-    voiceWhatIs: "This is the candidate pipeline where you can track applicants through each stage of the hiring process.",
+    voiceWhatIs: "This is the candidate pipeline where you can track applicants through each stage of the hiring process. You can search, filter, and sort candidates and view their details.",
+    actionStep: "Click to manage your candidate pipeline.",
     permission: "canViewCandidates" as keyof Permissions
   },
   {
     label: "Jobs",
     icon: Briefcase,
     path: "/jobs",
-    voiceWhatIs: "This is the job management section where you post new positions and track job applications.",
+    voiceWhatIs: "This is the job management section where you post new positions and track job applications. You can create, edit, and archive job postings.",
+    actionStep: "Click to manage your job postings and applications.",
     permission: null // everyone can see jobs
   },
   {
     label: "Interviews",
     icon: Calendar,
     path: "/interviews",
-    voiceWhatIs: "This is the interview scheduling section where you manage candidate interviews.",
+    voiceWhatIs: "This is the interview scheduling section where you manage candidate interviews. You can schedule, reschedule, or cancel interviews and add feedback.",
+    actionStep: "Click to manage your interview calendar.",
     permission: "canScheduleInterviews" as keyof Permissions
   },
   {
     label: "Reports",
     icon: BarChart2,
     path: "/reports",
-    voiceWhatIs: "This is the analytics and reporting section where you track recruitment metrics.",
+    voiceWhatIs: "This is the analytics and reporting section where you track recruitment metrics. You can generate custom reports on hiring efficiency, source effectiveness, and more.",
+    actionStep: "Click to view detailed recruitment reports and analytics.",
     permission: "canViewReports" as keyof Permissions
   },
   {
     label: "Settings",
     icon: Settings,
     path: "/settings",
-    voiceWhatIs: "This is where you can configure your ATS settings.",
+    voiceWhatIs: "This is where you can configure your ATS settings. You can adjust your account preferences, manage users and roles, and customize voice tutorials.",
+    actionStep: "Click to customize your ATS settings and preferences.",
     permission: null // everyone can access settings, but will see different options based on permissions
   }
 ];
@@ -59,7 +66,8 @@ export default function AppSidebar() {
   const { currentUser, hasPermission } = useUser();
   
   const { voiceProps: sidebarVoiceProps } = useVoiceTrigger({
-    what: "This is the main navigation menu. Use it to access different sections of your Applicant Tracking System."
+    what: "This is the main navigation menu. Use it to access different sections of your Applicant Tracking System.",
+    actionStep: "Click on any menu item to navigate to that section."
   });
   
   return (
@@ -94,7 +102,8 @@ export default function AppSidebar() {
               }
               
               const { voiceProps } = useVoiceTrigger({
-                what: item.voiceWhatIs
+                what: item.voiceWhatIs,
+                actionStep: item.actionStep
               });
               
               return (
@@ -119,15 +128,21 @@ export default function AppSidebar() {
         </nav>
         
         <div className="mt-auto w-full p-4 border-t border-gray-200">
-          <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
-              <Users size={20} className="text-gray-600" />
+          <VoiceTutorialListener
+            selector="user-profile"
+            description={`You are currently logged in as ${currentUser.name}, with the role of ${currentUser.role.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}.`}
+            actionStep="Your role determines which features you can access in the system."
+          >
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
+                <Users size={20} className="text-gray-600" />
+              </div>
+              <div>
+                <p className="text-sm font-medium">{currentUser.name}</p>
+                <p className="text-xs text-gray-500">{currentUser.role.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}</p>
+              </div>
             </div>
-            <div>
-              <p className="text-sm font-medium">{currentUser.name}</p>
-              <p className="text-xs text-gray-500">{currentUser.role.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}</p>
-            </div>
-          </div>
+          </VoiceTutorialListener>
         </div>
       </aside>
     </div>

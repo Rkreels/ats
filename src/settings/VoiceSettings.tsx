@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -23,6 +23,8 @@ export default function VoiceSettings() {
   
   // Voice tutorial settings form state
   const [voiceTutorialLevel, setVoiceTutorialLevel] = useState("all");
+  const [whatIsEnabled, setWhatIsEnabled] = useState(true);
+  const [decisionEnabled, setDecisionEnabled] = useState(true);
   
   // Mock function to save settings
   const saveSettings = () => {
@@ -33,9 +35,10 @@ export default function VoiceSettings() {
     });
   };
   
-  // Voice tutorials
+  // Voice tutorials with improved descriptions and action steps
   const { voiceProps: voiceSettingsProps } = useVoiceTrigger({
-    what: "These settings control how the voice tutorial system works. You can adjust the speed, choose different voice personas, and enable or disable specific types of voice guidance."
+    what: "These settings control how the voice tutorial system works. You can customize how the voice assistant guides you through the application.",
+    actionStep: "Try adjusting the voice persona or speed to find what works best for you."
   });
   
   return (
@@ -70,6 +73,7 @@ export default function VoiceSettings() {
               <SelectItem value="mentor">Mentoring Coach</SelectItem>
             </SelectContent>
           </Select>
+          <p className="text-xs text-gray-500 mt-1">Choose the personality that best matches your preference</p>
         </div>
         
         <div className="space-y-2">
@@ -84,6 +88,7 @@ export default function VoiceSettings() {
               <SelectItem value="all">All Levels</SelectItem>
             </SelectContent>
           </Select>
+          <p className="text-xs text-gray-500 mt-1">Determine how detailed guidance should be</p>
         </div>
         
         <div className="space-y-2">
@@ -98,24 +103,38 @@ export default function VoiceSettings() {
               <SelectItem value="fast">Fast</SelectItem>
             </SelectContent>
           </Select>
+          <p className="text-xs text-gray-500 mt-1">Adjust the speed at which instructions are spoken</p>
         </div>
         
         <div className="space-y-2">
           <Label className="text-sm">Enable Tutorial Types</Label>
           <div className="space-y-2">
             <div className="flex items-center space-x-2">
-              <Checkbox id="whatIs" defaultChecked />
+              <Checkbox 
+                id="whatIs" 
+                checked={whatIsEnabled}
+                onCheckedChange={(checked) => {
+                  setWhatIsEnabled(checked === true);
+                }}
+              />
               <Label htmlFor="whatIs" className="text-sm">
                 "What is this?" (Hover tutorials)
               </Label>
             </div>
             <div className="flex items-center space-x-2">
-              <Checkbox id="decision" defaultChecked />
+              <Checkbox 
+                id="decision" 
+                checked={decisionEnabled}
+                onCheckedChange={(checked) => {
+                  setDecisionEnabled(checked === true);
+                }}
+              />
               <Label htmlFor="decision" className="text-sm">
                 "Decision Support" (Critical action tutorials)
               </Label>
             </div>
           </div>
+          <p className="text-xs text-gray-500 mt-1">Choose which types of voice guidance you want to receive</p>
         </div>
         
         <Button onClick={saveSettings}>Save Voice Settings</Button>

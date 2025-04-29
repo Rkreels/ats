@@ -13,6 +13,7 @@ import { useToast } from "@/hooks/use-toast";
 import { format, subMonths } from "date-fns";
 import { useUser } from "@/contexts/UserContext";
 import ReportsCharts from "@/components/reports/ReportsCharts";
+import VoiceTutorialListener from "@/components/voice/VoiceTutorialListener";
 
 export default function Reports() {
   const { toast } = useToast();
@@ -24,7 +25,8 @@ export default function Reports() {
   const [reportType, setReportType] = useState<string>("overview");
   
   const { voiceProps } = useVoiceTrigger({
-    what: "This is the reports page where you can view analytics and metrics about your recruiting process. Look at time to hire, source effectiveness, diversity metrics, and more."
+    what: "This is the reports page where you can view analytics and metrics about your recruiting process.",
+    actionStep: "Select different report types, date ranges, and tabs to view different metrics."
   });
   
   if (!hasPermission('canViewReports')) {
@@ -52,67 +54,112 @@ export default function Reports() {
       </div>
       
       <div className="flex flex-wrap gap-4 mb-6">
-        <Select value={reportType} onValueChange={setReportType}>
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Report Type" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="overview">Overview Dashboard</SelectItem>
-            <SelectItem value="hiring">Hiring Efficiency</SelectItem>
-            <SelectItem value="diversity">Diversity Metrics</SelectItem>
-            <SelectItem value="source">Candidate Sources</SelectItem>
-          </SelectContent>
-        </Select>
+        <VoiceTutorialListener
+          selector="report-type-selector"
+          description="Use this dropdown to select the type of report you want to view."
+          actionStep="Click to choose from overview dashboard, hiring efficiency, diversity metrics, or candidate sources."
+        >
+          <Select value={reportType} onValueChange={setReportType}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Report Type" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="overview">Overview Dashboard</SelectItem>
+              <SelectItem value="hiring">Hiring Efficiency</SelectItem>
+              <SelectItem value="diversity">Diversity Metrics</SelectItem>
+              <SelectItem value="source">Candidate Sources</SelectItem>
+            </SelectContent>
+          </Select>
+        </VoiceTutorialListener>
         
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button
-              variant={"outline"}
-              className={"w-[280px] justify-start text-left font-normal"}
-            >
-              <CalendarIcon className="mr-2 h-4 w-4" />
-              {dateRange?.from ? (
-                dateRange.to ? (
-                  <>
-                    {format(dateRange.from, "LLL dd, yyyy")} -{" "}
-                    {format(dateRange.to, "LLL dd, yyyy")}
-                  </>
+        <VoiceTutorialListener
+          selector="date-range-selector"
+          description="Select the date range for your report data."
+          actionStep="Click to open a calendar where you can choose start and end dates for your report."
+        >
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant={"outline"}
+                className={"w-[280px] justify-start text-left font-normal"}
+              >
+                <CalendarIcon className="mr-2 h-4 w-4" />
+                {dateRange?.from ? (
+                  dateRange.to ? (
+                    <>
+                      {format(dateRange.from, "LLL dd, yyyy")} -{" "}
+                      {format(dateRange.to, "LLL dd, yyyy")}
+                    </>
+                  ) : (
+                    format(dateRange.from, "LLL dd, yyyy")
+                  )
                 ) : (
-                  format(dateRange.from, "LLL dd, yyyy")
-                )
-              ) : (
-                <span>Select date range</span>
-              )}
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-auto p-0" align="start">
-            <Calendar
-              initialFocus
-              mode="range"
-              defaultMonth={dateRange?.from}
-              selected={dateRange}
-              onSelect={setDateRange}
-              numberOfMonths={2}
-            />
-          </PopoverContent>
-        </Popover>
+                  <span>Select date range</span>
+                )}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <Calendar
+                initialFocus
+                mode="range"
+                defaultMonth={dateRange?.from}
+                selected={dateRange}
+                onSelect={setDateRange}
+                numberOfMonths={2}
+              />
+            </PopoverContent>
+          </Popover>
+        </VoiceTutorialListener>
         
-        <Button onClick={() => {
-          toast({
-            title: "Report Generated",
-            description: `Data updated for ${format(dateRange?.from || new Date(), "MMM yyyy")} to ${format(dateRange?.to || new Date(), "MMM yyyy")}`,
-          });
-        }}>
-          Generate Report
-        </Button>
+        <VoiceTutorialListener
+          selector="generate-report-button"
+          description="Click this button to generate the report based on your selected parameters."
+          actionStep="After selecting your report type and date range, click here to update the data."
+        >
+          <Button onClick={() => {
+            toast({
+              title: "Report Generated",
+              description: `Data updated for ${format(dateRange?.from || new Date(), "MMM yyyy")} to ${format(dateRange?.to || new Date(), "MMM yyyy")}`,
+            });
+          }}>
+            Generate Report
+          </Button>
+        </VoiceTutorialListener>
       </div>
       
       <Tabs defaultValue="dashboard" className="space-y-8" {...voiceProps}>
         <TabsList className="grid grid-cols-1 md:grid-cols-4 w-full md:w-auto">
-          <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
-          <TabsTrigger value="hiring">Hiring Process</TabsTrigger>
-          <TabsTrigger value="diversity">Diversity</TabsTrigger>
-          <TabsTrigger value="custom">Custom Reports</TabsTrigger>
+          <VoiceTutorialListener
+            selector="dashboard-tab"
+            description="View the overview dashboard with key metrics."
+            actionStep="Click to see the main dashboard with charts and KPIs."
+          >
+            <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
+          </VoiceTutorialListener>
+          
+          <VoiceTutorialListener
+            selector="hiring-tab"
+            description="View metrics about the hiring process efficiency."
+            actionStep="Click to see application rates, time in each stage, and offer acceptance rates."
+          >
+            <TabsTrigger value="hiring">Hiring Process</TabsTrigger>
+          </VoiceTutorialListener>
+          
+          <VoiceTutorialListener
+            selector="diversity-tab"
+            description="View diversity and inclusion metrics."
+            actionStep="Click to analyze diversity data and initiative results."
+          >
+            <TabsTrigger value="diversity">Diversity</TabsTrigger>
+          </VoiceTutorialListener>
+          
+          <VoiceTutorialListener
+            selector="custom-tab"
+            description="Build custom reports with specific metrics."
+            actionStep="Click to access the custom report builder."
+          >
+            <TabsTrigger value="custom">Custom Reports</TabsTrigger>
+          </VoiceTutorialListener>
         </TabsList>
         
         <TabsContent value="dashboard">

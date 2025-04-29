@@ -46,7 +46,7 @@ export const VoiceTutorialPopup = () => {
             <HelpCircle className="h-5 w-5 text-blue-500" />
           )}
           <span className="font-semibold">
-            {activeTutorial.type === "what" ? "Tip" : "Help"}
+            {activeTutorial.type === "what" ? "Voice Guide" : "Help"}
           </span>
           <div className="ml-auto flex items-center space-x-2">
             <Button

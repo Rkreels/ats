@@ -7,6 +7,7 @@ interface VoiceTutorialListenerProps {
   description: string;
   children: React.ReactNode;
   help?: string;
+  actionStep?: string; // Added to guide users on next steps
 }
 
 /**
@@ -17,6 +18,7 @@ export default function VoiceTutorialListener({
   description,
   children,
   help,
+  actionStep,
 }: VoiceTutorialListenerProps) {
   const { setTutorial, clearTutorial } = useVoiceTutorial();
   const elementRef = useRef<HTMLDivElement>(null);
@@ -40,8 +42,14 @@ export default function VoiceTutorialListener({
     // Clear any existing audio first
     clearTutorial();
     
+    // Construct a more comprehensive tutorial message with action step if provided
+    let tutorialText = description;
+    if (actionStep) {
+      tutorialText = `${description} ${actionStep}`;
+    }
+    
     // Set the tutorial immediately
-    setTutorial(help || description, help ? "decision" : "what");
+    setTutorial(tutorialText, help ? "decision" : "what");
   };
   
   const stopTutorial = () => {

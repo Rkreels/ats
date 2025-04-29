@@ -6,12 +6,14 @@ interface VoiceTriggerOptions {
   what?: string;
   decision?: string;
   disableClick?: boolean;
+  actionStep?: string; // New property for guiding users to next actions
 }
 
 export const useVoiceTrigger = ({
   what,
   decision,
-  disableClick = false
+  disableClick = false,
+  actionStep
 }: VoiceTriggerOptions = {}) => {
   const { setTutorial, clearTutorial } = useVoiceTutorial();
   const timeoutRef = useRef<number | null>(null);
@@ -36,10 +38,16 @@ export const useVoiceTrigger = ({
         clearTimeout(timeoutRef.current);
       }
       
+      // Construct a more comprehensive tutorial message with action step if provided
+      let tutorialText = what;
+      if (actionStep) {
+        tutorialText = `${what} ${actionStep}`;
+      }
+      
       // Set the tutorial immediately - no delay
-      setTutorial(what, "what");
+      setTutorial(tutorialText, "what");
     }
-  }, [what, setTutorial, clearTutorial]);
+  }, [what, actionStep, setTutorial, clearTutorial]);
   
   const handleClick = useCallback(() => {
     if (!disableClick && what) {
@@ -51,10 +59,16 @@ export const useVoiceTrigger = ({
         clearTimeout(timeoutRef.current);
       }
       
+      // Construct a more comprehensive tutorial message with action step if provided
+      let tutorialText = what;
+      if (actionStep) {
+        tutorialText = `${what} ${actionStep}`;
+      }
+      
       // Also trigger on click for better accessibility with no delay
-      setTutorial(what, "what");
+      setTutorial(tutorialText, "what");
     }
-  }, [what, disableClick, setTutorial, clearTutorial]);
+  }, [what, actionStep, disableClick, setTutorial, clearTutorial]);
   
   // Handle mouse leave - clear tutorial when leaving component
   const handleMouseLeave = useCallback(() => {

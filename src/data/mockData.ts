@@ -1,509 +1,406 @@
-import { Candidate, Job, TimeToHireData, DiversityData, Interview } from "@/types";
 import { v4 as uuidv4 } from 'uuid';
+import { Candidate, Interview, User } from '@/types';
 
-// Sample candidates
+// Mock data service
+export const mockDataService = {
+  getAllCandidates: (): Candidate[] => candidates,
+  getCandidate: (id: string): Candidate | undefined => candidates.find(c => c.id === id),
+  getAllUsers: (): User[] => users,
+  getUser: (id: string): User | undefined => users.find(u => u.id === id),
+  getAllInterviews: (): Interview[] => interviews,
+  getInterview: (id: string): Interview | undefined => interviews.find(i => i.id === id),
+};
+
+// Mock candidate data
 const candidates: Candidate[] = [
   {
-    id: "c1",
-    name: "Alex Johnson",
+    id: "1",
+    name: "John Smith",
+    email: "john.123@example.com",
+    phone: "123-456-7890",
+    location: "New York, NY",
     role: "Frontend Developer",
-    email: "alex.johnson@example.com",
-    phone: "+1 (555) 123-4567",
-    location: "San Francisco, CA",
-    experience: 5,
-    skills: ["React", "TypeScript", "CSS", "HTML", "JavaScript"],
-    education: "BS Computer Science, Stanford University",
-    source: "LinkedIn",
-    salary: "$120,000 - $140,000",
     status: "Interview",
-    appliedDate: "2023-04-15",
-    resumeUrl: "#",
-    coverLetterUrl: "#",
-    notes: "Strong frontend skills, good cultural fit. Enthusiastic about our product.",
-    feedback: "Performed well in technical interview. Team recommended moving forward.",
-    avatar: "https://i.pravatar.cc/150?img=1",
-    lastUpdated: "2023-04-20",
+    appliedDate: "2023-01-15",
+    source: "LinkedIn",
+    resumeUrl: "/placeholder.svg",
+    coverLetterUrl: "",
+    avatar: "/placeholder.svg",
+    skills: ["React", "JavaScript", "HTML", "CSS"],
+    experience: "5 years",
+    education: "Bachelor's Degree in Computer Science",
+    notes: "Promising candidate with strong technical skills.",
+    lastUpdated: "2023-03-01",
     interviews: [
       {
-        id: "i1",
-        candidateId: "c1",
-        interviewerId: "e1",
-        interviewerName: "Sarah Chen",
-        date: "2023-04-25",
-        time: "2:00 PM",
-        duration: "45 minutes",
-        type: "Video",
-        status: "Scheduled",
+        id: "101",
+        date: "2023-02-01",
+        type: "Technical Interview",
+        notes: "Discussed React and JavaScript concepts.",
+        candidateId: "1"
       }
-    ]
+    ],
+    feedback: {
+      interviewer: "Jane Doe",
+      date: "2023-02-01",
+      rating: 4,
+      comments: "Good understanding of frontend technologies."
+    }
   },
   {
-    id: "c2",
-    name: "Emily White",
+    id: "2",
+    name: "Alice Johnson",
+    email: "alice.j@example.com",
+    phone: "987-654-3210",
+    location: "Los Angeles, CA",
     role: "Backend Developer",
-    email: "emily.white@example.com",
-    phone: "+1 (555) 234-5678",
-    location: "New York, NY",
-    experience: 3,
-    skills: ["Node.js", "Express", "PostgreSQL", "JavaScript"],
-    education: "MS Computer Science, MIT",
-    source: "Indeed",
-    salary: "$110,000 - $130,000",
     status: "Offer",
-    appliedDate: "2023-03-01",
-    resumeUrl: "#",
-    coverLetterUrl: "#",
-    notes: "Solid backend skills, experience with large-scale systems.",
-    feedback: "Excellent problem-solving skills. Strong understanding of system architecture.",
-    avatar: "https://i.pravatar.cc/150?img=2",
+    appliedDate: "2022-12-01",
+    source: "Indeed",
+    resumeUrl: "/placeholder.svg",
+    coverLetterUrl: "",
+    avatar: "/placeholder.svg",
+    skills: ["Node.js", "Express", "SQL", "MongoDB"],
+    experience: "7 years",
+    education: "Master's Degree in Software Engineering",
+    notes: "Experienced backend developer with a strong portfolio.",
+    lastUpdated: "2023-03-05",
+    interviews: [
+      {
+        id: "102",
+        date: "2023-01-10",
+        type: "Technical Interview",
+        notes: "Discussed Node.js and database design.",
+        candidateId: "2"
+      }
+    ],
+    feedback: {
+      interviewer: "Bob Smith",
+      date: "2023-01-10",
+      rating: 5,
+      comments: "Excellent technical skills and problem-solving abilities."
+    }
+  },
+  {
+    id: "3",
+    name: "Bob Williams",
+    email: "bob.w@example.com",
+    phone: "555-123-4567",
+    location: "Chicago, IL",
+    role: "Data Scientist",
+    status: "Hired",
+    appliedDate: "2023-02-10",
+    source: "Company Website",
+    resumeUrl: "/placeholder.svg",
+    coverLetterUrl: "",
+    avatar: "/placeholder.svg",
+    skills: ["Python", "Machine Learning", "Data Analysis", "Statistics"],
+    experience: "4 years",
+    education: "Bachelor's Degree in Statistics",
+    notes: "Strong analytical skills and experience with machine learning.",
+    lastUpdated: "2023-03-10",
+    interviews: [
+      {
+        id: "103",
+        date: "2023-03-01",
+        type: "Technical Interview",
+        notes: "Discussed machine learning algorithms and data analysis techniques.",
+        candidateId: "3"
+      }
+    ],
+    feedback: {
+      interviewer: "Alice Johnson",
+      date: "2023-03-01",
+      rating: 4,
+      comments: "Good understanding of data science concepts."
+    }
+  },
+  {
+    id: "4",
+    name: "Emily Brown",
+    email: "emily.b@example.com",
+    phone: "777-999-8888",
+    location: "Houston, TX",
+    role: "Project Manager",
+    status: "Rejected",
+    appliedDate: "2022-11-01",
+    source: "Referral",
+    resumeUrl: "/placeholder.svg",
+    coverLetterUrl: "",
+    avatar: "/placeholder.svg",
+    skills: ["Project Management", "Leadership", "Communication", "Agile"],
+    experience: "8 years",
+    education: "Master's Degree in Business Administration",
+    notes: "Experienced project manager with strong leadership skills.",
     lastUpdated: "2023-03-15",
     interviews: [
       {
-        id: "i2",
-        candidateId: "c2",
-        interviewerId: "e2",
-        interviewerName: "David Lee",
-        date: "2023-03-10",
-        time: "10:00 AM",
-        duration: "60 minutes",
-        type: "In-person",
-        status: "Completed",
-        feedback: "Candidate demonstrated strong technical abilities and a good understanding of backend development principles."
+        id: "104",
+        date: "2022-12-15",
+        type: "Behavioral Interview",
+        notes: "Discussed project management methodologies and leadership skills.",
+        candidateId: "4"
       }
-    ]
+    ],
+    feedback: {
+      interviewer: "John Smith",
+      date: "2022-12-15",
+      rating: 3,
+      comments: "Good communication skills but lacks technical expertise."
+    }
   },
   {
-    id: "c3",
-    name: "Carlos Rodriguez",
-    role: "Data Scientist",
-    email: "carlos.rodriguez@example.com",
-    phone: "+1 (555) 345-6789",
-    location: "Chicago, IL",
-    experience: 7,
-    skills: ["Python", "Machine Learning", "Data Analysis", "SQL"],
-    education: "PhD Statistics, University of Chicago",
-    source: "Referral",
-    salary: "$140,000 - $160,000",
-    status: "Hired",
-    appliedDate: "2022-11-01",
-    resumeUrl: "#",
-    coverLetterUrl: "#",
-    notes: "Expert in machine learning, extensive research experience.",
-    feedback: "Exceptional analytical skills. Published several papers in top journals.",
-    avatar: "https://i.pravatar.cc/150?img=3",
-    lastUpdated: "2022-12-01",
-    interviews: [
-      {
-        id: "i3",
-        candidateId: "c3",
-        interviewerId: "e3",
-        interviewerName: "Linda Brown",
-        date: "2022-11-15",
-        time: "1:00 PM",
-        duration: "75 minutes",
-        type: "Video",
-        status: "Completed",
-        feedback: "Candidate's expertise in machine learning and data analysis was evident. A strong addition to the team."
-      }
-    ]
-  },
-  {
-    id: "c4",
-    name: "Priya Sharma",
-    role: "Product Manager",
-    email: "priya.sharma@example.com",
-    phone: "+1 (555) 456-7890",
-    location: "Seattle, WA",
-    experience: 4,
-    skills: ["Product Strategy", "Market Analysis", "Agile", "User Experience"],
-    education: "MBA, Harvard Business School",
-    source: "LinkedIn",
-    salary: "$130,000 - $150,000",
-    status: "Rejected",
-    appliedDate: "2023-01-15",
-    resumeUrl: "#",
-    coverLetterUrl: "#",
-    notes: "Good understanding of product management principles, but lacks experience in our industry.",
-    feedback: "Candidate's interview performance was satisfactory, but other candidates had more relevant experience.",
-    avatar: "https://i.pravatar.cc/150?img=4",
-    lastUpdated: "2023-02-01",
-    interviews: [
-      {
-        id: "i4",
-        candidateId: "c4",
-        interviewerId: "e4",
-        interviewerName: "Michael Green",
-        date: "2023-01-25",
-        time: "3:00 PM",
-        duration: "60 minutes",
-        type: "Video",
-        status: "Completed",
-        feedback: "Candidate displayed a solid understanding of product management concepts but lacked specific experience in our target market."
-      }
-    ]
-  },
-  {
-    id: "c5",
-    name: "David Kim",
-    role: "Software Engineer",
-    email: "david.kim@example.com",
-    phone: "+1 (555) 567-8901",
-    location: "Austin, TX",
-    experience: 2,
-    skills: ["Java", "Spring", "RESTful APIs", "SQL"],
-    education: "BS Computer Engineering, UT Austin",
-    source: "Company Website",
-    salary: "$100,000 - $120,000",
-    status: "Applied",
-    appliedDate: "2023-05-01",
-    resumeUrl: "#",
-    coverLetterUrl: "#",
-    notes: "Recent graduate, eager to learn. Some internship experience.",
-    feedback: null,
-    avatar: "https://i.pravatar.cc/150?img=5",
-    lastUpdated: "2023-05-05",
-    interviews: []
-  },
-  {
-    id: "c6",
-    name: "Laura Smith",
-    role: "UX Designer",
-    email: "laura.smith@example.com",
-    phone: "+1 (555) 678-9012",
-    location: "Los Angeles, CA",
-    experience: 6,
-    skills: ["User Research", "Wireframing", "Prototyping", "UI Design"],
-    education: "MFA Design, UCLA",
-    source: "Behance",
-    salary: "$120,000 - $140,000",
-    status: "Screen",
-    appliedDate: "2023-02-15",
-    resumeUrl: "#",
-    coverLetterUrl: "#",
-    notes: "Creative designer, strong portfolio. Needs to improve communication skills.",
-    feedback: null,
-    avatar: "https://i.pravatar.cc/150?img=6",
-    lastUpdated: "2023-02-28",
-    interviews: []
-  },
-  {
-    id: "c7",
-    name: "Kevin Brown",
-    role: "Technical Lead",
-    email: "kevin.brown@example.com",
-    phone: "+1 (555) 789-0123",
-    location: "Denver, CO",
-    experience: 8,
-    skills: ["Leadership", "System Design", "Cloud Computing", "Agile"],
-    education: "BS Electrical Engineering, CU Boulder",
-    source: "Referral",
-    salary: "$150,000 - $170,000",
-    status: "Interview",
-    appliedDate: "2022-12-01",
-    resumeUrl: "#",
-    coverLetterUrl: "#",
-    notes: "Experienced leader, deep technical knowledge. Excellent communication skills.",
-    feedback: null,
-    avatar: "https://i.pravatar.cc/150?img=7",
-    lastUpdated: "2022-12-15",
-    interviews: []
-  },
-  {
-    id: "c8",
-    name: "Ashley Taylor",
-    role: "Marketing Manager",
-    email: "ashley.taylor@example.com",
-    phone: "+1 (555) 890-1234",
-    location: "Miami, FL",
-    experience: 5,
-    skills: ["Digital Marketing", "Social Media", "SEO", "Content Strategy"],
-    education: "BA Marketing, University of Florida",
-    source: "LinkedIn",
-    salary: "$110,000 - $130,000",
-    status: "Offer",
-    appliedDate: "2023-03-15",
-    resumeUrl: "#",
-    coverLetterUrl: "#",
-    notes: "Creative marketer, data-driven approach. Strong communication skills.",
-    feedback: null,
-    avatar: "https://i.pravatar.cc/150?img=8",
-    lastUpdated: "2023-03-30",
-    interviews: []
-  },
-  {
-    id: "c9",
-    name: "Ryan Garcia",
-    role: "Financial Analyst",
-    email: "ryan.garcia@example.com",
-    phone: "+1 (555) 901-2345",
-    location: "Houston, TX",
-    experience: 3,
-    skills: ["Financial Modeling", "Data Analysis", "Accounting", "Excel"],
-    education: "MS Finance, Rice University",
-    source: "Indeed",
-    salary: "$90,000 - $110,000",
-    status: "Hired",
-    appliedDate: "2023-01-01",
-    resumeUrl: "#",
-    coverLetterUrl: "#",
-    notes: "Detail-oriented analyst, strong financial acumen. Excellent analytical skills.",
-    feedback: null,
-    avatar: "https://i.pravatar.cc/150?img=9",
-    lastUpdated: "2023-01-15",
-    interviews: []
-  },
-  {
-    id: "c10",
-    name: "Jessica Martinez",
-    role: "HR Manager",
-    email: "jessica.martinez@example.com",
-    phone: "+1 (555) 012-3456",
-    location: "Phoenix, AZ",
-    experience: 7,
-    skills: ["HR Management", "Employee Relations", "Recruiting", "Compensation"],
-    education: "BA Human Resources, ASU",
-    source: "Company Website",
-    salary: "$120,000 - $140,000",
-    status: "Rejected",
-    appliedDate: "2022-11-15",
-    resumeUrl: "#",
-    coverLetterUrl: "#",
-    notes: "Experienced HR professional, good understanding of employment law. Strong communication skills.",
-    feedback: null,
-    avatar: "https://i.pravatar.cc/150?img=10",
-    lastUpdated: "2022-11-30",
-    interviews: []
-  }
-];
-
-// Sample jobs
-const jobs: Job[] = [
-  {
-    id: "j1",
-    title: "Senior Frontend Developer",
-    department: "Engineering",
+    id: "5",
+    name: "David Lee",
+    email: "david.l@example.com",
+    phone: "111-222-3333",
     location: "San Francisco, CA",
-    type: "Full-time",
-    description: "We are looking for an experienced frontend developer to join our team...",
-    responsibilities: [
-      "Develop new user-facing features",
-      "Build reusable components and libraries",
-      "Translate designs into high-quality code",
-    ],
-    requirements: [
-      "3+ years experience with React",
-      "Strong proficiency in JavaScript and TypeScript",
-      "Experience with responsive design",
-    ],
-    postedDate: "2023-04-01",
-    closingDate: "2023-05-01",
-    salary: "$120,000 - $150,000",
-    status: "Published",
-    hiringManager: "Sarah Chen",
-    applicants: 12,
-    skills: ["React", "TypeScript", "CSS", "HTML", "JavaScript"],
+    role: "UX Designer",
+    status: "Applied",
+    appliedDate: "2023-03-01",
+    source: "Behance",
+    resumeUrl: "/placeholder.svg",
+    coverLetterUrl: "",
+    avatar: "/placeholder.svg",
+    skills: ["User Research", "Wireframing", "Prototyping", "UI Design"],
+    experience: "6 years",
+    education: "Bachelor's Degree in Design",
+    notes: "Creative UX designer with a strong portfolio.",
+    lastUpdated: "2023-03-20",
+    interviews: [],
+    feedback: null
   },
   {
-    id: "j2",
-    title: "Backend Developer",
-    department: "Engineering",
-    location: "New York, NY",
-    type: "Full-time",
-    description: "We are seeking a skilled backend developer to build and maintain our server-side logic...",
-    responsibilities: [
-      "Design and implement RESTful APIs",
-      "Write efficient and scalable code",
-      "Work with databases and cloud services",
-    ],
-    requirements: [
-      "2+ years experience with Node.js",
-      "Proficiency in JavaScript and SQL",
-      "Experience with cloud platforms like AWS or Azure",
-    ],
-    postedDate: "2023-04-15",
-    closingDate: "2023-05-15",
-    salary: "$110,000 - $140,000",
-    status: "Published",
-    hiringManager: "David Lee",
-    applicants: 8,
-    skills: ["Node.js", "JavaScript", "SQL", "AWS", "Azure"],
-  },
-  {
-    id: "j3",
-    title: "Data Scientist",
-    department: "Data Science",
-    location: "Chicago, IL",
-    type: "Full-time",
-    description: "We are looking for a data scientist to analyze large datasets and build machine learning models...",
-    responsibilities: [
-      "Collect and analyze data from various sources",
-      "Develop and implement machine learning algorithms",
-      "Communicate findings to stakeholders",
-    ],
-    requirements: [
-      "3+ years experience with Python",
-      "Strong knowledge of machine learning techniques",
-      "Experience with data visualization tools",
-    ],
-    postedDate: "2023-05-01",
-    closingDate: "2023-06-01",
-    salary: "$130,000 - $160,000",
-    status: "Published",
-    hiringManager: "Linda Brown",
-    applicants: 5,
-    skills: ["Python", "Machine Learning", "Data Analysis", "SQL"],
-  },
-  {
-    id: "j4",
-    title: "Product Manager",
-    department: "Product",
+    id: "6",
+    name: "Sarah Kim",
+    email: "sarah.k@example.com",
+    phone: "444-555-6666",
     location: "Seattle, WA",
-    type: "Full-time",
-    description: "We are seeking a product manager to define and execute our product strategy...",
-    responsibilities: [
-      "Conduct market research and competitive analysis",
-      "Define product requirements and specifications",
-      "Work with engineering and design teams to deliver products",
-    ],
-    requirements: [
-      "2+ years experience with product management",
-      "Strong analytical and problem-solving skills",
-      "Excellent communication and interpersonal skills",
-    ],
-    postedDate: "2023-05-15",
-    closingDate: "2023-06-15",
-    salary: "$120,000 - $150,000",
-    status: "Published",
-    hiringManager: "Michael Green",
-    applicants: 10,
-    skills: ["Product Strategy", "Market Analysis", "Agile", "User Experience"],
+    role: "QA Engineer",
+    status: "Screen",
+    appliedDate: "2023-02-20",
+    source: "Glassdoor",
+    resumeUrl: "/placeholder.svg",
+    coverLetterUrl: "",
+    avatar: "/placeholder.svg",
+    skills: ["Test Automation", "Manual Testing", "Bug Tracking", "Agile"],
+    experience: "3 years",
+    education: "Associate's Degree in Computer Science",
+    notes: "Detail-oriented QA engineer with experience in test automation.",
+    lastUpdated: "2023-03-25",
+    interviews: [],
+    feedback: null
   },
   {
-    id: "j5",
-    title: "Software Engineer",
-    department: "Engineering",
+    id: "7",
+    name: "Michael Chen",
+    email: "michael.c@example.com",
+    phone: "222-333-4444",
     location: "Austin, TX",
-    type: "Full-time",
-    description: "Entry-level software engineer to develop and maintain software applications...",
-    responsibilities: [
-      "Write clean and efficient code",
-      "Participate in code reviews",
-      "Work with senior engineers to design solutions",
-    ],
-    requirements: [
-      "Bachelor's degree in Computer Science",
-      "Proficiency in Java or C++",
-      "Knowledge of data structures and algorithms",
-    ],
-    postedDate: "2023-06-01",
-    closingDate: "2023-07-01",
-    salary: "$80,000 - $100,000",
-    status: "Published",
-    hiringManager: "Sarah Chen",
-    applicants: 15,
-    skills: ["Java", "C++", "Data Structures", "Algorithms"],
+    role: "DevOps Engineer",
+    status: "Interview",
+    appliedDate: "2023-01-01",
+    source: "Stack Overflow",
+    resumeUrl: "/placeholder.svg",
+    coverLetterUrl: "",
+    avatar: "/placeholder.svg",
+    skills: ["AWS", "Docker", "Kubernetes", "CI/CD"],
+    experience: "5 years",
+    education: "Bachelor's Degree in Information Technology",
+    notes: "Experienced DevOps engineer with strong cloud skills.",
+    lastUpdated: "2023-03-30",
+    interviews: [],
+    feedback: null
+  },
+  {
+    id: "8",
+    name: "Linda Nguyen",
+    email: "linda.n@example.com",
+    phone: "666-777-8888",
+    location: "Boston, MA",
+    role: "Business Analyst",
+    status: "Offer",
+    appliedDate: "2022-10-01",
+    source: "LinkedIn",
+    resumeUrl: "/placeholder.svg",
+    coverLetterUrl: "",
+    avatar: "/placeholder.svg",
+    skills: ["Data Analysis", "Requirements Gathering", "Process Improvement", "SQL"],
+    experience: "7 years",
+    education: "Master's Degree in Business Analytics",
+    notes: "Experienced business analyst with strong analytical skills.",
+    lastUpdated: "2023-04-01",
+    interviews: [],
+    feedback: null
+  },
+  {
+    id: "9",
+    name: "Kevin Patel",
+    email: "kevin.p@example.com",
+    phone: "888-999-0000",
+    location: "Miami, FL",
+    role: "Marketing Manager",
+    status: "Hired",
+    appliedDate: "2023-03-01",
+    source: "Company Website",
+    resumeUrl: "/placeholder.svg",
+    coverLetterUrl: "",
+    avatar: "/placeholder.svg",
+    skills: ["Digital Marketing", "Social Media", "SEO", "Content Marketing"],
+    experience: "4 years",
+    education: "Bachelor's Degree in Marketing",
+    notes: "Creative marketing manager with experience in digital marketing.",
+    lastUpdated: "2023-04-05",
+    interviews: [],
+    feedback: null
+  },
+  {
+    id: "10",
+    name: "Jessica Garcia",
+    email: "jessica.g@example.com",
+    phone: "999-000-1111",
+    location: "Denver, CO",
+    role: "Sales Representative",
+    status: "Rejected",
+    appliedDate: "2022-09-01",
+    source: "Indeed",
+    resumeUrl: "/placeholder.svg",
+    coverLetterUrl: "",
+    avatar: "/placeholder.svg",
+    skills: ["Sales", "Customer Service", "Communication", "Negotiation"],
+    experience: "6 years",
+    education: "Associate's Degree in Business Administration",
+    notes: "Experienced sales representative with strong communication skills.",
+    lastUpdated: "2023-04-10",
+    interviews: [],
+    feedback: null
   }
 ];
 
-// Sample time to hire data for reports
-const timeToHireData: TimeToHireData[] = [
+// Mock user data
+const users: User[] = [
   {
-    month: "Jan",
-    Engineering: 32,
-    Product: 28,
-    Marketing: 25,
-    Sales: 20,
+    id: "1",
+    name: "Admin User",
+    email: "admin@example.com",
+    role: "admin",
+    permissions: {
+      canViewCandidates: true,
+      canEditCandidates: true,
+      canDeleteCandidates: true,
+      canViewJobs: true,
+      canEditJobs: true,
+      canDeleteJobs: true,
+      canScheduleInterviews: true,
+      canViewReports: true,
+      canEditReports: true,
+      canDeleteReports: true,
+      canManageUsers: true
+    }
   },
   {
-    month: "Feb",
-    Engineering: 30,
-    Product: 26,
-    Marketing: 23,
-    Sales: 22,
+    id: "2",
+    name: "Manager User",
+    email: "manager@example.com",
+    role: "manager",
+    permissions: {
+      canViewCandidates: true,
+      canEditCandidates: true,
+      canDeleteCandidates: false,
+      canViewJobs: true,
+      canEditJobs: true,
+      canDeleteJobs: false,
+      canScheduleInterviews: true,
+      canViewReports: true,
+      canEditReports: false,
+      canDeleteReports: false,
+      canManageUsers: false
+    }
   },
   {
-    month: "Mar",
-    Engineering: 35,
-    Product: 30,
-    Marketing: 27,
-    Sales: 24,
-  },
-  {
-    month: "Apr",
-    Engineering: 33,
-    Product: 29,
-    Marketing: 26,
-    Sales: 21,
-  },
-  {
-    month: "May",
-    Engineering: 31,
-    Product: 27,
-    Marketing: 24,
-    Sales: 23,
-  },
-  {
-    month: "Jun",
-    Engineering: 34,
-    Product: 28,
-    Marketing: 25,
-    Sales: 19,
+    id: "3",
+    name: "Regular User",
+    email: "user@example.com",
+    role: "user",
+    permissions: {
+      canViewCandidates: true,
+      canEditCandidates: false,
+      canDeleteCandidates: false,
+      canViewJobs: true,
+      canEditJobs: false,
+      canDeleteJobs: false,
+      canScheduleInterviews: false,
+      canViewReports: false,
+      canEditReports: false,
+      canDeleteReports: false,
+      canManageUsers: false
+    }
   }
 ];
 
-// Sample diversity data for reports
-const diversityData: DiversityData = {
-  gender: {
-    Male: 45,
-    Female: 40,
-    "Non-binary": 10,
-    "Prefer not to say": 5,
+// Mock interview data
+const interviews: Interview[] = [
+  {
+    id: "101",
+    date: "2023-05-01",
+    type: "Technical Interview",
+    notes: "Discussed React and JavaScript concepts.",
+    candidateId: "1"
   },
-  ethnicity: {
-    White: 50,
-    "Black or African American": 15,
-    Asian: 20,
-    Hispanic: 10,
-    "Two or more races": 3,
-    "Other/Unknown": 2,
+  {
+    id: "102",
+    date: "2023-05-03",
+    type: "Behavioral Interview",
+    notes: "Discussed team work and problem-solving skills.",
+    candidateId: "2"
   },
-  hiringSource: {
-    LinkedIn: 35,
-    "Job Boards": 25,
-    "Company Website": 20,
-    Referrals: 15,
-    "University Recruiting": 3,
-    Other: 2,
-  },
+  {
+    id: "103",
+    date: "2023-05-05",
+    type: "Final Interview",
+    notes: "Final discussion before making an offer.",
+    candidateId: "3"
+  }
+];
+
+// Add this patch to fix the TypeScript error in AddCandidateForm
+export const createCandidate = (candidateData: Omit<Partial<Candidate>, "id">): Candidate => {
+  const id = uuidv4();
+  
+  // Provide default values for required fields to fix TypeScript errors
+  const defaultCandidate: Omit<Candidate, "id"> = {
+    name: "New Candidate",
+    email: "candidate@example.com",
+    phone: "",
+    location: "",
+    role: "Frontend Developer",
+    status: "Applied",
+    appliedDate: new Date().toISOString().split('T')[0],
+    source: "Website",
+    resumeUrl: "/placeholder.svg",
+    coverLetterUrl: "",
+    avatar: "/placeholder.svg",
+    skills: [],
+    experience: "",
+    education: "",
+    notes: "",
+    lastUpdated: new Date().toISOString(),
+    interviews: [],
+    feedback: null
+  };
+  
+  // Create new candidate with defaults and override with provided data
+  return {
+    id,
+    ...defaultCandidate,
+    ...candidateData
+  };
 };
 
-export const mockDataService = {
-  getAllCandidates: () => [...candidates],
-  getCandidateById: (id: string) => {
-    return candidates.find((candidate) => candidate.id === id) as Candidate;
-  },
-  getAllJobs: () => [...jobs],
-  getJobById: (id: string) => {
-    return jobs.find((job) => job.id === id) as Job;
-  },
-  getTimeToHireData: () => [...timeToHireData],
-  getDiversityData: () => diversityData,
-  generateMoreCandidates: (num: number) => {
-    // This would generate more mock candidates
-  },
-  updateCandidate: (updatedCandidate: Candidate) => {
-    const index = candidates.findIndex(c => c.id === updatedCandidate.id);
-    if (index !== -1) {
-      candidates[index] = updatedCandidate;
-    }
-    return updatedCandidate;
-  },
-  addCandidate: (newCandidate: Omit<Candidate, 'id'>) => {
-    const candidateWithId = {
-      ...newCandidate,
-      id: uuidv4(),
-    };
-    candidates.push(candidateWithId as Candidate);
-    return candidateWithId;
-  }
+export const createUser = (userData: Omit<User, "id">): User => {
+  const id = uuidv4();
+  return {
+    id,
+    ...userData
+  };
 };
