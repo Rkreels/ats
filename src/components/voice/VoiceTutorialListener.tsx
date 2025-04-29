@@ -18,9 +18,18 @@ export default function VoiceTutorialListener({
   children,
   help,
 }: VoiceTutorialListenerProps) {
-  const { setActiveTutorial } = useVoiceTutorial();
+  const { setTutorial, clearTutorial } = useVoiceTutorial();
   const elementRef = useRef<HTMLDivElement>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  
+  // Clear any pending timeouts on unmount
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, []);
   
   const startTutorial = () => {
     // Clear any existing timeout to prevent race conditions
@@ -28,20 +37,18 @@ export default function VoiceTutorialListener({
       clearTimeout(timeoutRef.current);
     }
     
-    // Set a small timeout before activating to prevent flicker on quick mouse movements
-    timeoutRef.current = setTimeout(() => {
-      setActiveTutorial({
-        type: help ? "help" : "what",
-        text: help || description,
-      });
-    }, 100);
+    // Clear any existing audio first
+    clearTutorial();
+    
+    // Set the tutorial immediately
+    setTutorial(help || description, help ? "decision" : "what");
   };
   
   const stopTutorial = () => {
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
     }
-    setActiveTutorial(null);
+    clearTutorial();
   };
   
   useEffect(() => {
