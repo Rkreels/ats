@@ -15,61 +15,64 @@ import Settings from "./pages/Settings";
 import Onboarding from "./pages/Onboarding";
 import NotFound from "./pages/NotFound";
 import { UserProvider } from "./contexts/UserContext";
+import { VoiceTutorialProvider } from "./contexts/VoiceTutorialContext";
 
 const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <UserProvider>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={
-              <AppLayout>
-                <Dashboard />
-              </AppLayout>
-            } />
-            <Route path="/candidates" element={
-              <AppLayout>
-                <Candidates />
-              </AppLayout>
-            } />
-            <Route path="/candidates/:id" element={
-              <AppLayout>
-                <CandidateDetail />
-              </AppLayout>
-            } />
-            <Route path="/jobs" element={
-              <AppLayout>
-                <Jobs />
-              </AppLayout>
-            } />
-            <Route path="/interviews" element={
-              <AppLayout>
-                <Interviews />
-              </AppLayout>
-            } />
-            <Route path="/onboarding" element={
-              <AppLayout>
-                <Onboarding />
-              </AppLayout>
-            } />
-            <Route path="/reports" element={
-              <AppLayout>
-                <Reports />
-              </AppLayout>
-            } />
-            <Route path="/settings" element={
-              <AppLayout>
-                <Settings />
-              </AppLayout>
-            } />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
-      </TooltipProvider>
+      <VoiceTutorialProvider>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <Routes>
+              <Route path="/" element={
+                <AppLayout>
+                  <Dashboard />
+                </AppLayout>
+              } />
+              <Route path="/candidates" element={
+                <AppLayout>
+                  <Candidates />
+                </AppLayout>
+              } />
+              <Route path="/candidates/:id" element={
+                <AppLayout>
+                  <CandidateDetail />
+                </AppLayout>
+              } />
+              <Route path="/jobs" element={
+                <AppLayout>
+                  <Jobs />
+                </AppLayout>
+              } />
+              <Route path="/interviews" element={
+                <AppLayout>
+                  <Interviews />
+                </AppLayout>
+              } />
+              <Route path="/onboarding" element={
+                <AppLayout>
+                  <Onboarding />
+                </AppLayout>
+              } />
+              <Route path="/reports" element={
+                <AppLayout>
+                  <Reports />
+                </AppLayout>
+              } />
+              <Route path="/settings" element={
+                <AppLayout>
+                  <Settings />
+                </AppLayout>
+              } />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </BrowserRouter>
+        </TooltipProvider>
+      </VoiceTutorialProvider>
     </UserProvider>
   </QueryClientProvider>
 );
