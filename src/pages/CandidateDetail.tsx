@@ -16,12 +16,10 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
-import { Candidate } from "@/types";
+import { Candidate, Interview } from "@/types";
 import { mockDataService } from "@/data/mockData";
 import { useUser } from "@/contexts/UserContext";
 import { useToast } from "@/hooks/use-toast";
-
-// Import at the top of the file
 
 // Find and replace getCandidateById with getCandidate
 const CandidateDetail = () => {
@@ -30,8 +28,6 @@ const CandidateDetail = () => {
   const [candidate, setCandidate] = useState<Candidate | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("overview");
-  const [showAddNoteDialog, setShowAddNoteDialog] = useState(false);
-  const [showScheduleDialog, setShowScheduleDialog] = useState(false);
   const { hasPermission } = useUser();
   const { toast } = useToast();
 
@@ -89,7 +85,6 @@ const CandidateDetail = () => {
     
     mockDataService.updateCandidate(updatedCandidate);
     setCandidate(updatedCandidate);
-    setShowAddNoteDialog(false);
     
     toast({
       title: "Note added",
@@ -97,21 +92,20 @@ const CandidateDetail = () => {
     });
   };
   
-  const handleScheduleInterview = (date: Date) => {
+  const handleScheduleInterview = (date: Date, type: Interview['type']) => {
     if (!candidate) return;
     
     // In a real app, this would be an API call
-    const newInterview = {
+    const newInterview: Interview = {
       id: String(Math.random()),
       candidateId: candidate.id,
       interviewerId: "1", // Replace with actual interviewer ID
       interviewerName: "John Doe", // Replace with actual interviewer name
-      date: date.toISOString(),
-      time: "10:00 AM", // Replace with actual time
-      duration: "1 hour", // Replace with actual duration
-      type: "Video", // Replace with actual type
+      date: format(date, 'yyyy-MM-dd'),
+      time: "10:00",
+      duration: "1 hour",
+      type, // Use the correctly typed parameter
       status: "Scheduled",
-      notes: ""
     };
     
     const updatedCandidate = {
@@ -122,11 +116,10 @@ const CandidateDetail = () => {
     
     mockDataService.updateCandidate(updatedCandidate);
     setCandidate(updatedCandidate);
-    setShowScheduleDialog(false);
     
     toast({
       title: "Interview scheduled",
-      description: `Interview scheduled for ${format(date, "MMMM dd, yyyy")}`
+      description: `${type} interview scheduled for ${format(date, "MMMM dd, yyyy")}`
     });
   };
 
@@ -140,13 +133,13 @@ const CandidateDetail = () => {
 
   return (
     <>
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
         <div>
           <h1 className="text-2xl font-bold text-gray-800">{candidate.name}</h1>
           <p className="text-gray-600">{candidate.role}</p>
         </div>
         
-        <div className="flex items-center space-x-2">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
           {hasPermission('canEditCandidates') ? (
             <Select onValueChange={handleUpdateStatus} defaultValue={candidate.status}>
               <SelectTrigger className="w-[180px]">
@@ -176,7 +169,7 @@ const CandidateDetail = () => {
             <CardDescription>Details about the candidate</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="flex items-start space-x-4">
+            <div className="flex flex-col md:flex-row items-start md:items-center gap-4">
               <Avatar className="h-20 w-20">
                 <AvatarImage src={candidate.avatar} alt={candidate.name} />
                 <AvatarFallback>{candidate.name.substring(0, 2)}</AvatarFallback>
@@ -225,7 +218,7 @@ const CandidateDetail = () => {
         </Card>
 
         <Tabs defaultValue="overview" className="space-y-4" onValueChange={setActiveTab}>
-          <TabsList>
+          <TabsList className="flex flex-wrap">
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="interviews">Interviews</TabsTrigger>
             <TabsTrigger value="application">Application</TabsTrigger>
@@ -241,7 +234,7 @@ const CandidateDetail = () => {
               <CardContent className="space-y-4">
                 <div className="space-y-2">
                   <h3 className="text-lg font-semibold">Notes</h3>
-                  <p className="text-gray-600">{candidate.notes || "No notes available."}</p>
+                  <p className="text-gray-600 whitespace-pre-wrap">{candidate.notes || "No notes available."}</p>
                 </div>
                 
                 <div className="space-y-2">
@@ -318,6 +311,7 @@ const CandidateDetail = () => {
             </Card>
           </TabsContent>
           
+          {/* Rest of the tabs implementation remains the same */}
           <TabsContent value="application">
             <Card>
               <CardHeader>
@@ -400,21 +394,40 @@ const AddNoteForm: React.FC<AddNoteFormProps> = ({ onSubmit }) => {
 };
 
 interface ScheduleInterviewFormProps {
-  onSubmit: (date: Date) => void;
+  onSubmit: (date: Date, type: Interview['type']) => void;
 }
 
 const ScheduleInterviewForm: React.FC<ScheduleInterviewFormProps> = ({ onSubmit }) => {
   const [date, setDate] = useState<Date | undefined>(new Date());
+  const [type, setType] = useState<Interview['type']>("Video");
   
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
     if (date) {
-      onSubmit(date);
+      onSubmit(date, type);
     }
   };
   
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
+      <div>
+        <Label>Interview Type</Label>
+        <Select 
+          value={type} 
+          onValueChange={(value) => setType(value as Interview['type'])}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="Select interview type" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="Phone">Phone</SelectItem>
+            <SelectItem value="Video">Video</SelectItem>
+            <SelectItem value="In-person">In-person</SelectItem>
+            <SelectItem value="Behavioral">Behavioral</SelectItem>
+            <SelectItem value="Technical">Technical</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
       <div>
         <Label>Schedule Date</Label>
         <Popover>
@@ -422,7 +435,7 @@ const ScheduleInterviewForm: React.FC<ScheduleInterviewFormProps> = ({ onSubmit 
             <Button
               variant={"outline"}
               className={cn(
-                "w-[240px] justify-start text-left font-normal",
+                "w-full justify-start text-left font-normal",
                 !date && "text-muted-foreground"
               )}
             >
@@ -471,7 +484,7 @@ const EditCandidateForm: React.FC<EditCandidateFormProps> = ({ candidate, setCan
     event.preventDefault();
     
     // In a real app, this would be an API call
-    const updatedCandidate = {
+    const updatedCandidate: Candidate = {
       ...candidate,
       name,
       role,
@@ -491,44 +504,53 @@ const EditCandidateForm: React.FC<EditCandidateFormProps> = ({ candidate, setCan
       title: "Candidate updated",
       description: "Candidate information has been updated."
     });
-    
-    navigate(`/candidates/${candidate.id}`);
   };
   
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <div>
-        <Label htmlFor="name">Name</Label>
-        <Input id="name" type="text" value={name} onChange={(e) => setName(e.target.value)} />
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <Label htmlFor="name">Name</Label>
+          <Input id="name" type="text" value={name} onChange={(e) => setName(e.target.value)} />
+        </div>
+        <div>
+          <Label htmlFor="role">Role</Label>
+          <Input id="role" type="text" value={role} onChange={(e) => setRole(e.target.value)} />
+        </div>
       </div>
-      <div>
-        <Label htmlFor="role">Role</Label>
-        <Input id="role" type="text" value={role} onChange={(e) => setRole(e.target.value)} />
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <Label htmlFor="email">Email</Label>
+          <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+        </div>
+        <div>
+          <Label htmlFor="phone">Phone</Label>
+          <Input id="phone" type="text" value={phone} onChange={(e) => setPhone(e.target.value)} />
+        </div>
       </div>
-      <div>
-        <Label htmlFor="email">Email</Label>
-        <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <Label htmlFor="location">Location</Label>
+          <Input id="location" type="text" value={location} onChange={(e) => setLocation(e.target.value)} />
+        </div>
+        <div>
+          <Label htmlFor="experience">Experience</Label>
+          <Input id="experience" type="number" value={experience} onChange={(e) => setExperience(e.target.value)} />
+        </div>
       </div>
-      <div>
-        <Label htmlFor="phone">Phone</Label>
-        <Input id="phone" type="text" value={phone} onChange={(e) => setPhone(e.target.value)} />
-      </div>
-      <div>
-        <Label htmlFor="location">Location</Label>
-        <Input id="location" type="text" value={location} onChange={(e) => setLocation(e.target.value)} />
-      </div>
-      <div>
-        <Label htmlFor="experience">Experience</Label>
-        <Input id="experience" type="number" value={experience} onChange={(e) => setExperience(e.target.value)} />
-      </div>
+      
       <div>
         <Label htmlFor="skills">Skills (comma separated)</Label>
         <Input id="skills" type="text" value={skills} onChange={(e) => setSkills(e.target.value)} />
       </div>
+      
       <div>
         <Label htmlFor="education">Education</Label>
         <Input id="education" type="text" value={education} onChange={(e) => setEducation(e.target.value)} />
       </div>
+      
       <div className="flex justify-end">
         <Button type="submit">Update Candidate</Button>
       </div>
