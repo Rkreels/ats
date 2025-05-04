@@ -18,11 +18,33 @@ export default function AppLayout({ children }: AppLayoutProps) {
   
   return (
     <div className="min-h-screen bg-gray-50 flex">
-      <div className={`transition-all duration-300 ${sidebarOpen || !isMobile ? 'translate-x-0' : '-translate-x-full'} fixed md:sticky top-0 h-screen z-30`}>
-        <AppSidebar />
-      </div>
+      {/* Mobile sidebar with overlay */}
+      {isMobile ? (
+        <>
+          <div 
+            className={`fixed inset-y-0 left-0 z-40 transition-transform transform duration-300 ease-in-out ${
+              sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+            }`}
+          >
+            <AppSidebar />
+          </div>
+          
+          {/* Overlay for mobile */}
+          {sidebarOpen && (
+            <div 
+              className="fixed inset-0 bg-black bg-opacity-50 z-30"
+              onClick={toggleSidebar}
+            />
+          )}
+        </>
+      ) : (
+        // Desktop sidebar
+        <div className="hidden md:block md:w-64 flex-shrink-0">
+          <AppSidebar />
+        </div>
+      )}
       
-      <div className="flex-1 md:ml-64 relative"> {/* This accounts for the sidebar width on desktop */}
+      <div className="flex-1 flex flex-col">
         <header className="sticky top-0 bg-white border-b border-gray-200 p-4 z-20 flex justify-between items-center">
           <Button 
             variant="ghost" 
@@ -39,18 +61,10 @@ export default function AppLayout({ children }: AppLayoutProps) {
           </div>
         </header>
         
-        <main className="p-4 lg:p-6 overflow-x-hidden">
+        <main className="flex-1 p-4 lg:p-6 overflow-x-hidden">
           {children}
         </main>
       </div>
-      
-      {/* Overlay to close sidebar on mobile */}
-      {sidebarOpen && isMobile && (
-        <div 
-          className="fixed inset-0 bg-black bg-opacity-50 z-20"
-          onClick={toggleSidebar}
-        />
-      )}
     </div>
   );
 }
