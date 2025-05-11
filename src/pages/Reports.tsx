@@ -1,13 +1,17 @@
 
+import { useState } from "react";
 import { useUser } from "@/contexts/UserContext";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import ReportFilters from "@/components/reports/ReportFilters";
 import ReportTabs from "@/components/reports/ReportTabs";
+import { DateRange } from "react-day-picker";
 
 export default function Reports() {
   const { toast } = useToast();
   const { hasPermission } = useUser();
+  const [currentReportType, setCurrentReportType] = useState<string>("overview");
+  const [isGenerating, setIsGenerating] = useState<boolean>(false);
   
   if (!hasPermission('canViewReports')) {
     return (
@@ -24,6 +28,20 @@ export default function Reports() {
     );
   }
   
+  const handleGenerateReport = (reportType: string, dateRange: DateRange | undefined) => {
+    setIsGenerating(true);
+    setCurrentReportType(reportType);
+    
+    // Simulate report generation with a delay
+    setTimeout(() => {
+      setIsGenerating(false);
+      toast({
+        title: "Report Generated",
+        description: "The report data has been updated successfully."
+      });
+    }, 1000);
+  };
+  
   return (
     <>
       <div className="flex justify-between items-center mb-6">
@@ -33,8 +51,16 @@ export default function Reports() {
         </div>
       </div>
       
-      <ReportFilters onGenerateReport={() => {}} />
-      <ReportTabs />
+      <ReportFilters onGenerateReport={handleGenerateReport} />
+      
+      {isGenerating ? (
+        <div className="flex items-center justify-center p-12">
+          <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-primary"></div>
+          <span className="ml-3">Generating report...</span>
+        </div>
+      ) : (
+        <ReportTabs activeTab={currentReportType} />
+      )}
     </>
   );
 }

@@ -1,6 +1,5 @@
 
 import { useState, useEffect } from "react";
-import { useVoiceTrigger } from "@/hooks/useVoiceTrigger";
 import { mockDataService } from "@/data/mockData";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import AnalyticsDashboard from "@/components/dashboard/AnalyticsDashboard";
@@ -26,10 +25,6 @@ const Dashboard = () => {
     });
   }, []);
 
-  const { voiceProps: dashboardProps } = useVoiceTrigger({
-    what: "Welcome to your ATS dashboard. Here you can see a summary of your recruitment activities, including key metrics and analytics to help you optimize your hiring process."
-  });
-
   return (
     <>
       <div className="flex justify-between items-center mb-6">
@@ -39,7 +34,7 @@ const Dashboard = () => {
         </div>
       </div>
 
-      <div className="space-y-6" {...dashboardProps}>
+      <div className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <Card>
             <CardHeader className="pb-2">

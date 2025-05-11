@@ -1,6 +1,5 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { useVoiceTrigger } from "@/hooks/useVoiceTrigger";
 import { Bar, BarChart, Line, LineChart, Pie, PieChart, ResponsiveContainer } from "@/components/ui/chart";
 import { mockDataService } from "@/data/mockData";
 import { TimeToHireData, DiversityData } from "@/types";
@@ -32,12 +31,8 @@ const AnalyticsDashboard = () => {
     });
   }, []);
 
-  const { voiceProps: analyticsProps } = useVoiceTrigger({
-    what: "This analytics dashboard gives you an overview of your recruiting metrics. You can see time-to-hire trends, diversity statistics, and key hiring metrics to help optimize your recruitment process."
-  });
-
   return (
-    <div className="space-y-6" {...analyticsProps}>
+    <div className="space-y-6">
       {/* Hiring Stats */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card>
@@ -73,14 +68,16 @@ const AnalyticsDashboard = () => {
           <CardDescription>Average days from application to hire</CardDescription>
         </CardHeader>
         <CardContent>
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={timeToHireData}>
-              <Bar dataKey="Engineering" fill="rgba(59, 130, 246, 0.8)" />
-              <Bar dataKey="Product" fill="rgba(16, 185, 129, 0.8)" />
-              <Bar dataKey="Marketing" fill="rgba(250, 204, 21, 0.8)" />
-              <Bar dataKey="Sales" fill="rgba(239, 68, 68, 0.8)" />
-            </BarChart>
-          </ResponsiveContainer>
+          <div className="h-[300px] w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={timeToHireData}>
+                <Bar dataKey="Engineering" fill="rgba(59, 130, 246, 0.8)" />
+                <Bar dataKey="Product" fill="rgba(16, 185, 129, 0.8)" />
+                <Bar dataKey="Marketing" fill="rgba(250, 204, 21, 0.8)" />
+                <Bar dataKey="Sales" fill="rgba(239, 68, 68, 0.8)" />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
         </CardContent>
       </Card>
 
@@ -93,24 +90,27 @@ const AnalyticsDashboard = () => {
           </CardHeader>
           <CardContent>
             {diversityData && (
-              <ResponsiveContainer width="100%" height={300}>
-                <PieChart>
-                  <Pie 
-                    data={[
-                      { name: "Male", value: diversityData.gender.Male },
-                      { name: "Female", value: diversityData.gender.Female },
-                      { name: "Non-binary", value: diversityData.gender["Non-binary"] },
-                      { name: "Prefer not to say", value: diversityData.gender["Prefer not to say"] }
-                    ]}
-                    dataKey="value"
-                    nameKey="name"
-                    cx="50%"
-                    cy="50%"
-                    outerRadius={80}
-                    fill="#8884d8"
-                  />
-                </PieChart>
-              </ResponsiveContainer>
+              <div className="h-[300px] w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie 
+                      data={[
+                        { name: "Male", value: diversityData.gender.Male },
+                        { name: "Female", value: diversityData.gender.Female },
+                        { name: "Non-binary", value: diversityData.gender["Non-binary"] },
+                        { name: "Prefer not to say", value: diversityData.gender["Prefer not to say"] }
+                      ]}
+                      dataKey="value"
+                      nameKey="name"
+                      cx="50%"
+                      cy="50%"
+                      outerRadius={80}
+                      fill="#8884d8"
+                      label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                    />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
             )}
           </CardContent>
         </Card>
@@ -122,26 +122,29 @@ const AnalyticsDashboard = () => {
           </CardHeader>
           <CardContent>
             {diversityData && (
-              <ResponsiveContainer width="100%" height={300}>
-                <PieChart>
-                  <Pie 
-                    data={[
-                      { name: "LinkedIn", value: diversityData.hiringSource.LinkedIn },
-                      { name: "Job Boards", value: diversityData.hiringSource["Job Boards"] },
-                      { name: "Company Website", value: diversityData.hiringSource["Company Website"] },
-                      { name: "Referrals", value: diversityData.hiringSource.Referrals },
-                      { name: "University", value: diversityData.hiringSource["University Recruiting"] },
-                      { name: "Other", value: diversityData.hiringSource.Other }
-                    ]}
-                    dataKey="value"
-                    nameKey="name"
-                    cx="50%"
-                    cy="50%"
-                    outerRadius={80}
-                    fill="#82ca9d"
-                  />
-                </PieChart>
-              </ResponsiveContainer>
+              <div className="h-[300px] w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie 
+                      data={[
+                        { name: "LinkedIn", value: diversityData.hiringSource.LinkedIn },
+                        { name: "Job Boards", value: diversityData.hiringSource["Job Boards"] },
+                        { name: "Company Website", value: diversityData.hiringSource["Company Website"] },
+                        { name: "Referrals", value: diversityData.hiringSource.Referrals },
+                        { name: "University", value: diversityData.hiringSource["University Recruiting"] },
+                        { name: "Other", value: diversityData.hiringSource.Other }
+                      ]}
+                      dataKey="value"
+                      nameKey="name"
+                      cx="50%"
+                      cy="50%"
+                      outerRadius={80}
+                      fill="#82ca9d"
+                      label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                    />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
             )}
           </CardContent>
         </Card>

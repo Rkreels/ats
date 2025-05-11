@@ -8,10 +8,9 @@ import { Calendar } from "@/components/ui/calendar";
 import { format, subMonths } from "date-fns";
 import { DateRange } from "react-day-picker";
 import { useToast } from "@/hooks/use-toast";
-import VoiceTutorialListener from "@/components/voice/VoiceTutorialListener";
 
 interface ReportFiltersProps {
-  onGenerateReport: () => void;
+  onGenerateReport: (reportType: string, dateRange: DateRange | undefined) => void;
 }
 
 const ReportFilters = ({ onGenerateReport }: ReportFiltersProps) => {
@@ -23,17 +22,27 @@ const ReportFilters = ({ onGenerateReport }: ReportFiltersProps) => {
   const [reportType, setReportType] = useState<string>("overview");
   
   const handleGenerateReport = () => {
-    onGenerateReport();
+    if (!dateRange?.from || !dateRange?.to) {
+      toast({
+        title: "Missing date range",
+        description: "Please select a date range for the report",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    onGenerateReport(reportType, dateRange);
+    
     toast({
       title: "Report Generated",
-      description: `Data updated for ${format(dateRange?.from || new Date(), "MMM yyyy")} to ${format(dateRange?.to || new Date(), "MMM yyyy")}`,
+      description: `Data updated for ${format(dateRange.from, "MMM yyyy")} to ${format(dateRange.to, "MMM yyyy")}`,
     });
   };
   
   return (
-    <div className="flex flex-wrap gap-4 mb-6">
+    <div className="flex flex-col sm:flex-row flex-wrap gap-4 mb-6">
       <Select value={reportType} onValueChange={setReportType}>
-        <SelectTrigger className="w-[180px]">
+        <SelectTrigger className="w-full sm:w-[180px]">
           <SelectValue placeholder="Report Type" />
         </SelectTrigger>
         <SelectContent>
@@ -48,7 +57,7 @@ const ReportFilters = ({ onGenerateReport }: ReportFiltersProps) => {
         <PopoverTrigger asChild>
           <Button
             variant={"outline"}
-            className={"w-[280px] justify-start text-left font-normal"}
+            className={"w-full sm:w-[280px] justify-start text-left font-normal"}
           >
             <CalendarIcon className="mr-2 h-4 w-4" />
             {dateRange?.from ? (
@@ -77,7 +86,7 @@ const ReportFilters = ({ onGenerateReport }: ReportFiltersProps) => {
         </PopoverContent>
       </Popover>
       
-      <Button onClick={handleGenerateReport}>
+      <Button onClick={handleGenerateReport} className="w-full sm:w-auto">
         Generate Report
       </Button>
     </div>

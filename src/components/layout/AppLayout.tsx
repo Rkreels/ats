@@ -1,9 +1,9 @@
 
-import { ReactNode, useState } from "react";
+import { ReactNode, useState, useEffect } from "react";
 import AppSidebar from "./AppSidebar";
 import { NotificationsPopover } from "../notifications/NotificationsPopover";
 import { Button } from "@/components/ui/button";
-import { Menu } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 interface AppLayoutProps {
@@ -14,10 +14,22 @@ export default function AppLayout({ children }: AppLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const isMobile = useIsMobile();
   
+  // Close sidebar when window is resized to desktop view
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 768 && sidebarOpen) {
+        setSidebarOpen(false);
+      }
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, [sidebarOpen]);
+  
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
   
   return (
-    <div className="min-h-screen bg-gray-50 flex">
+    <div className="min-h-screen bg-gray-50 flex flex-col md:flex-row">
       {/* Mobile sidebar with overlay */}
       {isMobile ? (
         <>
@@ -26,7 +38,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
               sidebarOpen ? 'translate-x-0' : '-translate-x-full'
             }`}
           >
-            <AppSidebar />
+            <AppSidebar onClose={() => setSidebarOpen(false)} />
           </div>
           
           {/* Overlay for mobile */}
@@ -44,7 +56,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
         </div>
       )}
       
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col min-h-screen">
         <header className="sticky top-0 bg-white border-b border-gray-200 p-4 z-20 flex justify-between items-center">
           <Button 
             variant="ghost" 
@@ -52,7 +64,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
             className="md:hidden" 
             onClick={toggleSidebar}
           >
-            <Menu />
+            {sidebarOpen ? <X size={20} /> : <Menu size={20} />}
             <span className="sr-only">Toggle menu</span>
           </Button>
           
@@ -61,7 +73,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
           </div>
         </header>
         
-        <main className="flex-1 p-4 lg:p-6 overflow-x-hidden">
+        <main className="flex-1 p-3 md:p-6 overflow-x-hidden">
           {children}
         </main>
       </div>

@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -157,15 +156,6 @@ export default function Jobs() {
     salaryRange: ""
   });
 
-  // Voice tutorials for job management
-  const { voiceProps: jobListProps } = useVoiceTrigger({
-    what: "This is the job management page where you can view, create, edit, and delete job postings for your organization."
-  });
-
-  const { voiceProps: addJobButtonProps } = useVoiceTrigger({
-    what: "Click this button to create a new job posting. You'll need to fill in details like the job title, description, and requirements."
-  });
-
   const handleOpenNewJobDialog = () => {
     // Reset form state when opening the dialog
     setNewJob({
@@ -250,7 +240,7 @@ export default function Jobs() {
 
   return (
     <div>
-      <Card {...jobListProps}>
+      <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <div>
             <CardTitle>Job Postings</CardTitle>
@@ -258,7 +248,7 @@ export default function Jobs() {
           </div>
           
           {hasPermission('canCreateJob') && (
-            <Button {...addJobButtonProps} onClick={handleOpenNewJobDialog}>
+            <Button onClick={handleOpenNewJobDialog}>
               Add New Job
             </Button>
           )}
@@ -317,9 +307,6 @@ export default function Jobs() {
                         variant="ghost" 
                         size="sm"
                         onClick={() => handleOpenEditDialog(job, true)}
-                        {...useVoiceTrigger({ 
-                          what: "View the full details of this job posting, including the complete description and requirements." 
-                        }).voiceProps}
                       >
                         View
                       </Button>
@@ -329,9 +316,6 @@ export default function Jobs() {
                           variant="outline" 
                           size="sm"
                           onClick={() => handleOpenEditDialog(job, false)}
-                          {...useVoiceTrigger({ 
-                            what: "Edit this job posting to update its details, requirements, or status." 
-                          }).voiceProps}
                         >
                           Edit
                         </Button>
@@ -344,9 +328,6 @@ export default function Jobs() {
                               variant="ghost" 
                               size="sm"
                               className="text-red-500 hover:text-red-700"
-                              {...useVoiceTrigger({ 
-                                what: "Delete this job posting. This will permanently remove it from your system." 
-                              }).voiceProps}
                             >
                               Delete
                             </Button>
@@ -376,141 +357,143 @@ export default function Jobs() {
 
       {/* Create Job Dialog */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-auto">
           <DialogHeader>
             <DialogTitle>Create New Job Posting</DialogTitle>
             <DialogDescription>
               Fill in the details below to create a new job posting for your organization.
             </DialogDescription>
           </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-2 gap-4">
+          <ScrollArea className="max-h-[60vh]">
+            <div className="grid gap-4 py-4 px-1">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="title">Job Title*</Label>
+                  <Input 
+                    id="title" 
+                    placeholder="e.g. Senior Frontend Developer"
+                    value={newJob.title}
+                    onChange={(e) => setNewJob({...newJob, title: e.target.value})}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="department">Department*</Label>
+                  <Input 
+                    id="department" 
+                    placeholder="e.g. Engineering"
+                    value={newJob.department}
+                    onChange={(e) => setNewJob({...newJob, department: e.target.value})}
+                  />
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="location">Location*</Label>
+                  <Input 
+                    id="location" 
+                    placeholder="e.g. Remote, New York, NY"
+                    value={newJob.location}
+                    onChange={(e) => setNewJob({...newJob, location: e.target.value})}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="salary-range">Salary Range</Label>
+                  <Input 
+                    id="salary-range" 
+                    placeholder="e.g. $80,000 - $100,000"
+                    value={newJob.salaryRange}
+                    onChange={(e) => setNewJob({...newJob, salaryRange: e.target.value})}
+                  />
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="employment-type">Employment Type*</Label>
+                  <Select 
+                    value={newJob.employmentType} 
+                    onValueChange={(value: JobEmploymentType) => setNewJob({...newJob, employmentType: value})}
+                  >
+                    <SelectTrigger id="employment-type">
+                      <SelectValue placeholder="Select type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Full-time">Full-time</SelectItem>
+                      <SelectItem value="Part-time">Part-time</SelectItem>
+                      <SelectItem value="Contract">Contract</SelectItem>
+                      <SelectItem value="Temporary">Temporary</SelectItem>
+                      <SelectItem value="Internship">Internship</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="status">Status*</Label>
+                  <Select 
+                    value={newJob.status} 
+                    onValueChange={(value: JobStatus) => setNewJob({...newJob, status: value})}
+                  >
+                    <SelectTrigger id="status">
+                      <SelectValue placeholder="Select status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Draft">Draft</SelectItem>
+                      <SelectItem value="Pending Approval">Pending Approval</SelectItem>
+                      <SelectItem value="Published">Published</SelectItem>
+                      <SelectItem value="Closed">Closed</SelectItem>
+                      <SelectItem value="On Hold">On Hold</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="posting-date">Posting Date*</Label>
+                  <Input 
+                    id="posting-date" 
+                    type="date"
+                    value={newJob.postedDate}
+                    onChange={(e) => setNewJob({...newJob, postedDate: e.target.value})}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="closing-date">Closing Date*</Label>
+                  <Input 
+                    id="closing-date" 
+                    type="date"
+                    value={newJob.closingDate}
+                    onChange={(e) => setNewJob({...newJob, closingDate: e.target.value})}
+                  />
+                </div>
+              </div>
+              
               <div className="space-y-2">
-                <Label htmlFor="title">Job Title*</Label>
-                <Input 
-                  id="title" 
-                  placeholder="e.g. Senior Frontend Developer"
-                  value={newJob.title}
-                  onChange={(e) => setNewJob({...newJob, title: e.target.value})}
+                <Label htmlFor="job-description">Job Description*</Label>
+                <Textarea 
+                  id="job-description" 
+                  placeholder="Enter a detailed description of the job..."
+                  className="min-h-[100px]"
+                  value={newJob.description}
+                  onChange={(e) => setNewJob({...newJob, description: e.target.value})}
                 />
               </div>
+              
               <div className="space-y-2">
-                <Label htmlFor="department">Department*</Label>
-                <Input 
-                  id="department" 
-                  placeholder="e.g. Engineering"
-                  value={newJob.department}
-                  onChange={(e) => setNewJob({...newJob, department: e.target.value})}
+                <Label htmlFor="job-requirements">Requirements*</Label>
+                <Textarea 
+                  id="job-requirements" 
+                  placeholder="List the skills, experience, and qualifications required..."
+                  className="min-h-[100px]"
+                  value={newJob.requirements}
+                  onChange={(e) => setNewJob({...newJob, requirements: e.target.value})}
                 />
               </div>
             </div>
-            
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="location">Location*</Label>
-                <Input 
-                  id="location" 
-                  placeholder="e.g. Remote, New York, NY"
-                  value={newJob.location}
-                  onChange={(e) => setNewJob({...newJob, location: e.target.value})}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="salary-range">Salary Range</Label>
-                <Input 
-                  id="salary-range" 
-                  placeholder="e.g. $80,000 - $100,000"
-                  value={newJob.salaryRange}
-                  onChange={(e) => setNewJob({...newJob, salaryRange: e.target.value})}
-                />
-              </div>
-            </div>
-            
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="employment-type">Employment Type*</Label>
-                <Select 
-                  value={newJob.employmentType} 
-                  onValueChange={(value: JobEmploymentType) => setNewJob({...newJob, employmentType: value})}
-                >
-                  <SelectTrigger id="employment-type">
-                    <SelectValue placeholder="Select type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Full-time">Full-time</SelectItem>
-                    <SelectItem value="Part-time">Part-time</SelectItem>
-                    <SelectItem value="Contract">Contract</SelectItem>
-                    <SelectItem value="Temporary">Temporary</SelectItem>
-                    <SelectItem value="Internship">Internship</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="status">Status*</Label>
-                <Select 
-                  value={newJob.status} 
-                  onValueChange={(value: JobStatus) => setNewJob({...newJob, status: value})}
-                >
-                  <SelectTrigger id="status">
-                    <SelectValue placeholder="Select status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Draft">Draft</SelectItem>
-                    <SelectItem value="Pending Approval">Pending Approval</SelectItem>
-                    <SelectItem value="Published">Published</SelectItem>
-                    <SelectItem value="Closed">Closed</SelectItem>
-                    <SelectItem value="On Hold">On Hold</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-            
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="posting-date">Posting Date*</Label>
-                <Input 
-                  id="posting-date" 
-                  type="date"
-                  value={newJob.postedDate}
-                  onChange={(e) => setNewJob({...newJob, postedDate: e.target.value})}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="closing-date">Closing Date*</Label>
-                <Input 
-                  id="closing-date" 
-                  type="date"
-                  value={newJob.closingDate}
-                  onChange={(e) => setNewJob({...newJob, closingDate: e.target.value})}
-                />
-              </div>
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="job-description">Job Description*</Label>
-              <Textarea 
-                id="job-description" 
-                placeholder="Enter a detailed description of the job..."
-                className="min-h-[100px]"
-                value={newJob.description}
-                onChange={(e) => setNewJob({...newJob, description: e.target.value})}
-              />
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="job-requirements">Requirements*</Label>
-              <Textarea 
-                id="job-requirements" 
-                placeholder="List the skills, experience, and qualifications required..."
-                className="min-h-[100px]"
-                value={newJob.requirements}
-                onChange={(e) => setNewJob({...newJob, requirements: e.target.value})}
-              />
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsDialogOpen(false)}>Cancel</Button>
-            <Button onClick={handleCreateJob}>Create Job</Button>
+          </ScrollArea>
+          <DialogFooter className="flex flex-col sm:flex-row gap-2">
+            <Button variant="outline" onClick={() => setIsDialogOpen(false)} className="w-full sm:w-auto">Cancel</Button>
+            <Button onClick={handleCreateJob} className="w-full sm:w-auto">Create Job</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -518,7 +501,7 @@ export default function Jobs() {
       {/* Edit/View Job Dialog */}
       {selectedJob && (
         <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-          <DialogContent className="max-w-2xl">
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-auto">
             <DialogHeader>
               <DialogTitle>{isViewMode ? "View Job Posting" : "Edit Job Posting"}</DialogTitle>
               <DialogDescription>
@@ -527,174 +510,176 @@ export default function Jobs() {
                   : "Update the details of this job posting."}
               </DialogDescription>
             </DialogHeader>
-            <div className="grid gap-4 py-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="edit-title">Job Title*</Label>
-                  <Input 
-                    id="edit-title" 
-                    value={selectedJob.title}
-                    onChange={(e) => setSelectedJob({...selectedJob, title: e.target.value})}
-                    readOnly={isViewMode}
-                    className={isViewMode ? "bg-gray-100" : ""}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="edit-department">Department*</Label>
-                  <Input 
-                    id="edit-department" 
-                    value={selectedJob.department}
-                    onChange={(e) => setSelectedJob({...selectedJob, department: e.target.value})}
-                    readOnly={isViewMode}
-                    className={isViewMode ? "bg-gray-100" : ""}
-                  />
-                </div>
-              </div>
-              
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="edit-location">Location*</Label>
-                  <Input 
-                    id="edit-location" 
-                    value={selectedJob.location}
-                    onChange={(e) => setSelectedJob({...selectedJob, location: e.target.value})}
-                    readOnly={isViewMode}
-                    className={isViewMode ? "bg-gray-100" : ""}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="edit-salary-range">Salary Range</Label>
-                  <Input 
-                    id="edit-salary-range" 
-                    value={selectedJob.salaryRange}
-                    onChange={(e) => setSelectedJob({...selectedJob, salaryRange: e.target.value})}
-                    readOnly={isViewMode}
-                    className={isViewMode ? "bg-gray-100" : ""}
-                  />
-                </div>
-              </div>
-              
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="edit-employment-type">Employment Type*</Label>
-                  {isViewMode ? (
+            <ScrollArea className="max-h-[60vh]">
+              <div className="grid gap-4 py-4 px-1">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="edit-title">Job Title*</Label>
                     <Input 
-                      id="edit-employment-type" 
-                      value={selectedJob.employmentType}
-                      readOnly
-                      className="bg-gray-100"
+                      id="edit-title" 
+                      value={selectedJob.title}
+                      onChange={(e) => setSelectedJob({...selectedJob, title: e.target.value})}
+                      readOnly={isViewMode}
+                      className={isViewMode ? "bg-gray-100" : ""}
                     />
-                  ) : (
-                    <Select 
-                      value={selectedJob.employmentType} 
-                      onValueChange={(value: JobEmploymentType) => setSelectedJob({...selectedJob, employmentType: value})}
-                    >
-                      <SelectTrigger id="edit-employment-type">
-                        <SelectValue placeholder="Select type" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Full-time">Full-time</SelectItem>
-                        <SelectItem value="Part-time">Part-time</SelectItem>
-                        <SelectItem value="Contract">Contract</SelectItem>
-                        <SelectItem value="Temporary">Temporary</SelectItem>
-                        <SelectItem value="Internship">Internship</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  )}
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="edit-status">Status*</Label>
-                  {isViewMode ? (
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="edit-department">Department*</Label>
                     <Input 
-                      id="edit-status" 
-                      value={selectedJob.status}
-                      readOnly
-                      className="bg-gray-100"
+                      id="edit-department" 
+                      value={selectedJob.department}
+                      onChange={(e) => setSelectedJob({...selectedJob, department: e.target.value})}
+                      readOnly={isViewMode}
+                      className={isViewMode ? "bg-gray-100" : ""}
                     />
-                  ) : (
-                    <Select 
-                      value={selectedJob.status} 
-                      onValueChange={(value: JobStatus) => setSelectedJob({...selectedJob, status: value})}
-                    >
-                      <SelectTrigger id="edit-status">
-                        <SelectValue placeholder="Select status" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Draft">Draft</SelectItem>
-                        <SelectItem value="Pending Approval">Pending Approval</SelectItem>
-                        <SelectItem value="Published">Published</SelectItem>
-                        <SelectItem value="Closed">Closed</SelectItem>
-                        <SelectItem value="On Hold">On Hold</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  )}
+                  </div>
                 </div>
-              </div>
-              
-              <div className="grid grid-cols-2 gap-4">
+                
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="edit-location">Location*</Label>
+                    <Input 
+                      id="edit-location" 
+                      value={selectedJob.location}
+                      onChange={(e) => setSelectedJob({...selectedJob, location: e.target.value})}
+                      readOnly={isViewMode}
+                      className={isViewMode ? "bg-gray-100" : ""}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="edit-salary-range">Salary Range</Label>
+                    <Input 
+                      id="edit-salary-range" 
+                      value={selectedJob.salaryRange}
+                      onChange={(e) => setSelectedJob({...selectedJob, salaryRange: e.target.value})}
+                      readOnly={isViewMode}
+                      className={isViewMode ? "bg-gray-100" : ""}
+                    />
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="edit-employment-type">Employment Type*</Label>
+                    {isViewMode ? (
+                      <Input 
+                        id="edit-employment-type" 
+                        value={selectedJob.employmentType}
+                        readOnly
+                        className="bg-gray-100"
+                      />
+                    ) : (
+                      <Select 
+                        value={selectedJob.employmentType} 
+                        onValueChange={(value: JobEmploymentType) => setSelectedJob({...selectedJob, employmentType: value})}
+                      >
+                        <SelectTrigger id="edit-employment-type">
+                          <SelectValue placeholder="Select type" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Full-time">Full-time</SelectItem>
+                          <SelectItem value="Part-time">Part-time</SelectItem>
+                          <SelectItem value="Contract">Contract</SelectItem>
+                          <SelectItem value="Temporary">Temporary</SelectItem>
+                          <SelectItem value="Internship">Internship</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    )}
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="edit-status">Status*</Label>
+                    {isViewMode ? (
+                      <Input 
+                        id="edit-status" 
+                        value={selectedJob.status}
+                        readOnly
+                        className="bg-gray-100"
+                      />
+                    ) : (
+                      <Select 
+                        value={selectedJob.status} 
+                        onValueChange={(value: JobStatus) => setSelectedJob({...selectedJob, status: value})}
+                      >
+                        <SelectTrigger id="edit-status">
+                          <SelectValue placeholder="Select status" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Draft">Draft</SelectItem>
+                          <SelectItem value="Pending Approval">Pending Approval</SelectItem>
+                          <SelectItem value="Published">Published</SelectItem>
+                          <SelectItem value="Closed">Closed</SelectItem>
+                          <SelectItem value="On Hold">On Hold</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    )}
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="edit-posting-date">Posting Date*</Label>
+                    <Input 
+                      id="edit-posting-date" 
+                      type="date"
+                      value={selectedJob.postedDate}
+                      onChange={(e) => setSelectedJob({...selectedJob, postedDate: e.target.value})}
+                      readOnly={isViewMode}
+                      className={isViewMode ? "bg-gray-100" : ""}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="edit-closing-date">Closing Date*</Label>
+                    <Input 
+                      id="edit-closing-date" 
+                      type="date"
+                      value={selectedJob.closingDate}
+                      onChange={(e) => setSelectedJob({...selectedJob, closingDate: e.target.value})}
+                      readOnly={isViewMode}
+                      className={isViewMode ? "bg-gray-100" : ""}
+                    />
+                  </div>
+                </div>
+                
                 <div className="space-y-2">
-                  <Label htmlFor="edit-posting-date">Posting Date*</Label>
-                  <Input 
-                    id="edit-posting-date" 
-                    type="date"
-                    value={selectedJob.postedDate}
-                    onChange={(e) => setSelectedJob({...selectedJob, postedDate: e.target.value})}
+                  <Label htmlFor="edit-job-description">Job Description*</Label>
+                  <Textarea 
+                    id="edit-job-description" 
+                    className="min-h-[100px]"
+                    value={selectedJob.description}
+                    onChange={(e) => setSelectedJob({...selectedJob, description: e.target.value})}
                     readOnly={isViewMode}
-                    className={isViewMode ? "bg-gray-100" : ""}
+                    disabled={isViewMode}
                   />
                 </div>
+                
                 <div className="space-y-2">
-                  <Label htmlFor="edit-closing-date">Closing Date*</Label>
-                  <Input 
-                    id="edit-closing-date" 
-                    type="date"
-                    value={selectedJob.closingDate}
-                    onChange={(e) => setSelectedJob({...selectedJob, closingDate: e.target.value})}
+                  <Label htmlFor="edit-job-requirements">Requirements*</Label>
+                  <Textarea 
+                    id="edit-job-requirements" 
+                    className="min-h-[100px]"
+                    value={selectedJob.requirements}
+                    onChange={(e) => setSelectedJob({...selectedJob, requirements: e.target.value})}
                     readOnly={isViewMode}
-                    className={isViewMode ? "bg-gray-100" : ""}
+                    disabled={isViewMode}
                   />
                 </div>
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="edit-job-description">Job Description*</Label>
-                <Textarea 
-                  id="edit-job-description" 
-                  className="min-h-[100px]"
-                  value={selectedJob.description}
-                  onChange={(e) => setSelectedJob({...selectedJob, description: e.target.value})}
-                  readOnly={isViewMode}
-                  disabled={isViewMode}
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="edit-job-requirements">Requirements*</Label>
-                <Textarea 
-                  id="edit-job-requirements" 
-                  className="min-h-[100px]"
-                  value={selectedJob.requirements}
-                  onChange={(e) => setSelectedJob({...selectedJob, requirements: e.target.value})}
-                  readOnly={isViewMode}
-                  disabled={isViewMode}
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label>Applicants</Label>
-                <div className="bg-gray-50 p-3 rounded-md">
-                  <span className="text-lg font-semibold">{selectedJob.applicants}</span>
-                  <span className="text-gray-500 ml-2">candidates have applied to this position</span>
+                
+                <div className="space-y-2">
+                  <Label>Applicants</Label>
+                  <div className="bg-gray-50 p-3 rounded-md">
+                    <span className="text-lg font-semibold">{selectedJob.applicants}</span>
+                    <span className="text-gray-500 ml-2">candidates have applied to this position</span>
+                  </div>
                 </div>
               </div>
-            </div>
-            <DialogFooter>
+            </ScrollArea>
+            <DialogFooter className="flex flex-col sm:flex-row gap-2">
               {isViewMode ? (
-                <Button onClick={() => setIsEditDialogOpen(false)}>Close</Button>
+                <Button onClick={() => setIsEditDialogOpen(false)} className="w-full sm:w-auto">Close</Button>
               ) : (
                 <>
-                  <Button variant="outline" onClick={() => setIsEditDialogOpen(false)}>Cancel</Button>
-                  <Button onClick={handleUpdateJob}>Save Changes</Button>
+                  <Button variant="outline" onClick={() => setIsEditDialogOpen(false)} className="w-full sm:w-auto">Cancel</Button>
+                  <Button onClick={handleUpdateJob} className="w-full sm:w-auto">Save Changes</Button>
                 </>
               )}
             </DialogFooter>
