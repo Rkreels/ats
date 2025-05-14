@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -16,6 +15,7 @@ import Onboarding from "./pages/Onboarding";
 import NotFound from "./pages/NotFound";
 import { UserProvider } from "./contexts/UserContext";
 import { VoiceTutorialProvider } from "./contexts/VoiceTutorialContext";
+import { VoiceTutorialPopup } from "@/components/voice/VoiceTutorialPopup"; // Inject the popup
 
 const queryClient = new QueryClient();
 
@@ -24,6 +24,8 @@ const App = () => (
     <UserProvider>
       <VoiceTutorialProvider>
         <TooltipProvider>
+          {/* Globally inject the voice popup so it's always available */}
+          <VoiceTutorialPopup />
           <Toaster />
           <Sonner />
           <BrowserRouter>
