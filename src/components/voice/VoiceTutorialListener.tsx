@@ -1,81 +1,67 @@
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { useVoiceTutorial } from "@/contexts/VoiceTutorialContext";
 
+/**
+ * Advanced VoiceTrainer: Instantly responds to mouse/focus/keyboard/click actions.
+ *
+ * Usage: Wrap any actionable or important component in <VoiceTutorialListener>
+ */
 interface VoiceTutorialListenerProps {
   selector: string;
   description: string;
-  children: React.ReactNode;
   help?: string;
-  actionStep?: string; // Added to guide users on next steps
+  actionStep?: string;
+  children: React.ReactNode;
 }
 
-/**
- * Component that adds voice tutorial support to any element
- */
 export default function VoiceTutorialListener({
   selector,
   description,
-  children,
   help,
   actionStep,
+  children,
 }: VoiceTutorialListenerProps) {
   const { setTutorial, clearTutorial } = useVoiceTutorial();
-  const elementRef = useRef<HTMLDivElement>(null);
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
-  
-  // Clear any pending timeouts on unmount
-  useEffect(() => {
-    return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
-    };
-  }, []);
-  
-  const startTutorial = () => {
-    // Clear any existing timeout to prevent race conditions
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-    }
-    
-    // Clear any existing audio first
+  const ref = useRef<HTMLDivElement>(null);
+
+  // Handlers: Mouse enter, focus, and click.
+  const showTutorial = () => {
+    // Always immediately clear previous voice
     clearTutorial();
-    
-    // Construct a more comprehensive tutorial message with action step if provided
     let tutorialText = description;
-    if (actionStep) {
-      tutorialText = `${description} ${actionStep}`;
-    }
-    
-    // Set the tutorial immediately
+    if (actionStep) tutorialText = `${description} ${actionStep}`;
     setTutorial(tutorialText, help ? "decision" : "what");
   };
-  
-  const stopTutorial = () => {
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-    }
-    clearTutorial();
-  };
-  
+  const hideTutorial = () => clearTutorial();
+
   useEffect(() => {
+    // Attach listeners for mousemoving over children for deep coverage
+    const node = ref.current;
+    if (!node) return;
+    node.addEventListener("mouseenter", showTutorial);
+    node.addEventListener("focus", showTutorial, true);
+    node.addEventListener("mousedown", showTutorial);
+    node.addEventListener("mouseleave", hideTutorial);
+    node.addEventListener("blur", hideTutorial, true);
+    node.addEventListener("mouseup", showTutorial);
+
+    // For MSAA: Add touch
+    node.addEventListener("touchstart", showTutorial);
+
     return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
+      node.removeEventListener("mouseenter", showTutorial);
+      node.removeEventListener("focus", showTutorial, true);
+      node.removeEventListener("mousedown", showTutorial);
+      node.removeEventListener("mouseleave", hideTutorial);
+      node.removeEventListener("blur", hideTutorial, true);
+      node.removeEventListener("mouseup", showTutorial);
+      node.removeEventListener("touchstart", showTutorial);
     };
   }, []);
 
   return (
-    <div
-      ref={elementRef}
-      onMouseEnter={startTutorial}
-      onMouseLeave={stopTutorial}
-      onFocus={startTutorial}
-      onBlur={stopTutorial}
-      data-voice-selector={selector}
-    >
+    <div ref={ref} data-voice-selector={selector} tabIndex={0}>
       {children}
     </div>
   );

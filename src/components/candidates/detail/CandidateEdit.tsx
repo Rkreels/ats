@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Label } from "@/components/ui/label";
@@ -7,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Candidate } from "@/types";
 import { mockDataService } from "@/data/mockData";
 import { useToast } from "@/hooks/use-toast";
+import { useVoiceTrigger } from "@/hooks/useVoiceTrigger";
 
 interface CandidateEditProps {
   candidate: Candidate;
@@ -49,9 +49,14 @@ export function CandidateEdit({ candidate, setCandidate }: CandidateEditProps) {
       description: "Candidate information has been updated."
     });
   };
+
+  const { voiceProps } = useVoiceTrigger({
+    what: "Edit candidate details.",
+    actionStep: "Update the information and click Update Candidate to save."
+  });
   
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-4" {...voiceProps}>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <Label htmlFor="name">Name</Label>
