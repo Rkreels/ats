@@ -1,4 +1,3 @@
-
 import { ReactNode, useState, useEffect } from "react";
 import AppSidebar from "./AppSidebar";
 import { NotificationsPopover } from "../notifications/NotificationsPopover";
@@ -38,7 +37,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
               sidebarOpen ? 'translate-x-0' : '-translate-x-full'
             }`}
           >
-            <AppSidebar onClose={() => setSidebarOpen(false)} />
+            <AppSidebar />
           </div>
           
           {/* Overlay for mobile */}
