@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Candidate } from "@/types";
@@ -15,6 +14,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/hooks/use-toast";
+import VoiceTutorialListener from "@/components/voice/VoiceTutorialListener";
 
 interface CandidateTableProps {
   candidates: Candidate[];
@@ -43,21 +43,11 @@ const CandidateTable = ({ candidates, onDelete }: CandidateTableProps) => {
         <table className="w-full text-sm text-left text-gray-500">
           <thead className="text-xs text-gray-700 uppercase bg-gray-50 sticky top-0">
             <tr>
-              <th scope="col" className="px-6 py-3">
-                Name
-              </th>
-              <th scope="col" className="px-6 py-3">
-                Role
-              </th>
-              <th scope="col" className="px-6 py-3">
-                Status
-              </th>
-              <th scope="col" className="px-6 py-3">
-                Applied Date
-              </th>
-              <th scope="col" className="px-6 py-3">
-                Actions
-              </th>
+              <th scope="col" className="px-6 py-3">Name</th>
+              <th scope="col" className="px-6 py-3">Role</th>
+              <th scope="col" className="px-6 py-3">Status</th>
+              <th scope="col" className="px-6 py-3">Applied Date</th>
+              <th scope="col" className="px-6 py-3">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -93,27 +83,67 @@ const CandidateTable = ({ candidates, onDelete }: CandidateTableProps) => {
                   <td className="px-6 py-4" onClick={(e) => e.stopPropagation()}>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="h-8 w-8 p-0">
-                          <span className="sr-only">Open menu</span>
-                          <MoreVertical className="h-4 w-4" />
-                        </Button>
+                        <VoiceTutorialListener
+                          selector={`actions-menu-${candidate.id}`}
+                          description={`Actions for candidate ${candidate.name}`}
+                          actionStep={`Open menu for viewing, editing, or deleting ${candidate.name}`}
+                        >
+                          <Button variant="ghost" className="h-8 w-8 p-0">
+                            <span className="sr-only">Open menu</span>
+                            <MoreVertical className="h-4 w-4" />
+                          </Button>
+                        </VoiceTutorialListener>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        <DropdownMenuItem onClick={() => viewCandidateDetails(candidate.id)}>
-                          <Eye className="mr-2 h-4 w-4" /> View Details
+                        <DropdownMenuItem
+                          asChild
+                        >
+                          <VoiceTutorialListener
+                            selector={`view-details-${candidate.id}`}
+                            description={`View details for candidate ${candidate.name}`}
+                            actionStep="Click to see the candidate profile"
+                          >
+                            <div onClick={() => viewCandidateDetails(candidate.id)}>
+                              <Eye className="mr-2 h-4 w-4" /> View Details
+                            </div>
+                          </VoiceTutorialListener>
                         </DropdownMenuItem>
                         <DropdownMenuItem>
-                          <Edit className="mr-2 h-4 w-4" /> Edit
+                          <VoiceTutorialListener
+                            selector={`edit-candidate-${candidate.id}`}
+                            description={`Edit candidate ${candidate.name}`}
+                            actionStep="Click to edit this candidate's info"
+                          >
+                            <div>
+                              <Edit className="mr-2 h-4 w-4" /> Edit
+                            </div>
+                          </VoiceTutorialListener>
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleDelete(candidate.id, candidate.name)}>
-                          <Trash2 className="mr-2 h-4 w-4" /> Delete
+                        <DropdownMenuItem
+                          onClick={() => handleDelete(candidate.id, candidate.name)}
+                        >
+                          <VoiceTutorialListener
+                            selector={`delete-candidate-${candidate.id}`}
+                            description={`Delete candidate ${candidate.name}`}
+                            actionStep="Click to permanently remove"
+                          >
+                            <div>
+                              <Trash2 className="mr-2 h-4 w-4" /> Delete
+                            </div>
+                          </VoiceTutorialListener>
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem>
-                          <a href={candidate.resumeUrl} target="_blank" rel="noopener noreferrer" className="flex items-center">
-                            View Resume
-                          </a>
+                          <VoiceTutorialListener
+                            selector={`view-resume-${candidate.id}`}
+                            description={`View resume for candidate ${candidate.name}`}
+                            actionStep="Click to preview the resume"
+                          >
+                            <a href={candidate.resumeUrl} target="_blank" rel="noopener noreferrer" className="flex items-center">
+                              View Resume
+                            </a>
+                          </VoiceTutorialListener>
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>

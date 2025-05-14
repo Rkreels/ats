@@ -1,11 +1,12 @@
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useCallback } from "react";
 import { useVoiceTutorial } from "@/contexts/VoiceTutorialContext";
 
 /**
- * Advanced VoiceTrainer: Instantly responds to mouse/focus/keyboard/click actions.
+ * Ultra-Responsive VoiceTrainer: Instantly responds to mouse/focus/keyboard/click actions.
+ * Applies to any actionable or important interactive element for rapid voice switches.
  *
- * Usage: Wrap any actionable or important component in <VoiceTutorialListener>
+ * Usage: Wrap any actionable/important element in &lt;VoiceTutorialListener&gt;
  */
 interface VoiceTutorialListenerProps {
   selector: string;
@@ -24,44 +25,77 @@ export default function VoiceTutorialListener({
 }: VoiceTutorialListenerProps) {
   const { setTutorial, clearTutorial } = useVoiceTutorial();
   const ref = useRef<HTMLDivElement>(null);
+  // Maintain last-guided element to avoid unnecessary repeats
+  const lastGuidedRef = useRef<string>("");
 
-  // Handlers: Mouse enter, focus, and click.
-  const showTutorial = () => {
-    // Always immediately clear previous voice
+  const guideNow = useCallback(() => {
+    // Do not re-announce the same element rapidly if it's already active
+    if (lastGuidedRef.current === selector) return;
     clearTutorial();
     let tutorialText = description;
     if (actionStep) tutorialText = `${description} ${actionStep}`;
     setTutorial(tutorialText, help ? "decision" : "what");
-  };
-  const hideTutorial = () => clearTutorial();
+    lastGuidedRef.current = selector;
+  }, [clearTutorial, setTutorial, description, help, actionStep, selector]);
+
+  const leaveNow = useCallback(() => {
+    clearTutorial();
+    lastGuidedRef.current = "";
+  }, [clearTutorial]);
 
   useEffect(() => {
-    // Attach listeners for mousemoving over children for deep coverage
     const node = ref.current;
     if (!node) return;
-    node.addEventListener("mouseenter", showTutorial);
-    node.addEventListener("focus", showTutorial, true);
-    node.addEventListener("mousedown", showTutorial);
-    node.addEventListener("mouseleave", hideTutorial);
-    node.addEventListener("blur", hideTutorial, true);
-    node.addEventListener("mouseup", showTutorial);
+    // Listen to mousemove for subcomponent granularity (child actions)
+    let hasMouse = false;
 
-    // For MSAA: Add touch
-    node.addEventListener("touchstart", showTutorial);
+    const mouseMoveListener = (e: MouseEvent) => {
+      // Only guide if mouse is over this node and not deepest child (buttons in a row)
+      if (node.contains(e.target as Node)) {
+        if (!hasMouse) {
+          guideNow();
+          hasMouse = true;
+        }
+      } else {
+        if (hasMouse) {
+          leaveNow();
+          hasMouse = false;
+        }
+      }
+    };
+    // Attach listeners: high-frequency mouseover, focus
+    node.addEventListener("mouseenter", guideNow, { passive: true });
+    node.addEventListener("mousemove", guideNow, { passive: true });
+    node.addEventListener("focus", guideNow, true);
+    node.addEventListener("mousedown", guideNow);
+    node.addEventListener("mouseleave", leaveNow, { passive: true });
+    node.addEventListener("blur", leaveNow, true);
+    node.addEventListener("mouseup", guideNow);
+    node.addEventListener("touchstart", guideNow);
+
+    // Global mousemove to catch leave anywhere
+    document.addEventListener("mousemove", mouseMoveListener);
 
     return () => {
-      node.removeEventListener("mouseenter", showTutorial);
-      node.removeEventListener("focus", showTutorial, true);
-      node.removeEventListener("mousedown", showTutorial);
-      node.removeEventListener("mouseleave", hideTutorial);
-      node.removeEventListener("blur", hideTutorial, true);
-      node.removeEventListener("mouseup", showTutorial);
-      node.removeEventListener("touchstart", showTutorial);
+      node.removeEventListener("mouseenter", guideNow);
+      node.removeEventListener("mousemove", guideNow);
+      node.removeEventListener("focus", guideNow, true);
+      node.removeEventListener("mousedown", guideNow);
+      node.removeEventListener("mouseleave", leaveNow);
+      node.removeEventListener("blur", leaveNow, true);
+      node.removeEventListener("mouseup", guideNow);
+      node.removeEventListener("touchstart", guideNow);
+      document.removeEventListener("mousemove", mouseMoveListener);
     };
-  }, []);
+  }, [guideNow, leaveNow]);
 
   return (
-    <div ref={ref} data-voice-selector={selector} tabIndex={0}>
+    <div 
+      ref={ref}
+      data-voice-selector={selector}
+      tabIndex={0}
+      style={{ outline: "none" }}
+    >
       {children}
     </div>
   );
