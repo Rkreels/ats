@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -11,9 +10,11 @@ import { useVoiceTrigger } from "@/hooks/useVoiceTrigger";
 interface CandidateEditProps {
   candidate: Candidate;
   setCandidate: React.Dispatch<React.SetStateAction<Candidate | null>>;
+  onClose?: () => void; // Added optional onClose for modals
 }
 
-export function CandidateEdit({ candidate, setCandidate }: CandidateEditProps) {
+
+export function CandidateEdit({ candidate, setCandidate, onClose }: CandidateEditProps) {
   const [name, setName] = useState(candidate.name);
   const [role, setRole] = useState(candidate.role);
   const [email, setEmail] = useState(candidate.email);
@@ -23,7 +24,7 @@ export function CandidateEdit({ candidate, setCandidate }: CandidateEditProps) {
   const [skills, setSkills] = useState(candidate.skills.join(", "));
   const [education, setEducation] = useState(candidate.education);
   const [linkedinUrl, setLinkedinUrl] = useState(candidate.linkedinUrl ?? "");
-  const [status, setStatus] = useState(candidate.status);
+  const [status, setStatus] = useState<Candidate['status']>(candidate.status); // Ensure correct type for status state
   const [appliedDate, setAppliedDate] = useState(candidate.appliedDate);
 
   const { toast } = useToast();
@@ -31,7 +32,6 @@ export function CandidateEdit({ candidate, setCandidate }: CandidateEditProps) {
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
 
-    // In a real app, this would be an API call
     const updatedCandidate: Candidate = {
       ...candidate,
       name,
@@ -39,10 +39,10 @@ export function CandidateEdit({ candidate, setCandidate }: CandidateEditProps) {
       email,
       phone,
       location,
-      experience: parseInt(experience),
+      experience: parseInt(experience) || 0, // Ensure experience is a number, default to 0 if NaN
       skills: skills.split(",").map(s => s.trim()),
       education,
-      linkedinUrl,
+      linkedinUrl: linkedinUrl || undefined, // Handle empty string for optional field
       status,
       appliedDate,
       lastUpdated: new Date().toISOString()
@@ -55,6 +55,9 @@ export function CandidateEdit({ candidate, setCandidate }: CandidateEditProps) {
       title: "Candidate updated",
       description: "Candidate information has been updated."
     });
+    if (onClose) {
+      onClose(); // Call onClose if provided (for closing modals)
+    }
   };
 
   const { voiceProps } = useVoiceTrigger({
@@ -62,7 +65,7 @@ export function CandidateEdit({ candidate, setCandidate }: CandidateEditProps) {
     actionStep: "Update the information and click Update Candidate to save."
   });
 
-  // Expanded: added fields for LinkedIn, Status, Applied Date
+
   return (
     <form onSubmit={handleSubmit} className="space-y-4" {...voiceProps}>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -116,14 +119,41 @@ export function CandidateEdit({ candidate, setCandidate }: CandidateEditProps) {
         </div>
         <div>
           <Label htmlFor="status">Status</Label>
-          <Input id="status" type="text" value={status} onChange={(e) => setStatus(e.target.value)} />
+          {/* For status, ideally use a Select component to ensure valid values.
+              For now, casting the value from the text input.
+              Consider replacing with <Select> for better UX and type safety.
+           */}
+          <Input 
+            id="status" 
+            type="text" 
+            value={status} 
+            onChange={(e) => setStatus(e.target.value as Candidate['status'])} 
+            placeholder="e.g., Applied, Screen, Interview"
+          />
+          {/* A better approach would be:
+            <Select value={status} onValueChange={(value) => setStatus(value as Candidate['status'])}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Applied">Applied</SelectItem>
+                <SelectItem value="Screen">Screen</SelectItem>
+                <SelectItem value="Interview">Interview</SelectItem>
+                <SelectItem value="Offer">Offer</SelectItem>
+                <SelectItem value="Hired">Hired</SelectItem>
+                <SelectItem value="Rejected">Rejected</SelectItem>
+              </SelectContent>
+            </Select>
+           This would require importing Select components from shadcn/ui.
+          */}
         </div>
       </div>
       <div>
         <Label htmlFor="appliedDate">Applied Date</Label>
         <Input id="appliedDate" type="date" value={appliedDate} onChange={(e) => setAppliedDate(e.target.value)} />
       </div>
-      <div className="flex justify-end">
+      <div className="flex justify-end space-x-2">
+        {onClose && <Button type="button" variant="outline" onClick={onClose}>Cancel</Button>}
         <Button type="submit">Update Candidate</Button>
       </div>
     </form>

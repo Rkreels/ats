@@ -1,4 +1,3 @@
-
 export interface Candidate {
   id: string;
   name: string;
@@ -20,6 +19,7 @@ export interface Candidate {
   avatar: string;
   lastUpdated: string;
   interviews: Interview[];
+  linkedinUrl?: string; // Added missing property
 }
 
 export interface Job {
@@ -159,4 +159,3 @@ export interface ReferralProgram {
   referrals: number;
   hires: number;
 }
-
