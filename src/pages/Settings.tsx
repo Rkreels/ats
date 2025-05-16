@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -69,22 +70,58 @@ export default function Settings() {
             </VoiceTutorialListener>
           </TabsList>
           <TabsContent value="general">
-            <GeneralSettings />
+            <VoiceTutorialListener
+              selector="settings-general-panel"
+              description="All general settings for company, timezone, and roles."
+              actionStep="Edit general fields, then save your changes."
+            >
+              <GeneralSettings />
+            </VoiceTutorialListener>
           </TabsContent>
           <TabsContent value="voice">
-            <VoiceSettings />
+            <VoiceTutorialListener
+              selector="settings-voice-panel"
+              description="All customization for the voice assistant, including persona and speed."
+              actionStep="Pick a voice and save."
+            >
+              <VoiceSettings />
+            </VoiceTutorialListener>
           </TabsContent>
           <TabsContent value="templates">
-            <JobTemplateSettings />
+            <VoiceTutorialListener
+              selector="settings-templates-panel"
+              description="Manage job template fields, defaults, and creation."
+              actionStep="You can add, edit or remove templates."
+            >
+              <JobTemplateSettings />
+            </VoiceTutorialListener>
           </TabsContent>
           <TabsContent value="users">
-            <UserSettings />
+            <VoiceTutorialListener
+              selector="settings-users-panel"
+              description="User and permissions management."
+              actionStep="Invite or update users, set roles here."
+            >
+              <UserSettings />
+            </VoiceTutorialListener>
           </TabsContent>
           <TabsContent value="email">
-            <EmailSettings />
+            <VoiceTutorialListener
+              selector="settings-email-panel"
+              description="Email templates, signatures, and outgoing setup."
+              actionStep="Edit or test your email settings."
+            >
+              <EmailSettings />
+            </VoiceTutorialListener>
           </TabsContent>
           <TabsContent value="integrations">
-            <IntegrationSettings />
+            <VoiceTutorialListener
+              selector="settings-integrations-panel"
+              description="Integrations with job boards and ATS systems."
+              actionStep="Connect or update integrations."
+            >
+              <IntegrationSettings />
+            </VoiceTutorialListener>
           </TabsContent>
         </Tabs>
       </VoiceTutorialListener>

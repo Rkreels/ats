@@ -96,90 +96,96 @@ const CandidateDetail = () => {
       >
         <CandidateInfo candidate={candidate} />
       </VoiceTutorialListener>
-      <Tabs defaultValue="overview" className="space-y-4" onValueChange={setActiveTab} value={activeTab}>
-        <TabsList className="flex flex-wrap">
-          <VoiceTutorialListener
-            selector="tab-overview"
-            description="Overview tab: view the candidate summary and timeline."
-            actionStep="Switch tabs to access interviews, application, or editing."
-          >
-            <TabsTrigger value="overview">Overview</TabsTrigger>
-          </VoiceTutorialListener>
-          <VoiceTutorialListener
-            selector="tab-interviews"
-            description="Interviews tab: see all interviews related to this candidate."
-            actionStep="Review or manage interview history."
-          >
-            <TabsTrigger value="interviews">Interviews</TabsTrigger>
-          </VoiceTutorialListener>
-          <VoiceTutorialListener
-            selector="tab-application"
-            description="Application tab: see application data submitted by this candidate."
-          >
-            <TabsTrigger value="application">Application</TabsTrigger>
-          </VoiceTutorialListener>
-          {hasPermission('canEditCandidates') && (
+      <VoiceTutorialListener
+        selector="candidate-tabs"
+        description="Navigate between different sections of the candidate profile: overview, interviews, application, and editing."
+        actionStep="Switch between tabs for detailed views and actions."
+      >
+        <Tabs defaultValue="overview" className="space-y-4" onValueChange={setActiveTab} value={activeTab}>
+          <TabsList className="flex flex-wrap">
             <VoiceTutorialListener
-              selector="tab-edit"
-              description="Edit tab: update candidate details or status." 
-              actionStep="Only available to users with edit permission."
+              selector="tab-overview"
+              description="Overview tab: view the candidate summary and timeline."
+              actionStep="Switch tabs to access interviews, application, or editing."
             >
-              <TabsTrigger value="edit">Edit</TabsTrigger>
+              <TabsTrigger value="overview">Overview</TabsTrigger>
             </VoiceTutorialListener>
-          )}
-        </TabsList>
-        <TabsContent value="overview">
-          <VoiceTutorialListener
-            selector="tab-content-overview"
-            description="Candidate at-a-glance and activity. Useful for quick summary."
-          >
-            <CandidateOverview 
-              candidate={candidate}
-              setCandidate={setCandidate}
-              hasPermission={hasPermission}
-            />
-          </VoiceTutorialListener>
-        </TabsContent>
-        <TabsContent value="interviews">
-          <VoiceTutorialListener
-            selector="tab-content-interviews"
-            description="Shows all interviews, statuses, and actions for this candidate."
-            actionStep="Schedule, reschedule, edit, or cancel interviews as needed."
-          >
-            <CandidateInterviews 
-              candidate={candidate}
-              setCandidate={setCandidate}
-              hasPermission={hasPermission}
-            />
-          </VoiceTutorialListener>
-        </TabsContent>
-        <TabsContent value="application">
-          <VoiceTutorialListener
-            selector="tab-content-application"
-            description="Displays the candidate's application details."
-          >
-            <CandidateApplication candidate={candidate} />
-          </VoiceTutorialListener>
-        </TabsContent>
-        {hasPermission('canEditCandidates') && (
-          <TabsContent value="edit">
             <VoiceTutorialListener
-              selector="tab-content-edit"
-              description="Edit candidate form, update any details and save."
-              actionStep="Make the changes and submit. Only available to editors."
+              selector="tab-interviews"
+              description="Interviews tab: see all interviews related to this candidate."
+              actionStep="Review or manage interview history."
             >
-              <Card>
-                <CardContent className="pt-6">
-                  <CandidateEdit 
-                    candidate={candidate}
-                    setCandidate={setCandidate}
-                  />
-                </CardContent>
-              </Card>
+              <TabsTrigger value="interviews">Interviews</TabsTrigger>
+            </VoiceTutorialListener>
+            <VoiceTutorialListener
+              selector="tab-application"
+              description="Application tab: see application data submitted by this candidate."
+            >
+              <TabsTrigger value="application">Application</TabsTrigger>
+            </VoiceTutorialListener>
+            {hasPermission('canEditCandidates') && (
+              <VoiceTutorialListener
+                selector="tab-edit"
+                description="Edit tab: update candidate details or status." 
+                actionStep="Only available to users with edit permission."
+              >
+                <TabsTrigger value="edit">Edit</TabsTrigger>
+              </VoiceTutorialListener>
+            )}
+          </TabsList>
+          <TabsContent value="overview">
+            <VoiceTutorialListener
+              selector="tab-content-overview"
+              description="Candidate at-a-glance and activity. Useful for quick summary."
+            >
+              <CandidateOverview 
+                candidate={candidate}
+                setCandidate={setCandidate}
+                hasPermission={hasPermission}
+              />
             </VoiceTutorialListener>
           </TabsContent>
-        )}
-      </Tabs>
+          <TabsContent value="interviews">
+            <VoiceTutorialListener
+              selector="tab-content-interviews"
+              description="Shows all interviews, statuses, and actions for this candidate."
+              actionStep="Schedule, reschedule, edit, or cancel interviews as needed."
+            >
+              <CandidateInterviews 
+                candidate={candidate}
+                setCandidate={setCandidate}
+                hasPermission={hasPermission}
+              />
+            </VoiceTutorialListener>
+          </TabsContent>
+          <TabsContent value="application">
+            <VoiceTutorialListener
+              selector="tab-content-application"
+              description="Displays the candidate's application details."
+            >
+              <CandidateApplication candidate={candidate} />
+            </VoiceTutorialListener>
+          </TabsContent>
+          {hasPermission('canEditCandidates') && (
+            <TabsContent value="edit">
+              <VoiceTutorialListener
+                selector="tab-content-edit"
+                description="Edit candidate form, update any details and save."
+                actionStep="Make the changes and submit. Only available to editors."
+              >
+                <Card>
+                  <CardContent className="pt-6">
+                    <CandidateEdit 
+                      candidate={candidate}
+                      setCandidate={setCandidate}
+                    />
+                  </CardContent>
+                </Card>
+              </VoiceTutorialListener>
+            </TabsContent>
+          )}
+        </Tabs>
+      </VoiceTutorialListener>
     </div>
   );
 };

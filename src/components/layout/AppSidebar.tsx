@@ -67,36 +67,42 @@ export default function AppSidebar() {
           <h1 className="text-xl font-bold text-gray-900">TalentTrack ATS</h1>
         </div>
         <nav className="flex-1 px-4 mt-4">
-          <ul className="space-y-2">
-            {navItems.map((item) => (
-              <li key={item.path}>
-                <VoiceTutorialListener
-                  selector={`sidebar-link-${item.name.toLowerCase()}`}
-                  description={item.description}
-                  actionStep={item.actionStep}
-                >
-                  <Link
-                    to={item.path}
-                    className={cn(
-                      "flex items-center px-4 py-3 text-gray-700 rounded-md",
-                      "transition-colors duration-200",
-                      "hover:bg-gray-100",
-                      isActive(item.path) && "bg-gray-100 font-medium text-gray-900"
-                    )}
+          <VoiceTutorialListener
+            selector="sidebar-main-nav"
+            description="This side menu allows you to quickly navigate to all main sections of the application."
+            actionStep="Use arrow keys or click menu items to move between dashboard, jobs, interviews, onboarding, and settings."
+          >
+            <ul className="space-y-2">
+              {navItems.map((item) => (
+                <li key={item.path}>
+                  <VoiceTutorialListener
+                    selector={`sidebar-link-${item.name.toLowerCase()}`}
+                    description={item.description}
+                    actionStep={item.actionStep}
                   >
-                    <item.icon className="h-5 w-5 mr-3" />
-                    <span>{item.name}</span>
-                  </Link>
-                </VoiceTutorialListener>
-              </li>
-            ))}
-          </ul>
+                    <Link
+                      to={item.path}
+                      className={cn(
+                        "flex items-center px-4 py-3 text-gray-700 rounded-md",
+                        "transition-colors duration-200",
+                        "hover:bg-gray-100",
+                        isActive(item.path) && "bg-gray-100 font-medium text-gray-900"
+                      )}
+                    >
+                      <item.icon className="h-5 w-5 mr-3" />
+                      <span>{item.name}</span>
+                    </Link>
+                  </VoiceTutorialListener>
+                </li>
+              ))}
+            </ul>
+          </VoiceTutorialListener>
         </nav>
         <div className="p-4 border-t">
           <VoiceTutorialListener
-            selector="settings-link"
-            description="Go to application settings to configure system options, voice assistant preferences, and integrations."
-            actionStep="Click to view or edit ATS settings."
+            selector="sidebar-settings-nav"
+            description="Navigate to settings to update user, voice, email, and system options."
+            actionStep="Click to open all system configuration menus."
           >
             <Link
               to="/settings"
@@ -110,34 +116,40 @@ export default function AppSidebar() {
               <span>Settings</span>
             </Link>
           </VoiceTutorialListener>
-          <div className="flex items-center mt-6">
-            <div className="flex-shrink-0">
-              <div className="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center text-gray-600 font-medium">
-                {currentUser?.name?.charAt(0) || "U"}
+          <VoiceTutorialListener
+            selector="sidebar-user-controls"
+            description="Shows your user information and logout option."
+            actionStep="Press logout to leave securely."
+          >
+            <div className="flex items-center mt-6">
+              <div className="flex-shrink-0">
+                <div className="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center text-gray-600 font-medium">
+                  {currentUser?.name?.charAt(0) || "U"}
+                </div>
               </div>
-            </div>
-            <div className="ml-3">
-              <p className="text-sm font-medium text-gray-700">{currentUser?.name || "User"}</p>
-              <p className="text-xs text-gray-500">{currentUser?.role || "Admin"}</p>
-            </div>
-            <VoiceTutorialListener
-              selector="logout-button"
-              description="Click here to log out of your account securely."
-              actionStep="Press to confirm logging out."
-            >
-              <button
-                className="ml-auto p-2 text-gray-500 hover:text-gray-700"
-                onClick={() => {
-                  toast({
-                    title: "Logged Out",
-                    description: "You have been successfully logged out."
-                  });
-                }}
+              <div className="ml-3">
+                <p className="text-sm font-medium text-gray-700">{currentUser?.name || "User"}</p>
+                <p className="text-xs text-gray-500">{currentUser?.role || "Admin"}</p>
+              </div>
+              <VoiceTutorialListener
+                selector="sidebar-logout"
+                description="Logout button for exiting your session safely."
+                actionStep="Click to confirm logout."
               >
-                <LogOut className="h-4 w-4" />
-              </button>
-            </VoiceTutorialListener>
-          </div>
+                <button
+                  className="ml-auto p-2 text-gray-500 hover:text-gray-700"
+                  onClick={() => {
+                    toast({
+                      title: "Logged Out",
+                      description: "You have been successfully logged out."
+                    });
+                  }}
+                >
+                  <LogOut className="h-4 w-4" />
+                </button>
+              </VoiceTutorialListener>
+            </div>
+          </VoiceTutorialListener>
         </div>
       </div>
     </aside>

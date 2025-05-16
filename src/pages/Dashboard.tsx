@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { mockDataService } from "@/data/mockData";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -80,10 +79,11 @@ const Dashboard = () => {
             </Card>
           </VoiceTutorialListener>
         </div>
+        {/* Add detail voice trainer on analytics dashboard */}
         <VoiceTutorialListener
-          selector="dashboard-analytics"
-          description="See insights and key recruitment analytics trends."
-          actionStep="Interact with analytics filters or view reports for more data."
+          selector="dashboard-analytics-main"
+          description="This section provides visual reports, trends, and analytics of your entire hiring process."
+          actionStep="Use charts to analyze trends. Hover for segment-specific guidance."
         >
           <AnalyticsDashboard />
         </VoiceTutorialListener>
