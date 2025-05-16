@@ -3,6 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Search } from "lucide-react";
+import VoiceTutorialListener from "@/components/voice/VoiceTutorialListener";
 
 interface CandidateSearchFiltersProps {
   searchTerm: string;
