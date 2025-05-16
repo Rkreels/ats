@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
@@ -16,6 +15,7 @@ import { CandidateOverview } from "@/components/candidates/detail/CandidateOverv
 import { CandidateInterviews } from "@/components/candidates/detail/CandidateInterviews";
 import { CandidateApplication } from "@/components/candidates/detail/CandidateApplication";
 import { CandidateEdit } from "@/components/candidates/detail/CandidateEdit";
+import VoiceTutorialListener from "@/components/voice/VoiceTutorialListener";
 
 const CandidateDetail = () => {
   const { id } = useParams();
@@ -78,57 +78,109 @@ const CandidateDetail = () => {
 
   return (
     <div className="space-y-6">
-      <CandidateHeader 
-        candidate={candidate}
-        handleUpdateStatus={handleUpdateStatus}
-        hasPermission={hasPermission}
-      />
-
-      <CandidateInfo candidate={candidate} />
-      
+      <VoiceTutorialListener
+        selector="candidate-header"
+        description="This area shows main information and candidate status. Actions are possible depending on your permissions."
+        actionStep="Change status, initiate communication, or go back to the list."
+      >
+        <CandidateHeader 
+          candidate={candidate}
+          handleUpdateStatus={handleUpdateStatus}
+          hasPermission={hasPermission}
+        />
+      </VoiceTutorialListener>
+      <VoiceTutorialListener
+        selector="candidate-info"
+        description="Detailed candidate contact and background information."
+        actionStep="Review details or copy information."
+      >
+        <CandidateInfo candidate={candidate} />
+      </VoiceTutorialListener>
       <Tabs defaultValue="overview" className="space-y-4" onValueChange={setActiveTab} value={activeTab}>
         <TabsList className="flex flex-wrap">
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="interviews">Interviews</TabsTrigger>
-          <TabsTrigger value="application">Application</TabsTrigger>
-          {hasPermission('canEditCandidates') && <TabsTrigger value="edit">Edit</TabsTrigger>}
+          <VoiceTutorialListener
+            selector="tab-overview"
+            description="Overview tab: view the candidate summary and timeline."
+            actionStep="Switch tabs to access interviews, application, or editing."
+          >
+            <TabsTrigger value="overview">Overview</TabsTrigger>
+          </VoiceTutorialListener>
+          <VoiceTutorialListener
+            selector="tab-interviews"
+            description="Interviews tab: see all interviews related to this candidate."
+            actionStep="Review or manage interview history."
+          >
+            <TabsTrigger value="interviews">Interviews</TabsTrigger>
+          </VoiceTutorialListener>
+          <VoiceTutorialListener
+            selector="tab-application"
+            description="Application tab: see application data submitted by this candidate."
+          >
+            <TabsTrigger value="application">Application</TabsTrigger>
+          </VoiceTutorialListener>
+          {hasPermission('canEditCandidates') && (
+            <VoiceTutorialListener
+              selector="tab-edit"
+              description="Edit tab: update candidate details or status." 
+              actionStep="Only available to users with edit permission."
+            >
+              <TabsTrigger value="edit">Edit</TabsTrigger>
+            </VoiceTutorialListener>
+          )}
         </TabsList>
-        
         <TabsContent value="overview">
-          <CandidateOverview 
-            candidate={candidate}
-            setCandidate={setCandidate}
-            hasPermission={hasPermission}
-          />
+          <VoiceTutorialListener
+            selector="tab-content-overview"
+            description="Candidate at-a-glance and activity. Useful for quick summary."
+          >
+            <CandidateOverview 
+              candidate={candidate}
+              setCandidate={setCandidate}
+              hasPermission={hasPermission}
+            />
+          </VoiceTutorialListener>
         </TabsContent>
-        
         <TabsContent value="interviews">
-          <CandidateInterviews 
-            candidate={candidate}
-            setCandidate={setCandidate}
-            hasPermission={hasPermission}
-          />
+          <VoiceTutorialListener
+            selector="tab-content-interviews"
+            description="Shows all interviews, statuses, and actions for this candidate."
+            actionStep="Schedule, reschedule, edit, or cancel interviews as needed."
+          >
+            <CandidateInterviews 
+              candidate={candidate}
+              setCandidate={setCandidate}
+              hasPermission={hasPermission}
+            />
+          </VoiceTutorialListener>
         </TabsContent>
-        
         <TabsContent value="application">
-          <CandidateApplication candidate={candidate} />
+          <VoiceTutorialListener
+            selector="tab-content-application"
+            description="Displays the candidate's application details."
+          >
+            <CandidateApplication candidate={candidate} />
+          </VoiceTutorialListener>
         </TabsContent>
-        
         {hasPermission('canEditCandidates') && (
           <TabsContent value="edit">
-            <Card>
-              <CardContent className="pt-6">
-                <CandidateEdit 
-                  candidate={candidate}
-                  setCandidate={setCandidate}
-                />
-              </CardContent>
-            </Card>
+            <VoiceTutorialListener
+              selector="tab-content-edit"
+              description="Edit candidate form, update any details and save."
+              actionStep="Make the changes and submit. Only available to editors."
+            >
+              <Card>
+                <CardContent className="pt-6">
+                  <CandidateEdit 
+                    candidate={candidate}
+                    setCandidate={setCandidate}
+                  />
+                </CardContent>
+              </Card>
+            </VoiceTutorialListener>
           </TabsContent>
         )}
       </Tabs>
     </div>
   );
 };
-
 export default CandidateDetail;

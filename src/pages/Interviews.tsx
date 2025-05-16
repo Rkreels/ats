@@ -1,9 +1,9 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Interview } from "@/types";
 import InterviewForm from "@/components/interviews/InterviewForm";
 import InterviewsList from "@/components/interviews/InterviewsList";
+import VoiceTutorialListener from "@/components/voice/VoiceTutorialListener";
 
 // Mock interviews data
 const mockInterviews: Interview[] = [
@@ -49,27 +49,38 @@ export default function Interviews() {
           <p className="text-gray-600">Manage upcoming and past interviews</p>
         </div>
       </div>
-      
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-        <Card>
-          <CardHeader>
-            <CardTitle>Schedule New Interview</CardTitle>
-            <CardDescription>Create a new interview for a candidate</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <InterviewForm onAddInterview={addInterview} />
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardHeader>
-            <CardTitle>Upcoming Interviews</CardTitle>
-            <CardDescription>List of scheduled interviews</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <InterviewsList interviews={interviews} />
-          </CardContent>
-        </Card>
+        <VoiceTutorialListener
+          selector="schedule-interview-card"
+          description="Use this form to schedule a new interview with a candidate."
+          actionStep="Fill out all required fields and submit to add a new interview."
+        >
+          <Card>
+            <CardHeader>
+              <CardTitle>Schedule New Interview</CardTitle>
+              <CardDescription>Create a new interview for a candidate</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <InterviewForm onAddInterview={addInterview} />
+            </CardContent>
+          </Card>
+        </VoiceTutorialListener>
+        <VoiceTutorialListener
+          selector="upcoming-interviews-card"
+          description="Displays a list of all scheduled and upcoming interviews."
+          actionStep="You can view, edit, reschedule, or delete any interview from here."
+        >
+          <Card>
+            <CardHeader>
+              <CardTitle>Upcoming Interviews</CardTitle>
+              <CardDescription>List of scheduled interviews</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <InterviewsList interviews={interviews} />
+            </CardContent>
+          </Card>
+        </VoiceTutorialListener>
       </div>
     </>
   );

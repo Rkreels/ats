@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { mockDataService } from "@/data/mockData";
@@ -6,6 +5,7 @@ import { Candidate } from "@/types";
 import { AddCandidateForm } from "@/components/candidates/AddCandidateForm";
 import CandidateSearchFilters from "@/components/candidates/CandidateSearchFilters";
 import CandidateTable from "@/components/candidates/CandidateTable";
+import VoiceTutorialListener from "@/components/voice/VoiceTutorialListener";
 
 export default function Candidates() {
   const [candidates, setCandidates] = useState<Candidate[]>([]);
@@ -58,33 +58,55 @@ export default function Candidates() {
           <h1 className="text-2xl font-bold text-gray-800">Candidates</h1>
           <p className="text-gray-600">Manage your candidate pipeline</p>
         </div>
-        <AddCandidateForm />
+        <VoiceTutorialListener
+          selector="candidates-add"
+          description="Add a new candidate to your talent pool."
+          actionStep="Fill out the required candidate information and submit."
+        >
+          <AddCandidateForm />
+        </VoiceTutorialListener>
       </div>
-
-      <Card className="space-y-4">
-        <CardHeader>
-          <CardTitle>Candidate Pipeline</CardTitle>
-          <CardDescription>Track candidates through each stage of the hiring process</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <CandidateSearchFilters
-            searchTerm={searchTerm}
-            setSearchTerm={setSearchTerm}
-            statusFilter={statusFilter}
-            setStatusFilter={setStatusFilter}
-            sortBy={sortBy}
-            setSortBy={setSortBy}
-            sortOrder={sortOrder}
-            setSortOrder={setSortOrder}
-            statusOptions={statusOptions}
-          />
-          
-          <CandidateTable 
-            candidates={filteredCandidates}
-            onDelete={deleteCandidate}
-          />
-        </CardContent>
-      </Card>
+      <VoiceTutorialListener
+        selector="candidates-pipeline-card"
+        description="This section shows your candidate pipeline, filtering and sorting features."
+        actionStep="Use the filters and actions to manage, search, or update candidates."
+      >
+        <Card className="space-y-4">
+          <CardHeader>
+            <CardTitle>Candidate Pipeline</CardTitle>
+            <CardDescription>Track candidates through each stage of the hiring process</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <VoiceTutorialListener
+              selector="candidates-filters"
+              description="Filter, search, or sort the list of candidates."
+              actionStep="Adjust the filters or search and see the results update below."
+            >
+              <CandidateSearchFilters
+                searchTerm={searchTerm}
+                setSearchTerm={setSearchTerm}
+                statusFilter={statusFilter}
+                setStatusFilter={setStatusFilter}
+                sortBy={sortBy}
+                setSortBy={setSortBy}
+                sortOrder={sortOrder}
+                setSortOrder={setSortOrder}
+                statusOptions={statusOptions}
+              />
+            </VoiceTutorialListener>
+            <VoiceTutorialListener
+              selector="candidates-table"
+              description="This table lists all candidates filtered by your criteria. Actions are available on each row."
+              actionStep="Use the row actions to view details, edit, or delete a candidate."
+            >
+              <CandidateTable 
+                candidates={filteredCandidates}
+                onDelete={deleteCandidate}
+              />
+            </VoiceTutorialListener>
+          </CardContent>
+        </Card>
+      </VoiceTutorialListener>
     </>
   );
 }
