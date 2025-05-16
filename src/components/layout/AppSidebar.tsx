@@ -20,37 +20,43 @@ export default function AppSidebar() {
       name: "Dashboard",
       path: "/",
       icon: Home,
-      description: "See a high-level overview of all ATS activities and stats on the Dashboard."
+      description: "See a high-level overview of all ATS activities and stats on the Dashboard.",
+      actionStep: "Click here to access your dashboard and view company stats."
     },
     {
       name: "Candidates",
       path: "/candidates",
       icon: Users,
-      description: "Manage and review candidates, including adding, editing, and deleting profiles."
+      description: "Manage and review candidates, including adding, editing, and deleting profiles.",
+      actionStep: "Click here to view all candidate profiles and manage your talent pipeline."
     },
     {
       name: "Jobs",
       path: "/jobs",
       icon: Briefcase,
-      description: "View, add, edit, and manage job postings."
+      description: "View, add, edit, and manage job postings.",
+      actionStep: "Click to create new jobs or review current roles."
     },
     {
       name: "Interviews",
       path: "/interviews",
       icon: CalendarDays,
-      description: "Schedule, edit, and track interviews for candidates."
+      description: "Schedule, edit, and track interviews for candidates.",
+      actionStep: "Click to see scheduled interviews, reschedule, or create new."
     },
     {
       name: "Onboarding",
       path: "/onboarding",
       icon: FileText,
-      description: "Track onboarding steps and documents for new hires."
+      description: "Track onboarding steps and documents for new hires.",
+      actionStep: "Manage onboarding tasks or add new employee tasks."
     },
     {
       name: "Reports",
       path: "/reports",
       icon: BarChart,
-      description: "Analyze recruitment performance, generate reports, and review insights."
+      description: "Analyze recruitment performance, generate reports, and review insights.",
+      actionStep: "Click to generate reports or view analytics."
     }
   ];
 
@@ -60,7 +66,6 @@ export default function AppSidebar() {
         <div className="p-6">
           <h1 className="text-xl font-bold text-gray-900">TalentTrack ATS</h1>
         </div>
-
         <nav className="flex-1 px-4 mt-4">
           <ul className="space-y-2">
             {navItems.map((item) => (
@@ -68,7 +73,7 @@ export default function AppSidebar() {
                 <VoiceTutorialListener
                   selector={`sidebar-link-${item.name.toLowerCase()}`}
                   description={item.description}
-                  actionStep={`Click to navigate to ${item.name}.`}
+                  actionStep={item.actionStep}
                 >
                   <Link
                     to={item.path}
@@ -87,7 +92,6 @@ export default function AppSidebar() {
             ))}
           </ul>
         </nav>
-
         <div className="p-4 border-t">
           <VoiceTutorialListener
             selector="settings-link"
@@ -106,7 +110,6 @@ export default function AppSidebar() {
               <span>Settings</span>
             </Link>
           </VoiceTutorialListener>
-
           <div className="flex items-center mt-6">
             <div className="flex-shrink-0">
               <div className="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center text-gray-600 font-medium">
@@ -120,6 +123,7 @@ export default function AppSidebar() {
             <VoiceTutorialListener
               selector="logout-button"
               description="Click here to log out of your account securely."
+              actionStep="Press to confirm logging out."
             >
               <button
                 className="ml-auto p-2 text-gray-500 hover:text-gray-700"

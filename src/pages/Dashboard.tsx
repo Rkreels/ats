@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { mockDataService } from "@/data/mockData";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import AnalyticsDashboard from "@/components/dashboard/AnalyticsDashboard";
+import VoiceTutorialListener from "@/components/voice/VoiceTutorialListener";
 
 const Dashboard = () => {
   const [stats, setStats] = useState({
@@ -12,10 +13,8 @@ const Dashboard = () => {
   });
 
   useEffect(() => {
-    // In a real app, we would fetch from an API
     const candidates = mockDataService.getAllCandidates();
     const jobs = mockDataService.getAllJobs();
-    
     setStats({
       totalCandidates: candidates.length,
       activeJobs: jobs.length,
@@ -33,41 +32,61 @@ const Dashboard = () => {
           <p className="text-gray-600">Welcome to your recruitment dashboard</p>
         </div>
       </div>
-
       <div className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle>Total Candidates</CardTitle>
-              <CardDescription>All applicants in the system</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p className="text-3xl font-bold">{stats.totalCandidates}</p>
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle>Active Jobs</CardTitle>
-              <CardDescription>Currently open positions</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p className="text-3xl font-bold">{stats.activeJobs}</p>
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle>Scheduled Interviews</CardTitle>
-              <CardDescription>Upcoming interviews</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p className="text-3xl font-bold">{stats.scheduledInterviews}</p>
-            </CardContent>
-          </Card>
+          <VoiceTutorialListener
+            selector="dashboard-total-candidates"
+            description="This card shows the total number of candidates in your recruitment system."
+            actionStep="You can click details in Candidates to view or modify."
+          >
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle>Total Candidates</CardTitle>
+                <CardDescription>All applicants in the system</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <p className="text-3xl font-bold">{stats.totalCandidates}</p>
+              </CardContent>
+            </Card>
+          </VoiceTutorialListener>
+          <VoiceTutorialListener
+            selector="dashboard-active-jobs"
+            description="This card displays the number of active job postings."
+            actionStep="Go to Jobs to manage or create new job posts."
+          >
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle>Active Jobs</CardTitle>
+                <CardDescription>Currently open positions</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <p className="text-3xl font-bold">{stats.activeJobs}</p>
+              </CardContent>
+            </Card>
+          </VoiceTutorialListener>
+          <VoiceTutorialListener
+            selector="dashboard-scheduled-interviews"
+            description="Displays all upcoming interviews across all jobs and candidates."
+            actionStep="See Interviews for editing or rescheduling interviews."
+          >
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle>Scheduled Interviews</CardTitle>
+                <CardDescription>Upcoming interviews</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <p className="text-3xl font-bold">{stats.scheduledInterviews}</p>
+              </CardContent>
+            </Card>
+          </VoiceTutorialListener>
         </div>
-        
-        <AnalyticsDashboard />
+        <VoiceTutorialListener
+          selector="dashboard-analytics"
+          description="See insights and key recruitment analytics trends."
+          actionStep="Interact with analytics filters or view reports for more data."
+        >
+          <AnalyticsDashboard />
+        </VoiceTutorialListener>
       </div>
     </>
   );
