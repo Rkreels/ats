@@ -20,6 +20,16 @@ import { VoiceTutorialPopup } from "@/components/voice/VoiceTutorialPopup";
 
 const queryClient = new QueryClient();
 
+// Get the base path from the environment or default to empty string for local development
+const getBasename = () => {
+  // In production, use the base path from Vite config
+  if (import.meta.env.PROD) {
+    return "/simulation/ats";
+  }
+  // In development, no basename needed
+  return "";
+};
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <UserProvider>
@@ -28,7 +38,7 @@ const App = () => (
           <VoiceTutorialPopup />
           <Toaster />
           <Sonner />
-          <BrowserRouter basename="/simulation/ats">
+          <BrowserRouter basename={getBasename()}>
             <Routes>
               <Route path="/" element={
                 <AppLayout>
