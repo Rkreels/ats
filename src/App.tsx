@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -28,7 +29,7 @@ const App = () => (
           <VoiceTutorialPopup />
           <Toaster />
           <Sonner />
-          <BrowserRouter>
+          <BrowserRouter basename="/simulation/ats">
             <Routes>
               <Route path="/" element={
                 <AppLayout>
