@@ -1,8 +1,11 @@
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
 import ReportsCharts from "@/components/reports/ReportsCharts";
 import { useEffect, useState } from "react";
 import { BarChart, Bar, ResponsiveContainer, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from "recharts";
@@ -58,13 +61,53 @@ const diversityData = [
   },
 ];
 
-const ReportTabs = ({ activeTab = "dashboard" }: ReportTabsProps) => {
+const ReportTabs = ({ activeTab = "overview" }: ReportTabsProps) => {
   const { toast } = useToast();
   const [currentTab, setCurrentTab] = useState(activeTab);
+  const [customReportName, setCustomReportName] = useState("");
+  const [selectedMetrics, setSelectedMetrics] = useState<string[]>([]);
+  const [reportDateRange, setReportDateRange] = useState("last30days");
   
   useEffect(() => {
     setCurrentTab(activeTab);
   }, [activeTab]);
+
+  const handleMetricChange = (metric: string, checked: boolean) => {
+    if (checked) {
+      setSelectedMetrics([...selectedMetrics, metric]);
+    } else {
+      setSelectedMetrics(selectedMetrics.filter(m => m !== metric));
+    }
+  };
+
+  const handleCreateCustomReport = () => {
+    if (!customReportName.trim()) {
+      toast({
+        title: "Report Name Required",
+        description: "Please enter a name for your custom report.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (selectedMetrics.length === 0) {
+      toast({
+        title: "Metrics Required",
+        description: "Please select at least one metric for your report.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    toast({
+      title: "Custom Report Created",
+      description: `"${customReportName}" has been created with ${selectedMetrics.length} metrics.`
+    });
+
+    // Reset form
+    setCustomReportName("");
+    setSelectedMetrics([]);
+  };
 
   return (
     <Tabs value={currentTab} onValueChange={setCurrentTab} className="space-y-8">
@@ -208,18 +251,63 @@ const ReportTabs = ({ activeTab = "dashboard" }: ReportTabsProps) => {
           <Card>
             <CardHeader>
               <CardTitle>Custom Report Builder</CardTitle>
-              <CardDescription>Create and save custom reports</CardDescription>
+              <CardDescription>Create personalized reports with your selected metrics</CardDescription>
             </CardHeader>
-            <CardContent className="py-6">
-              <div className="flex flex-col items-center justify-center py-8">
-                <p className="text-gray-500 mb-4">Custom report builder coming soon!</p>
-                <Button variant="outline" onClick={() => {
-                  toast({
-                    title: "Coming Soon",
-                    description: "Custom report building functionality will be available in the next update."
-                  });
-                }}>Request Early Access</Button>
+            <CardContent className="space-y-6">
+              <div className="space-y-2">
+                <Label htmlFor="reportName">Report Name</Label>
+                <Input
+                  id="reportName"
+                  placeholder="Enter report name..."
+                  value={customReportName}
+                  onChange={(e) => setCustomReportName(e.target.value)}
+                />
               </div>
+
+              <div className="space-y-2">
+                <Label>Date Range</Label>
+                <Select value={reportDateRange} onValueChange={setReportDateRange}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="last7days">Last 7 days</SelectItem>
+                    <SelectItem value="last30days">Last 30 days</SelectItem>
+                    <SelectItem value="last90days">Last 90 days</SelectItem>
+                    <SelectItem value="last6months">Last 6 months</SelectItem>
+                    <SelectItem value="lastyear">Last year</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-3">
+                <Label>Select Metrics</Label>
+                <div className="grid grid-cols-2 gap-3">
+                  {[
+                    'Application Volume',
+                    'Time to Hire',
+                    'Conversion Rates',
+                    'Source Effectiveness',
+                    'Interview Success Rate',
+                    'Offer Acceptance Rate',
+                    'Diversity Metrics',
+                    'Cost per Hire'
+                  ].map((metric) => (
+                    <div key={metric} className="flex items-center space-x-2">
+                      <Checkbox
+                        id={metric}
+                        checked={selectedMetrics.includes(metric)}
+                        onCheckedChange={(checked) => handleMetricChange(metric, checked as boolean)}
+                      />
+                      <Label htmlFor={metric} className="text-sm">{metric}</Label>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <Button onClick={handleCreateCustomReport} className="w-full">
+                Create Custom Report
+              </Button>
             </CardContent>
           </Card>
         </div>

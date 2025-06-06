@@ -16,7 +16,7 @@ import Onboarding from "./pages/Onboarding";
 import NotFound from "./pages/NotFound";
 import { UserProvider } from "./contexts/UserContext";
 import { VoiceTutorialProvider } from "./contexts/VoiceTutorialContext";
-import { VoiceTutorialPopup } from "@/components/voice/VoiceTutorialPopup"; // Inject the popup
+import { VoiceTutorialPopup } from "@/components/voice/VoiceTutorialPopup";
 
 const queryClient = new QueryClient();
 
@@ -25,7 +25,6 @@ const App = () => (
     <UserProvider>
       <VoiceTutorialProvider>
         <TooltipProvider>
-          {/* Globally inject the voice popup so it's always available */}
           <VoiceTutorialPopup />
           <Toaster />
           <Sonner />
