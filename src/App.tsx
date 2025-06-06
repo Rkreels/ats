@@ -17,76 +17,79 @@ import NotFound from "./pages/NotFound";
 import { UserProvider } from "./contexts/UserContext";
 import { VoiceTutorialProvider } from "./contexts/VoiceTutorialContext";
 import { VoiceTutorialPopup } from "@/components/voice/VoiceTutorialPopup";
+import ErrorBoundary from "./components/common/ErrorBoundary";
 
 const queryClient = new QueryClient();
 
-// Get the base path from the environment or default to empty string for local development
+// Enhanced base path handling for better routing
 const getBasename = () => {
-  // In production, use the base path from Vite config
-  if (import.meta.env.PROD) {
+  // Check if we're in production and on the correct path
+  if (import.meta.env.PROD && window.location.pathname.startsWith('/simulation/ats')) {
     return "/simulation/ats";
   }
-  // In development, no basename needed
+  // For development or when not on the simulation path
   return "";
 };
 
 const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <UserProvider>
-      <VoiceTutorialProvider>
-        <TooltipProvider>
-          <VoiceTutorialPopup />
-          <Toaster />
-          <Sonner />
-          <BrowserRouter basename={getBasename()}>
-            <Routes>
-              <Route path="/" element={
-                <AppLayout>
-                  <Dashboard />
-                </AppLayout>
-              } />
-              <Route path="/candidates" element={
-                <AppLayout>
-                  <Candidates />
-                </AppLayout>
-              } />
-              <Route path="/candidates/:id" element={
-                <AppLayout>
-                  <CandidateDetail />
-                </AppLayout>
-              } />
-              <Route path="/jobs" element={
-                <AppLayout>
-                  <Jobs />
-                </AppLayout>
-              } />
-              <Route path="/interviews" element={
-                <AppLayout>
-                  <Interviews />
-                </AppLayout>
-              } />
-              <Route path="/onboarding" element={
-                <AppLayout>
-                  <Onboarding />
-                </AppLayout>
-              } />
-              <Route path="/reports" element={
-                <AppLayout>
-                  <Reports />
-                </AppLayout>
-              } />
-              <Route path="/settings" element={
-                <AppLayout>
-                  <Settings />
-                </AppLayout>
-              } />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </BrowserRouter>
-        </TooltipProvider>
-      </VoiceTutorialProvider>
-    </UserProvider>
-  </QueryClientProvider>
+  <ErrorBoundary>
+    <QueryClientProvider client={queryClient}>
+      <UserProvider>
+        <VoiceTutorialProvider>
+          <TooltipProvider>
+            <VoiceTutorialPopup />
+            <Toaster />
+            <Sonner />
+            <BrowserRouter basename={getBasename()}>
+              <Routes>
+                <Route path="/" element={
+                  <AppLayout>
+                    <Dashboard />
+                  </AppLayout>
+                } />
+                <Route path="/candidates" element={
+                  <AppLayout>
+                    <Candidates />
+                  </AppLayout>
+                } />
+                <Route path="/candidates/:id" element={
+                  <AppLayout>
+                    <CandidateDetail />
+                  </AppLayout>
+                } />
+                <Route path="/jobs" element={
+                  <AppLayout>
+                    <Jobs />
+                  </AppLayout>
+                } />
+                <Route path="/interviews" element={
+                  <AppLayout>
+                    <Interviews />
+                  </AppLayout>
+                } />
+                <Route path="/onboarding" element={
+                  <AppLayout>
+                    <Onboarding />
+                  </AppLayout>
+                } />
+                <Route path="/reports" element={
+                  <AppLayout>
+                    <Reports />
+                  </AppLayout>
+                } />
+                <Route path="/settings" element={
+                  <AppLayout>
+                    <Settings />
+                  </AppLayout>
+                } />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </BrowserRouter>
+          </TooltipProvider>
+        </VoiceTutorialProvider>
+      </UserProvider>
+    </QueryClientProvider>
+  </ErrorBoundary>
 );
 
 export default App;
