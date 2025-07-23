@@ -16,7 +16,6 @@ import Onboarding from "./pages/Onboarding";
 import NotFound from "./pages/NotFound";
 import { UserProvider } from "./contexts/UserContext";
 import { VoiceTutorialProvider } from "./contexts/VoiceTutorialContext";
-import { VoiceTutorialPopup } from "@/components/voice/VoiceTutorialPopup";
 import ErrorBoundary from "./components/common/ErrorBoundary";
 
 const queryClient = new QueryClient();
@@ -37,7 +36,6 @@ const App = () => (
       <UserProvider>
         <VoiceTutorialProvider>
           <TooltipProvider>
-            <VoiceTutorialPopup />
             <Toaster />
             <Sonner />
             <BrowserRouter basename={getBasename()}>

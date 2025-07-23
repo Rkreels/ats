@@ -11,6 +11,7 @@ import { useVoiceTrigger } from "@/hooks/useVoiceTrigger";
 import { useUser } from "@/contexts/UserContext";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import EnhancedVoiceTutorialListener from "@/components/voice/EnhancedVoiceTutorialListener";
 
 // Job type definition
 type JobEmploymentType = "Full-time" | "Part-time" | "Contract" | "Temporary" | "Internship";
@@ -238,26 +239,51 @@ export default function Jobs() {
     });
   };
 
+  const { voiceProps: jobsMainProps } = useVoiceTrigger({
+    what: "This is the Jobs management page where you can create, edit, and manage job postings for your organization.",
+    actionStep: "View existing jobs, create new ones, or edit job details using the available actions."
+  });
+
+  const { voiceProps: addJobProps } = useVoiceTrigger({
+    what: "Create a new job posting by filling out the job details form.",
+    actionStep: "Click to open the job creation form."
+  });
+
   return (
     <div>
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
-          <div>
-            <CardTitle>Job Postings</CardTitle>
-            <CardDescription>Manage your organization's job postings</CardDescription>
-          </div>
-          
-          {hasPermission('canCreateJob') && (
-            <Button onClick={handleOpenNewJobDialog}>
-              Add New Job
-            </Button>
-          )}
-        </CardHeader>
-        <CardContent>
-          <ScrollArea className="h-[600px]">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {jobs.map(job => (
-                <Card key={job.id} className="overflow-hidden">
+      <EnhancedVoiceTutorialListener
+        selector="jobs-page"
+        description="This is the Jobs management page where you can create, edit, and manage job postings for your organization."
+        actionStep="View existing jobs, create new ones, or edit job details using the available actions."
+        category="navigation"
+        priority="high"
+      >
+        <Card {...jobsMainProps}>
+          <CardHeader className="flex flex-row items-center justify-between">
+            <div>
+              <CardTitle>Job Postings</CardTitle>
+              <CardDescription>Manage your organization's job postings</CardDescription>
+            </div>
+            
+            {hasPermission('canCreateJob') && (
+              <Button onClick={handleOpenNewJobDialog} {...addJobProps}>
+                Add New Job
+              </Button>
+            )}
+          </CardHeader>
+          <CardContent>
+            <ScrollArea className="h-[600px]">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {jobs.map(job => (
+                  <EnhancedVoiceTutorialListener
+                    key={job.id}
+                    selector={`job-card-${job.id}`}
+                    description={`Job posting for ${job.title} in ${job.department}. Status: ${job.status}. ${job.applicants} applicants.`}
+                    actionStep="Use the action buttons to view, edit, or delete this job posting."
+                    category="info"
+                    priority="medium"
+                  >
+                    <Card className="overflow-hidden">
                   <CardHeader className="bg-gray-50 p-4">
                     <div className="flex justify-between items-start">
                       <div>
@@ -302,58 +328,72 @@ export default function Jobs() {
                         <span className="text-sm ml-1">{job.applicants}</span>
                       </div>
                     </div>
-                    <div className="mt-4 flex justify-end space-x-2">
-                      <Button 
-                        variant="ghost" 
-                        size="sm"
-                        onClick={() => handleOpenEditDialog(job, true)}
-                      >
-                        View
-                      </Button>
-                      
-                      {hasPermission('canEditJob') && (
+                      <div className="mt-4 flex justify-end space-x-2">
                         <Button 
-                          variant="outline" 
+                          variant="ghost" 
                           size="sm"
-                          onClick={() => handleOpenEditDialog(job, false)}
+                          onClick={() => handleOpenEditDialog(job, true)}
+                          {...useVoiceTrigger({
+                            what: `View details for ${job.title} position`,
+                            actionStep: "Click to see full job details"
+                          }).voiceProps}
                         >
-                          Edit
+                          View
                         </Button>
-                      )}
-                      
-                      {hasPermission('canDeleteJob') && (
-                        <AlertDialog>
-                          <AlertDialogTrigger asChild>
-                            <Button 
-                              variant="ghost" 
-                              size="sm"
-                              className="text-red-500 hover:text-red-700"
-                            >
-                              Delete
-                            </Button>
-                          </AlertDialogTrigger>
-                          <AlertDialogContent>
-                            <AlertDialogHeader>
-                              <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                              <AlertDialogDescription>
-                                This will permanently delete the job posting and cannot be undone.
-                              </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                              <AlertDialogCancel>Cancel</AlertDialogCancel>
-                              <AlertDialogAction onClick={() => handleDeleteJob(job.id)}>Delete</AlertDialogAction>
-                            </AlertDialogFooter>
-                          </AlertDialogContent>
-                        </AlertDialog>
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </ScrollArea>
-        </CardContent>
-      </Card>
+                        
+                        {hasPermission('canEditJob') && (
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => handleOpenEditDialog(job, false)}
+                            {...useVoiceTrigger({
+                              what: `Edit ${job.title} job posting`,
+                              actionStep: "Click to modify job details"
+                            }).voiceProps}
+                          >
+                            Edit
+                          </Button>
+                        )}
+                        
+                        {hasPermission('canDeleteJob') && (
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Button 
+                                variant="ghost" 
+                                size="sm"
+                                className="text-red-500 hover:text-red-700"
+                                {...useVoiceTrigger({
+                                  what: `Delete ${job.title} job posting`,
+                                  actionStep: "This will permanently remove the job posting"
+                                }).voiceProps}
+                              >
+                                Delete
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  This will permanently delete the job posting and cannot be undone.
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                <AlertDialogAction onClick={() => handleDeleteJob(job.id)}>Delete</AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                        )}
+                      </div>
+                    </CardContent>
+                  </Card>
+                  </EnhancedVoiceTutorialListener>
+                ))}
+              </div>
+            </ScrollArea>
+          </CardContent>
+        </Card>
+      </EnhancedVoiceTutorialListener>
 
       {/* Create Job Dialog */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -364,137 +404,145 @@ export default function Jobs() {
               Fill in the details below to create a new job posting for your organization.
             </DialogDescription>
           </DialogHeader>
-          <ScrollArea className="max-h-[60vh]">
-            <div className="grid gap-4 py-4 px-1">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <EnhancedVoiceTutorialListener
+            selector="create-job-form"
+            description="Form for creating a new job posting. Fill out all required fields."
+            actionStep="Complete the form and click 'Create Job' to publish."
+            category="form"
+            priority="high"
+          >
+            <ScrollArea className="max-h-[60vh]">
+              <div className="grid gap-4 py-4 px-1">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="title">Job Title*</Label>
+                    <Input 
+                      id="title" 
+                      placeholder="e.g. Senior Frontend Developer"
+                      value={newJob.title}
+                      onChange={(e) => setNewJob({...newJob, title: e.target.value})}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="department">Department*</Label>
+                    <Input 
+                      id="department" 
+                      placeholder="e.g. Engineering"
+                      value={newJob.department}
+                      onChange={(e) => setNewJob({...newJob, department: e.target.value})}
+                    />
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="location">Location*</Label>
+                    <Input 
+                      id="location" 
+                      placeholder="e.g. Remote, New York, NY"
+                      value={newJob.location}
+                      onChange={(e) => setNewJob({...newJob, location: e.target.value})}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="salary-range">Salary Range</Label>
+                    <Input 
+                      id="salary-range" 
+                      placeholder="e.g. $80,000 - $100,000"
+                      value={newJob.salaryRange}
+                      onChange={(e) => setNewJob({...newJob, salaryRange: e.target.value})}
+                    />
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="employment-type">Employment Type*</Label>
+                    <Select 
+                      value={newJob.employmentType} 
+                      onValueChange={(value: JobEmploymentType) => setNewJob({...newJob, employmentType: value})}
+                    >
+                      <SelectTrigger id="employment-type">
+                        <SelectValue placeholder="Select type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Full-time">Full-time</SelectItem>
+                        <SelectItem value="Part-time">Part-time</SelectItem>
+                        <SelectItem value="Contract">Contract</SelectItem>
+                        <SelectItem value="Temporary">Temporary</SelectItem>
+                        <SelectItem value="Internship">Internship</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="status">Status*</Label>
+                    <Select 
+                      value={newJob.status} 
+                      onValueChange={(value: JobStatus) => setNewJob({...newJob, status: value})}
+                    >
+                      <SelectTrigger id="status">
+                        <SelectValue placeholder="Select status" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Draft">Draft</SelectItem>
+                        <SelectItem value="Pending Approval">Pending Approval</SelectItem>
+                        <SelectItem value="Published">Published</SelectItem>
+                        <SelectItem value="Closed">Closed</SelectItem>
+                        <SelectItem value="On Hold">On Hold</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="posting-date">Posting Date*</Label>
+                    <Input 
+                      id="posting-date" 
+                      type="date"
+                      value={newJob.postedDate}
+                      onChange={(e) => setNewJob({...newJob, postedDate: e.target.value})}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="closing-date">Closing Date*</Label>
+                    <Input 
+                      id="closing-date" 
+                      type="date"
+                      value={newJob.closingDate}
+                      onChange={(e) => setNewJob({...newJob, closingDate: e.target.value})}
+                    />
+                  </div>
+                </div>
+                
                 <div className="space-y-2">
-                  <Label htmlFor="title">Job Title*</Label>
-                  <Input 
-                    id="title" 
-                    placeholder="e.g. Senior Frontend Developer"
-                    value={newJob.title}
-                    onChange={(e) => setNewJob({...newJob, title: e.target.value})}
+                  <Label htmlFor="job-description">Job Description*</Label>
+                  <Textarea 
+                    id="job-description" 
+                    placeholder="Enter a detailed description of the job..."
+                    className="min-h-[100px]"
+                    value={newJob.description}
+                    onChange={(e) => setNewJob({...newJob, description: e.target.value})}
                   />
                 </div>
+                
                 <div className="space-y-2">
-                  <Label htmlFor="department">Department*</Label>
-                  <Input 
-                    id="department" 
-                    placeholder="e.g. Engineering"
-                    value={newJob.department}
-                    onChange={(e) => setNewJob({...newJob, department: e.target.value})}
+                  <Label htmlFor="job-requirements">Requirements*</Label>
+                  <Textarea 
+                    id="job-requirements" 
+                    placeholder="List the skills, experience, and qualifications required..."
+                    className="min-h-[100px]"
+                    value={newJob.requirements}
+                    onChange={(e) => setNewJob({...newJob, requirements: e.target.value})}
                   />
                 </div>
               </div>
-              
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="location">Location*</Label>
-                  <Input 
-                    id="location" 
-                    placeholder="e.g. Remote, New York, NY"
-                    value={newJob.location}
-                    onChange={(e) => setNewJob({...newJob, location: e.target.value})}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="salary-range">Salary Range</Label>
-                  <Input 
-                    id="salary-range" 
-                    placeholder="e.g. $80,000 - $100,000"
-                    value={newJob.salaryRange}
-                    onChange={(e) => setNewJob({...newJob, salaryRange: e.target.value})}
-                  />
-                </div>
-              </div>
-              
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="employment-type">Employment Type*</Label>
-                  <Select 
-                    value={newJob.employmentType} 
-                    onValueChange={(value: JobEmploymentType) => setNewJob({...newJob, employmentType: value})}
-                  >
-                    <SelectTrigger id="employment-type">
-                      <SelectValue placeholder="Select type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Full-time">Full-time</SelectItem>
-                      <SelectItem value="Part-time">Part-time</SelectItem>
-                      <SelectItem value="Contract">Contract</SelectItem>
-                      <SelectItem value="Temporary">Temporary</SelectItem>
-                      <SelectItem value="Internship">Internship</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="status">Status*</Label>
-                  <Select 
-                    value={newJob.status} 
-                    onValueChange={(value: JobStatus) => setNewJob({...newJob, status: value})}
-                  >
-                    <SelectTrigger id="status">
-                      <SelectValue placeholder="Select status" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Draft">Draft</SelectItem>
-                      <SelectItem value="Pending Approval">Pending Approval</SelectItem>
-                      <SelectItem value="Published">Published</SelectItem>
-                      <SelectItem value="Closed">Closed</SelectItem>
-                      <SelectItem value="On Hold">On Hold</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-              
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="posting-date">Posting Date*</Label>
-                  <Input 
-                    id="posting-date" 
-                    type="date"
-                    value={newJob.postedDate}
-                    onChange={(e) => setNewJob({...newJob, postedDate: e.target.value})}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="closing-date">Closing Date*</Label>
-                  <Input 
-                    id="closing-date" 
-                    type="date"
-                    value={newJob.closingDate}
-                    onChange={(e) => setNewJob({...newJob, closingDate: e.target.value})}
-                  />
-                </div>
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="job-description">Job Description*</Label>
-                <Textarea 
-                  id="job-description" 
-                  placeholder="Enter a detailed description of the job..."
-                  className="min-h-[100px]"
-                  value={newJob.description}
-                  onChange={(e) => setNewJob({...newJob, description: e.target.value})}
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="job-requirements">Requirements*</Label>
-                <Textarea 
-                  id="job-requirements" 
-                  placeholder="List the skills, experience, and qualifications required..."
-                  className="min-h-[100px]"
-                  value={newJob.requirements}
-                  onChange={(e) => setNewJob({...newJob, requirements: e.target.value})}
-                />
-              </div>
-            </div>
-          </ScrollArea>
-          <DialogFooter className="flex flex-col sm:flex-row gap-2">
-            <Button variant="outline" onClick={() => setIsDialogOpen(false)} className="w-full sm:w-auto">Cancel</Button>
-            <Button onClick={handleCreateJob} className="w-full sm:w-auto">Create Job</Button>
-          </DialogFooter>
+            </ScrollArea>
+            <DialogFooter className="flex flex-col sm:flex-row gap-2">
+              <Button variant="outline" onClick={() => setIsDialogOpen(false)} className="w-full sm:w-auto">Cancel</Button>
+              <Button onClick={handleCreateJob} className="w-full sm:w-auto">Create Job</Button>
+            </DialogFooter>
+          </EnhancedVoiceTutorialListener>
         </DialogContent>
       </Dialog>
 
