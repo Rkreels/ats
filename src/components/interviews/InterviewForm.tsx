@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -10,7 +10,8 @@ import { useToast } from "@/hooks/use-toast";
 import { CalendarIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
-import { Interview } from "@/types";
+import { Interview, Candidate } from "@/types";
+import { mockDataService } from "@/data/mockData";
 
 interface InterviewFormProps {
   onAddInterview: (interview: Omit<Interview, "id">) => void;
@@ -19,16 +20,23 @@ interface InterviewFormProps {
 const InterviewForm = ({ onAddInterview }: InterviewFormProps) => {
   const { toast } = useToast();
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
+  const [candidates, setCandidates] = useState<Candidate[]>([]);
   const [newInterview, setNewInterview] = useState<Omit<Interview, "id">>({
     candidateId: '',
     interviewerId: '',
     interviewerName: '',
     date: '',
     time: '',
-    duration: '',
+    duration: '30 minutes',
     type: 'Phone',
     status: 'Scheduled',
   });
+
+  useEffect(() => {
+    // Load candidates for the dropdown
+    const allCandidates = mockDataService.getAllCandidates();
+    setCandidates(allCandidates);
+  }, []);
   
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -76,14 +84,22 @@ const InterviewForm = ({ onAddInterview }: InterviewFormProps) => {
     <div className="space-y-4">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <Label htmlFor="candidateId">Candidate ID</Label>
-          <Input 
-            type="text" 
-            id="candidateId" 
-            name="candidateId" 
-            value={newInterview.candidateId} 
-            onChange={handleInputChange} 
-          />
+          <Label htmlFor="candidateId">Select Candidate</Label>
+          <Select
+            value={newInterview.candidateId}
+            onValueChange={(value) => setNewInterview(prev => ({ ...prev, candidateId: value }))}
+          >
+            <SelectTrigger id="candidateId">
+              <SelectValue placeholder="Choose a candidate" />
+            </SelectTrigger>
+            <SelectContent>
+              {candidates.map(candidate => (
+                <SelectItem key={candidate.id} value={candidate.id}>
+                  {candidate.name} - {candidate.role}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
         <div>
           <Label htmlFor="interviewerName">Interviewer Name</Label>
@@ -92,7 +108,8 @@ const InterviewForm = ({ onAddInterview }: InterviewFormProps) => {
             id="interviewerName" 
             name="interviewerName" 
             value={newInterview.interviewerName} 
-            onChange={handleInputChange} 
+            onChange={handleInputChange}
+            placeholder="Enter interviewer name"
           />
         </div>
       </div>
@@ -143,13 +160,22 @@ const InterviewForm = ({ onAddInterview }: InterviewFormProps) => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <Label htmlFor="duration">Duration</Label>
-          <Input 
-            type="text" 
-            id="duration" 
-            name="duration" 
-            value={newInterview.duration} 
-            onChange={handleInputChange} 
-          />
+          <Select
+            value={newInterview.duration}
+            onValueChange={(value) => setNewInterview(prev => ({ ...prev, duration: value }))}
+          >
+            <SelectTrigger id="duration">
+              <SelectValue placeholder="Select duration" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="15 minutes">15 minutes</SelectItem>
+              <SelectItem value="30 minutes">30 minutes</SelectItem>
+              <SelectItem value="45 minutes">45 minutes</SelectItem>
+              <SelectItem value="1 hour">1 hour</SelectItem>
+              <SelectItem value="1.5 hours">1.5 hours</SelectItem>
+              <SelectItem value="2 hours">2 hours</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
         <div>
           <Label htmlFor="type">Type</Label>

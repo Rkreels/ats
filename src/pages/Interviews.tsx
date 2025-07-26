@@ -36,9 +36,21 @@ export default function Interviews() {
   const [interviews, setInterviews] = useState<Interview[]>(mockInterviews);
   
   const addInterview = (interview: Omit<Interview, "id">) => {
-    const newId = `i-${interviews.length + 1}`;
+    const newId = `i-${Date.now()}`;
     const completeInterview: Interview = { id: newId, ...interview };
     setInterviews(prev => [...prev, completeInterview]);
+  };
+
+  const editInterview = (updatedInterview: Interview) => {
+    setInterviews(prev => 
+      prev.map(interview => 
+        interview.id === updatedInterview.id ? updatedInterview : interview
+      )
+    );
+  };
+
+  const deleteInterview = (interviewId: string) => {
+    setInterviews(prev => prev.filter(interview => interview.id !== interviewId));
   };
   
   return (
@@ -77,7 +89,11 @@ export default function Interviews() {
               <CardDescription>List of scheduled interviews</CardDescription>
             </CardHeader>
             <CardContent>
-              <InterviewsList interviews={interviews} />
+              <InterviewsList 
+                interviews={interviews} 
+                onEdit={editInterview}
+                onDelete={deleteInterview}
+              />
             </CardContent>
           </Card>
         </VoiceTutorialListener>
