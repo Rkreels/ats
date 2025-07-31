@@ -1,5 +1,5 @@
 
-import { useEffect, useRef, useCallback } from "react";
+import React, { useEffect, useRef, useCallback } from "react";
 import { useVoiceTutorial } from "@/contexts/VoiceTutorialContext";
 
 /**
@@ -16,13 +16,13 @@ interface VoiceTutorialListenerProps {
   children: React.ReactNode;
 }
 
-export default function VoiceTutorialListener({
+const VoiceTutorialListener = React.forwardRef<HTMLDivElement, VoiceTutorialListenerProps>(({
   selector,
   description,
   help,
   actionStep,
   children,
-}: VoiceTutorialListenerProps) {
+}, forwardedRef) => {
   const { setTutorial, clearTutorial } = useVoiceTutorial();
   const ref = useRef<HTMLDivElement>(null);
   // Maintain last-guided element to avoid unnecessary repeats
@@ -91,7 +91,7 @@ export default function VoiceTutorialListener({
 
   return (
     <div 
-      ref={ref}
+      ref={forwardedRef || ref}
       data-voice-selector={selector}
       tabIndex={0}
       style={{ outline: "none" }}
@@ -99,4 +99,8 @@ export default function VoiceTutorialListener({
       {children}
     </div>
   );
-}
+});
+
+VoiceTutorialListener.displayName = "VoiceTutorialListener";
+
+export default VoiceTutorialListener;
