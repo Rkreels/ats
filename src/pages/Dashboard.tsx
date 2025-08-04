@@ -2,6 +2,9 @@ import { useState, useEffect } from "react";
 import { mockDataService } from "@/data/mockData";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import AnalyticsDashboard from "@/components/dashboard/AnalyticsDashboard";
+import QuickActions from "@/components/dashboard/QuickActions";
+import RecruitmentMetrics from "@/components/analytics/RecruitmentMetrics";
+import NotificationCenter from "@/components/notifications/NotificationCenter";
 import VoiceTutorialListener from "@/components/voice/VoiceTutorialListener";
 
 const Dashboard = () => {
@@ -79,14 +82,27 @@ const Dashboard = () => {
             </Card>
           </VoiceTutorialListener>
         </div>
-        {/* Add detail voice trainer on analytics dashboard */}
-        <VoiceTutorialListener
-          selector="dashboard-analytics-main"
-          description="This section provides visual reports, trends, and analytics of your entire hiring process."
-          actionStep="Use charts to analyze trends. Hover for segment-specific guidance."
-        >
-          <AnalyticsDashboard />
-        </VoiceTutorialListener>
+        
+        {/* Quick Actions */}
+        <QuickActions />
+        
+        {/* Recruitment Metrics */}
+        <RecruitmentMetrics />
+        
+        {/* Two Column Layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Analytics Dashboard */}
+          <VoiceTutorialListener
+            selector="dashboard-analytics-main"
+            description="This section provides visual reports, trends, and analytics of your entire hiring process."
+            actionStep="Use charts to analyze trends. Hover for segment-specific guidance."
+          >
+            <AnalyticsDashboard />
+          </VoiceTutorialListener>
+          
+          {/* Notifications */}
+          <NotificationCenter />
+        </div>
       </div>
     </>
   );

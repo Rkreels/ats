@@ -5,6 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import AppLayout from "./components/layout/AppLayout";
+import Index from "./pages/Index";
 import Dashboard from "./pages/Dashboard";
 import Candidates from "./pages/Candidates";
 import CandidateDetail from "./pages/CandidateDetail";
@@ -40,6 +41,12 @@ const App = () => (
             <Sonner />
             <BrowserRouter basename={getBasename()}>
               <Routes>
+                <Route path="/index" element={<Index />} />
+                <Route path="/dashboard" element={
+                  <AppLayout>
+                    <Dashboard />
+                  </AppLayout>
+                } />
                 <Route path="/" element={
                   <AppLayout>
                     <Dashboard />
