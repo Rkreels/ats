@@ -9,6 +9,8 @@ import {
 } from "@/components/ui/popover";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
+import { useVoiceTrigger } from "@/hooks/useVoiceTrigger";
+import EnhancedVoiceTutorialListener from "@/components/voice/EnhancedVoiceTutorialListener";
 
 type Notification = {
   id: string;
@@ -74,10 +76,15 @@ export const NotificationsPopover = () => {
     );
   };
 
+  const { voiceProps: notificationProps } = useVoiceTrigger({
+    what: `Notifications center with ${unreadCount} unread messages`,
+    actionStep: "Click to view and manage your notifications"
+  });
+
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant="ghost" size="icon" className="relative">
+        <Button variant="ghost" size="icon" className="relative" {...notificationProps}>
           <Bell className="h-5 w-5" />
           {unreadCount > 0 && (
             <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-red-500" />
@@ -85,50 +92,69 @@ export const NotificationsPopover = () => {
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-80 p-0" align="end">
-        <div className="flex items-center justify-between p-3 border-b">
-          <h3 className="font-medium">Notifications</h3>
-          {unreadCount > 0 && (
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              onClick={markAllAsRead} 
-              className="text-xs h-auto py-1"
-            >
-              Mark all as read
-            </Button>
-          )}
-        </div>
+        <EnhancedVoiceTutorialListener
+          selector="notifications-header"
+          description="Notifications management panel"
+          actionStep="Mark all as read or review individual notifications"
+          category="info"
+        >
+          <div className="flex items-center justify-between p-3 border-b">
+            <h3 className="font-medium">Notifications</h3>
+            {unreadCount > 0 && (
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={markAllAsRead} 
+                className="text-xs h-auto py-1"
+                {...useVoiceTrigger({
+                  what: "Mark all notifications as read",
+                  actionStep: "Click to clear all unread status"
+                }).voiceProps}
+              >
+                Mark all as read
+              </Button>
+            )}
+          </div>
+        </EnhancedVoiceTutorialListener>
         <ScrollArea className="h-80">
           {notifications.length > 0 ? (
             <div>
               {notifications.map((notification) => (
-                <div
+                <EnhancedVoiceTutorialListener
                   key={notification.id}
-                  onClick={() => markAsRead(notification.id)}
-                  className={cn(
-                    "cursor-pointer p-3 border-b last:border-b-0 hover:bg-gray-50 transition-colors",
-                    !notification.read && "bg-blue-50"
-                  )}
+                  selector={`notification-${notification.id}`}
+                  description={`${notification.type} notification: ${notification.title}. ${notification.message}`}
+                  actionStep="Click to mark as read and dismiss"
+                  category="info"
+                  priority={notification.read ? "low" : "medium"}
                 >
-                  <div className="flex items-start">
-                    <div
-                      className={cn(
-                        "w-2 h-2 rounded-full mt-1.5 mr-2",
-                        notification.type === "info" && "bg-blue-500",
-                        notification.type === "warning" && "bg-yellow-500",
-                        notification.type === "success" && "bg-green-500",
-                        notification.type === "error" && "bg-red-500"
-                      )}
-                    />
-                    <div className="flex-1">
-                      <div className="flex justify-between items-start">
-                        <h4 className="text-sm font-medium">{notification.title}</h4>
-                        <span className="text-xs text-gray-500">{notification.date}</span>
+                  <div
+                    onClick={() => markAsRead(notification.id)}
+                    className={cn(
+                      "cursor-pointer p-3 border-b last:border-b-0 hover:bg-gray-50 transition-colors",
+                      !notification.read && "bg-blue-50"
+                    )}
+                  >
+                    <div className="flex items-start">
+                      <div
+                        className={cn(
+                          "w-2 h-2 rounded-full mt-1.5 mr-2",
+                          notification.type === "info" && "bg-blue-500",
+                          notification.type === "warning" && "bg-yellow-500",
+                          notification.type === "success" && "bg-green-500",
+                          notification.type === "error" && "bg-red-500"
+                        )}
+                      />
+                      <div className="flex-1">
+                        <div className="flex justify-between items-start">
+                          <h4 className="text-sm font-medium">{notification.title}</h4>
+                          <span className="text-xs text-gray-500">{notification.date}</span>
+                        </div>
+                        <p className="text-xs text-gray-600 mt-1">{notification.message}</p>
                       </div>
-                      <p className="text-xs text-gray-600 mt-1">{notification.message}</p>
                     </div>
                   </div>
-                </div>
+                </EnhancedVoiceTutorialListener>
               ))}
             </div>
           ) : (

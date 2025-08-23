@@ -8,6 +8,8 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
 import EmailTemplates from "@/components/email/EmailTemplates";
+import { useVoiceTrigger } from "@/hooks/useVoiceTrigger";
+import EnhancedVoiceTutorialListener from "@/components/voice/EnhancedVoiceTutorialListener";
 
 export default function EmailSettings() {
   const { toast } = useToast();
@@ -57,20 +59,41 @@ export default function EmailSettings() {
     });
   };
   
+  const { voiceProps: emailSettingsProps } = useVoiceTrigger({
+    what: "Email settings configuration for SMTP, automations, and templates",
+    actionStep: "Configure email server settings, automation rules, and template management"
+  });
+
   return (
-    <Tabs defaultValue="configuration">
-      <TabsList className="mb-6">
-        <TabsTrigger value="configuration">Email Configuration</TabsTrigger>
-        <TabsTrigger value="automations">Automations</TabsTrigger>
-        <TabsTrigger value="templates">Email Templates</TabsTrigger>
-      </TabsList>
+    <div {...emailSettingsProps}>
+      <EnhancedVoiceTutorialListener
+        selector="email-settings-tabs"
+        description="Email settings tabs for configuration, automations, and templates"
+        actionStep="Switch between tabs to configure different email aspects"
+        category="navigation"
+        priority="high"
+      >
+        <Tabs defaultValue="configuration">
+          <TabsList className="mb-6">
+            <TabsTrigger value="configuration">Email Configuration</TabsTrigger>
+            <TabsTrigger value="automations">Automations</TabsTrigger>
+            <TabsTrigger value="templates">Email Templates</TabsTrigger>
+          </TabsList>
+        </EnhancedVoiceTutorialListener>
       
-      <TabsContent value="configuration">
-        <Card>
-          <CardHeader>
-            <CardTitle>SMTP Configuration</CardTitle>
-            <CardDescription>Configure your email server settings</CardDescription>
-          </CardHeader>
+        <TabsContent value="configuration">
+          <EnhancedVoiceTutorialListener
+            selector="smtp-configuration"
+            description="SMTP server configuration for outgoing emails"
+            actionStep="Enter your email server details and test the connection"
+            category="form"
+            priority="high"
+          >
+            <Card>
+              <CardHeader>
+                <CardTitle>SMTP Configuration</CardTitle>
+                <CardDescription>Configure your email server settings</CardDescription>
+              </CardHeader>
           <CardContent className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
@@ -130,19 +153,44 @@ export default function EmailSettings() {
               </div>
             </div>
           </CardContent>
-          <CardFooter className="flex justify-between">
-            <Button variant="outline" onClick={testConnection}>Test Connection</Button>
-            <Button onClick={saveSettings}>Save Settings</Button>
-          </CardFooter>
-        </Card>
-      </TabsContent>
+              <CardFooter className="flex justify-between">
+                <Button 
+                  variant="outline" 
+                  onClick={testConnection}
+                  {...useVoiceTrigger({
+                    what: "Test SMTP connection with current settings",
+                    actionStep: "Click to verify email server connectivity"
+                  }).voiceProps}
+                >
+                  Test Connection
+                </Button>
+                <Button 
+                  onClick={saveSettings}
+                  {...useVoiceTrigger({
+                    what: "Save SMTP configuration settings",
+                    actionStep: "Click to save email server settings"
+                  }).voiceProps}
+                >
+                  Save Settings
+                </Button>
+              </CardFooter>
+            </Card>
+          </EnhancedVoiceTutorialListener>
+        </TabsContent>
       
-      <TabsContent value="automations">
-        <Card>
-          <CardHeader>
-            <CardTitle>Email Automations</CardTitle>
-            <CardDescription>Configure automated email triggers</CardDescription>
-          </CardHeader>
+        <TabsContent value="automations">
+          <EnhancedVoiceTutorialListener
+            selector="email-automations"
+            description="Email automation settings for recruitment workflow"
+            actionStep="Toggle automation rules for different recruitment stages"
+            category="form"
+            priority="medium"
+          >
+            <Card>
+              <CardHeader>
+                <CardTitle>Email Automations</CardTitle>
+                <CardDescription>Configure automated email triggers</CardDescription>
+              </CardHeader>
           <CardContent className="space-y-6">
             <div className="space-y-4">
               {Object.entries(emailAutomations).map(([key, value]) => (
@@ -167,15 +215,35 @@ export default function EmailSettings() {
               ))}
             </div>
           </CardContent>
-          <CardFooter>
-            <Button className="ml-auto" onClick={saveSettings}>Save Settings</Button>
-          </CardFooter>
-        </Card>
-      </TabsContent>
+              <CardFooter>
+                <Button 
+                  className="ml-auto" 
+                  onClick={saveSettings}
+                  {...useVoiceTrigger({
+                    what: "Save email automation settings",
+                    actionStep: "Click to save automation preferences"
+                  }).voiceProps}
+                >
+                  Save Settings
+                </Button>
+              </CardFooter>
+            </Card>
+          </EnhancedVoiceTutorialListener>
+        </TabsContent>
       
-      <TabsContent value="templates">
-        <EmailTemplates />
-      </TabsContent>
-    </Tabs>
+        <TabsContent value="templates">
+          <EnhancedVoiceTutorialListener
+            selector="email-templates-tab"
+            description="Email templates management for automated communications"
+            actionStep="Create, edit, and manage email templates"
+            category="form"
+            priority="medium"
+          >
+            <EmailTemplates />
+          </EnhancedVoiceTutorialListener>
+        </TabsContent>
+      </Tabs>
+      </EnhancedVoiceTutorialListener>
+    </div>
   );
 }
