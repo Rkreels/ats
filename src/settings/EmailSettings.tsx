@@ -79,7 +79,6 @@ export default function EmailSettings() {
             <TabsTrigger value="automations">Automations</TabsTrigger>
             <TabsTrigger value="templates">Email Templates</TabsTrigger>
           </TabsList>
-        </EnhancedVoiceTutorialListener>
       
         <TabsContent value="configuration">
           <EnhancedVoiceTutorialListener
@@ -231,18 +230,18 @@ export default function EmailSettings() {
           </EnhancedVoiceTutorialListener>
         </TabsContent>
       
-        <TabsContent value="templates">
-          <EnhancedVoiceTutorialListener
-            selector="email-templates-tab"
-            description="Email templates management for automated communications"
-            actionStep="Create, edit, and manage email templates"
-            category="form"
-            priority="medium"
-          >
-            <EmailTemplates />
-          </EnhancedVoiceTutorialListener>
-        </TabsContent>
-      </Tabs>
+          <TabsContent value="templates">
+            <EnhancedVoiceTutorialListener
+              selector="email-templates-tab"
+              description="Email templates management for automated communications"
+              actionStep="Create, edit, and manage email templates"
+              category="form"
+              priority="medium"
+            >
+              <EmailTemplates />
+            </EnhancedVoiceTutorialListener>
+          </TabsContent>
+        </Tabs>
       </EnhancedVoiceTutorialListener>
     </div>
   );

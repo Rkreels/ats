@@ -19,7 +19,11 @@ export interface Candidate {
   avatar: string;
   lastUpdated: string;
   interviews: Interview[];
-  linkedinUrl?: string; // Added missing property
+  linkedinUrl?: string;
+  expectedSalary?: string;
+  availability?: string;
+  certifications?: string;
+  portfolioUrl?: string;
 }
 
 export interface Job {
