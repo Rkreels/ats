@@ -25,7 +25,7 @@ const VoiceTutorialContext = createContext<VoiceTutorialContextType | undefined>
 
 export const VoiceTutorialProvider = ({ children }: { children: ReactNode }) => {
   const [activeTutorial, setActiveTutorial] = useState<VoiceTutorialContent | null>(null);
-  const [voiceEnabled, setVoiceEnabled] = useState<boolean>(true);
+  const [voiceEnabled, setVoiceEnabled] = useState<boolean>(false);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [voiceQueue, setVoiceQueue] = useState<VoiceTutorialContent[]>([]);
   // Add state for voice persona and speed

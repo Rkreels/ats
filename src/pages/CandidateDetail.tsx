@@ -163,7 +163,11 @@ const CandidateDetail = () => {
               selector="tab-content-application"
               description="Displays the candidate's application details."
             >
-              <CandidateApplication candidate={candidate} />
+              <CandidateApplication 
+                candidate={candidate} 
+                setCandidate={setCandidate}
+                hasPermission={hasPermission}
+              />
             </VoiceTutorialListener>
           </TabsContent>
           {hasPermission('canEditCandidates') && (

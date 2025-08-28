@@ -2,8 +2,9 @@
 import { ReactNode, useState, useEffect } from "react";
 import AppSidebar from "./AppSidebar";
 import { NotificationsPopover } from "../notifications/NotificationsPopover";
+import VoiceToggle from "@/components/voice/VoiceToggle";
 import { Button } from "@/components/ui/button";
-import { Menu, X } from "lucide-react";
+import { Menu, X, ExternalLink } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import EnhancedVoiceTutorialListener from "@/components/voice/EnhancedVoiceTutorialListener";
 
@@ -84,7 +85,24 @@ export default function AppLayout({ children }: AppLayoutProps) {
                 </Button>
               </EnhancedVoiceTutorialListener>
               
-              <div className="ml-auto">
+              <div className="ml-auto flex items-center space-x-4">
+                <EnhancedVoiceTutorialListener
+                  selector="master-dashboard-link"
+                  description="Master Dashboard link - opens the main system dashboard in a new window"
+                  actionStep="Click to access the central management dashboard"
+                  category="navigation"
+                  priority="medium"
+                >
+                  <Button
+                    onClick={() => window.open('https://skillsim.vercel.app/dashboard', '_self')}
+                    variant="outline"
+                    size="sm"
+                    className="flex items-center gap-2"
+                  >
+                    <ExternalLink className="h-4 w-4" />
+                    Master Dashboard
+                  </Button>
+                </EnhancedVoiceTutorialListener>
                 <NotificationsPopover />
               </div>
             </header>
@@ -101,6 +119,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
           </EnhancedVoiceTutorialListener>
         </div>
       </div>
+      <VoiceToggle />
     </EnhancedVoiceTutorialListener>
   );
 }
