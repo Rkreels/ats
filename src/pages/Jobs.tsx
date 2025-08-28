@@ -397,7 +397,7 @@ export default function Jobs() {
 
       {/* Create Job Dialog */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-auto">
+        <DialogContent className="w-[95vw] max-w-[900px] max-h-[90vh] overflow-auto p-4 sm:p-6">
           <DialogHeader>
             <DialogTitle>Create New Job Posting</DialogTitle>
             <DialogDescription>
@@ -549,7 +549,7 @@ export default function Jobs() {
       {/* Edit/View Job Dialog */}
       {selectedJob && (
         <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-          <DialogContent className="max-w-2xl max-h-[90vh] overflow-auto">
+          <DialogContent className="w-[95vw] max-w-[900px] max-h-[90vh] overflow-auto p-4 sm:p-6">
             <DialogHeader>
               <DialogTitle>{isViewMode ? "View Job Posting" : "Edit Job Posting"}</DialogTitle>
               <DialogDescription>

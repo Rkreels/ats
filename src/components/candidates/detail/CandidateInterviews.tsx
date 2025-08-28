@@ -97,7 +97,7 @@ export function CandidateInterviews({ candidate, setCandidate, hasPermission }: 
                           {interview.status}
                         </Badge>
                       </div>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-gray-600">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm text-gray-600">
                         <p><strong>Date:</strong> {new Date(interview.date).toLocaleDateString()}</p>
                         <p><strong>Time:</strong> {interview.time}</p>
                         <p><strong>Duration:</strong> {interview.duration}</p>
@@ -136,7 +136,7 @@ export function CandidateInterviews({ candidate, setCandidate, hasPermission }: 
                 <DialogTrigger asChild>
                   <Button className="w-full">Schedule Interview</Button>
                 </DialogTrigger>
-                <DialogContent className="sm:max-w-[425px]">
+                <DialogContent className="w-[95vw] max-w-[500px] max-h-[90vh] overflow-y-auto p-4 sm:p-6">
                   <DialogHeader>
                     <DialogTitle>Schedule Interview</DialogTitle>
                     <DialogDescription>

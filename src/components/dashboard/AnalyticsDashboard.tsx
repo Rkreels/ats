@@ -34,7 +34,7 @@ const AnalyticsDashboard = () => {
   return (
     <div className="space-y-6">
       {/* Hiring Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card>
           <CardHeader className="pb-2">
             <CardDescription>Active Jobs</CardDescription>
@@ -62,7 +62,7 @@ const AnalyticsDashboard = () => {
       </div>
 
       {/* Time to hire chart */}
-      <Card className="col-span-1 md:col-span-2">
+      <Card className="col-span-1 lg:col-span-2">
         <CardHeader>
           <CardTitle>Time to Hire by Department</CardTitle>
           <CardDescription>Average days from application to hire</CardDescription>
@@ -81,7 +81,7 @@ const AnalyticsDashboard = () => {
         </CardContent>
       </Card>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Diversity pie charts */}
         <Card>
           <CardHeader>

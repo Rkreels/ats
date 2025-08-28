@@ -29,7 +29,7 @@ const CandidateSearchFilters = ({
   statusOptions
 }: CandidateSearchFiltersProps) => {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
       <VoiceTutorialListener
         selector="filter-search"
         description="Use this search box to quickly find candidates by name, role, or email."
@@ -75,7 +75,7 @@ const CandidateSearchFilters = ({
       >
         <div className="space-y-2">
           <Label htmlFor="sort">Sort By</Label>
-          <div className="flex items-center space-x-2">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center space-y-2 sm:space-y-0 sm:space-x-2">
             <Select value={sortBy} onValueChange={setSortBy}>
               <SelectTrigger id="sort">
                 <SelectValue placeholder="Name" />

@@ -258,7 +258,7 @@ export function CandidateApplication({ candidate, setCandidate, hasPermission }:
           >
             <div className="space-y-3">
               <h3 className="text-lg font-semibold">Additional Information</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
                 {candidate.expectedSalary && (
                   <div>
                     <span className="font-medium text-gray-700">Expected Salary:</span>
@@ -272,7 +272,7 @@ export function CandidateApplication({ candidate, setCandidate, hasPermission }:
                   </div>
                 )}
                 {candidate.certifications && (
-                  <div className="md:col-span-2">
+                  <div className="sm:col-span-2">
                     <span className="font-medium text-gray-700">Certifications:</span>
                     <p className="text-gray-600">{candidate.certifications}</p>
                   </div>

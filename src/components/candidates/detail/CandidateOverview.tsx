@@ -108,7 +108,7 @@ export function CandidateOverview({ candidate, setCandidate, hasPermission }: Ca
                 <DialogTrigger asChild>
                   <Button>Add Note</Button>
                 </DialogTrigger>
-                <DialogContent className="sm:max-w-[425px]">
+                <DialogContent className="w-[95vw] max-w-[500px] max-h-[90vh] overflow-y-auto p-4 sm:p-6">
                   <DialogHeader>
                     <DialogTitle>Add Note</DialogTitle>
                     <DialogDescription>

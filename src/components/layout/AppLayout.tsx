@@ -37,7 +37,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
       priority="high"
       triggerOnLoad={true}
     >
-      <div className="min-h-screen bg-gray-50 flex flex-col md:flex-row">
+      <div className="min-h-screen bg-gray-50 flex flex-col lg:flex-row">
         {isMobile ? (
           <>
             <div 
@@ -56,7 +56,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
             )}
           </>
         ) : (
-          <div className="hidden md:block md:w-64 flex-shrink-0">
+          <div className="hidden lg:block lg:w-64 flex-shrink-0">
             <AppSidebar />
           </div>
         )}
@@ -77,7 +77,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
                 <Button 
                   variant="ghost" 
                   size="sm" 
-                  className="md:hidden" 
+                  className="lg:hidden" 
                   onClick={toggleSidebar}
                 >
                   {sidebarOpen ? <X size={20} /> : <Menu size={20} />}
@@ -113,7 +113,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
             description="Main content area where page content is displayed."
             category="info"
           >
-            <main className="flex-1 p-3 md:p-6 overflow-x-hidden">
+            <main className="flex-1 p-3 sm:p-6 lg:p-8 overflow-x-hidden">
               {children}
             </main>
           </EnhancedVoiceTutorialListener>

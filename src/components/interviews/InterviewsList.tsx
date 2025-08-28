@@ -169,7 +169,7 @@ const InterviewsList = ({ interviews, onEdit, onDelete }: InterviewsListProps) =
 
       {/* Edit Interview Dialog */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="w-[95vw] max-w-[500px] max-h-[90vh] overflow-y-auto p-4 sm:p-6">
           <DialogHeader>
             <DialogTitle>Edit Interview</DialogTitle>
             <DialogDescription>

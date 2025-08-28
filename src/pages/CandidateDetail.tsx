@@ -102,7 +102,7 @@ const CandidateDetail = () => {
         actionStep="Switch between tabs for detailed views and actions."
       >
         <Tabs defaultValue="overview" className="space-y-4" onValueChange={setActiveTab} value={activeTab}>
-          <TabsList className="flex flex-wrap">
+          <TabsList className="flex flex-wrap w-full gap-1">
             <VoiceTutorialListener
               selector="tab-overview"
               description="Overview tab: view the candidate summary and timeline."

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Candidate } from "@/types";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { MoreVertical, Edit, Trash2, Eye } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -53,14 +54,14 @@ const CandidateTable = ({ candidates, onDelete }: CandidateTableProps) => {
       >
         <ScrollArea className="rounded-md border h-[400px] w-full">
           <div className="relative overflow-x-auto">
-            <table className="w-full text-sm text-left text-gray-500">
+            <table className="w-full text-sm text-left text-gray-500 min-w-[600px]">
               <thead className="text-xs text-gray-700 uppercase bg-gray-50 sticky top-0">
                 <tr>
-                  <th scope="col" className="px-6 py-3">Name</th>
-                  <th scope="col" className="px-6 py-3">Role</th>
-                  <th scope="col" className="px-6 py-3">Status</th>
-                  <th scope="col" className="px-6 py-3">Applied Date</th>
-                  <th scope="col" className="px-6 py-3">Actions</th>
+                  <th scope="col" className="px-3 sm:px-6 py-3">Name</th>
+                  <th scope="col" className="px-3 sm:px-6 py-3 hidden sm:table-cell">Role</th>
+                  <th scope="col" className="px-3 sm:px-6 py-3">Status</th>
+                  <th scope="col" className="px-3 sm:px-6 py-3 hidden md:table-cell">Applied Date</th>
+                  <th scope="col" className="px-3 sm:px-6 py-3">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -77,23 +78,28 @@ const CandidateTable = ({ candidates, onDelete }: CandidateTableProps) => {
                       className="bg-white border-b hover:bg-gray-50 cursor-pointer"
                       onClick={() => viewCandidateDetails(candidate.id)}
                     >
-                      <th scope="row" className="flex items-center px-6 py-4 text-gray-900 whitespace-nowrap">
-                        <Avatar className="mr-3">
+                      <th scope="row" className="flex items-center px-3 sm:px-6 py-4 text-gray-900 whitespace-nowrap">
+                        <Avatar className="mr-2 sm:mr-3 h-8 w-8 sm:h-10 sm:w-10">
                           <AvatarImage src={candidate.avatar} alt={candidate.name} />
                           <AvatarFallback>{candidate.name.charAt(0)}</AvatarFallback>
                         </Avatar>
-                        {candidate.name}
+                        <div className="flex flex-col">
+                          <span className="font-medium">{candidate.name}</span>
+                          <span className="text-xs text-gray-500 sm:hidden">{candidate.role}</span>
+                        </div>
                       </th>
-                      <td className="px-6 py-4">
+                      <td className="px-3 sm:px-6 py-4 hidden sm:table-cell">
                         {candidate.role}
                       </td>
-                      <td className="px-6 py-4">
-                        {candidate.status}
+                      <td className="px-3 sm:px-6 py-4">
+                        <Badge variant="outline" className="text-xs">
+                          {candidate.status}
+                        </Badge>
                       </td>
-                      <td className="px-6 py-4">
+                      <td className="px-3 sm:px-6 py-4 hidden md:table-cell">
                         {candidate.appliedDate}
                       </td>
-                      <td className="px-6 py-4" onClick={(e) => e.stopPropagation()}>
+                      <td className="px-3 sm:px-6 py-4" onClick={(e) => e.stopPropagation()}>
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
                             <VoiceTutorialListener
@@ -174,7 +180,7 @@ const CandidateTable = ({ candidates, onDelete }: CandidateTableProps) => {
       </VoiceTutorialListener>
     
       <Dialog open={editModalOpen} onOpenChange={setEditModalOpen}>
-        <DialogContent>
+        <DialogContent className="w-[95vw] max-w-[600px] max-h-[90vh] overflow-y-auto p-4 sm:p-6">
           <DialogHeader>
             <DialogTitle>Edit Candidate</DialogTitle>
           </DialogHeader>

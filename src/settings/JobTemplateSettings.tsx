@@ -308,7 +308,7 @@ export default function JobTemplateSettings() {
 
       {/* Add Template Dialog */}
       <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-auto">
+        <DialogContent className="w-[95vw] max-w-[800px] max-h-[90vh] overflow-auto p-4 sm:p-6">
           <DialogHeader>
             <DialogTitle>Create Job Template</DialogTitle>
             <DialogDescription>
@@ -461,7 +461,7 @@ export default function JobTemplateSettings() {
 
       {/* Edit Template Dialog */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-auto">
+        <DialogContent className="w-[95vw] max-w-[800px] max-h-[90vh] overflow-auto p-4 sm:p-6">
           <DialogHeader>
             <DialogTitle>Edit Job Template</DialogTitle>
             <DialogDescription>

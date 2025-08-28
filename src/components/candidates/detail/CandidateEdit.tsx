@@ -193,7 +193,7 @@ export function CandidateEdit({ candidate, setCandidate, onClose }: CandidateEdi
           </EnhancedVoiceTutorialListener>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <EnhancedVoiceTutorialListener
             selector="candidate-location-field"
             description="Candidate location input field."
@@ -232,7 +232,7 @@ export function CandidateEdit({ candidate, setCandidate, onClose }: CandidateEdi
           </EnhancedVoiceTutorialListener>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <EnhancedVoiceTutorialListener
             selector="candidate-skills-field"
             description="Candidate skills input field - enter skills separated by commas."
@@ -271,7 +271,7 @@ export function CandidateEdit({ candidate, setCandidate, onClose }: CandidateEdi
           </EnhancedVoiceTutorialListener>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <EnhancedVoiceTutorialListener
             selector="candidate-linkedin-field"
             description="Candidate LinkedIn profile URL input field."

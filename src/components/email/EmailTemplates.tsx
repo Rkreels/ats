@@ -200,7 +200,7 @@ export default function EmailTemplates() {
                 New Template
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-2xl max-h-[90vh] overflow-auto">
+            <DialogContent className="w-[95vw] max-w-[800px] max-h-[90vh] overflow-auto p-4 sm:p-6">
               <DialogHeader>
                 <DialogTitle>Create Email Template</DialogTitle>
                 <DialogDescription>
@@ -214,7 +214,7 @@ export default function EmailTemplates() {
                 category="form"
               >
                 <div className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <Label htmlFor="new-name">Template Name</Label>
                       <Input
@@ -354,7 +354,7 @@ export default function EmailTemplates() {
 
       {/* Template Preview/Edit Dialog */}
       <Dialog open={!!selectedTemplate} onOpenChange={() => setSelectedTemplate(null)}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-auto">
+        <DialogContent className="w-[95vw] max-w-[800px] max-h-[90vh] overflow-auto p-4 sm:p-6">
           <DialogHeader>
             <DialogTitle>
               {isEditMode ? "Edit Template" : "Template Preview"}: {selectedTemplate?.name}
