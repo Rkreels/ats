@@ -12,6 +12,7 @@ import { useUser } from "@/contexts/UserContext";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import EnhancedVoiceTutorialListener from "@/components/voice/EnhancedVoiceTutorialListener";
+import { mockDataService } from "@/data/mockData";
 
 // Job type definition
 type JobEmploymentType = "Full-time" | "Part-time" | "Contract" | "Temporary" | "Internship";
@@ -186,13 +187,8 @@ export default function Jobs() {
       return;
     }
 
-    const job: Job = {
-      id: `job-${Date.now()}`,
-      ...newJob,
-      applicants: 0
-    };
-
-    setJobs([job, ...jobs]);
+    const job = mockDataService.addJob(newJob);
+    setJobs(mockDataService.getAllJobs());
     setIsDialogOpen(false);
 
     toast({
@@ -220,7 +216,8 @@ export default function Jobs() {
       return;
     }
 
-    setJobs(jobs.map(job => job.id === selectedJob.id ? selectedJob : job));
+    mockDataService.updateJob(selectedJob);
+    setJobs(mockDataService.getAllJobs());
     setIsEditDialogOpen(false);
     setSelectedJob(null);
 
@@ -231,12 +228,14 @@ export default function Jobs() {
   };
 
   const handleDeleteJob = (jobId: string) => {
-    setJobs(jobs.filter(job => job.id !== jobId));
-
-    toast({
-      title: "Job deleted",
-      description: "The job posting has been deleted successfully"
-    });
+    const success = mockDataService.deleteJob(jobId);
+    if (success) {
+      setJobs(mockDataService.getAllJobs());
+      toast({
+        title: "Job deleted",
+        description: "The job posting has been deleted successfully"
+      });
+    }
   };
 
   const { voiceProps: jobsMainProps } = useVoiceTrigger({

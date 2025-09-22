@@ -48,7 +48,15 @@ export default function Candidates() {
     });
 
   const deleteCandidate = (id: string) => {
-    setCandidates(candidates.filter(c => c.id !== id));
+    const success = mockDataService.deleteCandidate(id);
+    if (success) {
+      setCandidates(mockDataService.getAllCandidates());
+    }
+  };
+
+  const handleAddCandidate = (newCandidate: Omit<Candidate, "id">) => {
+    const candidate = mockDataService.addCandidate(newCandidate);
+    setCandidates(mockDataService.getAllCandidates());
   };
 
   return (
@@ -63,7 +71,7 @@ export default function Candidates() {
           description="Add a new candidate to your talent pool."
           actionStep="Fill out the required candidate information and submit."
         >
-          <AddCandidateForm />
+          <AddCandidateForm onAdd={handleAddCandidate} />
         </VoiceTutorialListener>
       </div>
       <VoiceTutorialListener

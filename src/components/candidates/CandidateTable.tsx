@@ -162,9 +162,16 @@ const CandidateTable = ({ candidates, onDelete }: CandidateTableProps) => {
                                 description={`View resume for candidate ${candidate.name}`}
                                 actionStep="Click to preview the resume"
                               >
-                                <a href={candidate.resumeUrl} target="_blank" rel="noopener noreferrer" className="flex items-center">
-                                  View Resume
-                                </a>
+                                 <div 
+                                   onClick={() => {
+                                     if (candidate.resumeUrl && candidate.resumeUrl !== '/placeholder.svg') {
+                                       window.open(candidate.resumeUrl, '_blank');
+                                     }
+                                   }}
+                                   className="flex items-center cursor-pointer"
+                                 >
+                                   View Resume
+                                 </div>
                               </VoiceTutorialListener>
                             </DropdownMenuItem>
                           </DropdownMenuContent>

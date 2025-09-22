@@ -4,6 +4,7 @@ import { Interview } from "@/types";
 import InterviewForm from "@/components/interviews/InterviewForm";
 import InterviewsList from "@/components/interviews/InterviewsList";
 import VoiceTutorialListener from "@/components/voice/VoiceTutorialListener";
+import { mockDataService } from "@/data/mockData";
 
 // Mock interviews data
 const mockInterviews: Interview[] = [
@@ -36,21 +37,18 @@ export default function Interviews() {
   const [interviews, setInterviews] = useState<Interview[]>(mockInterviews);
   
   const addInterview = (interview: Omit<Interview, "id">) => {
-    const newId = `i-${Date.now()}`;
-    const completeInterview: Interview = { id: newId, ...interview };
-    setInterviews(prev => [...prev, completeInterview]);
+    const newInterview = mockDataService.addInterview(interview);
+    setInterviews(mockDataService.getAllInterviews());
   };
 
   const editInterview = (updatedInterview: Interview) => {
-    setInterviews(prev => 
-      prev.map(interview => 
-        interview.id === updatedInterview.id ? updatedInterview : interview
-      )
-    );
+    mockDataService.updateInterview(updatedInterview);
+    setInterviews(mockDataService.getAllInterviews());
   };
 
   const deleteInterview = (interviewId: string) => {
-    setInterviews(prev => prev.filter(interview => interview.id !== interviewId));
+    mockDataService.deleteInterview(interviewId);
+    setInterviews(mockDataService.getAllInterviews());
   };
   
   return (

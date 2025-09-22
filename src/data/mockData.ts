@@ -1,31 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import { Candidate, Interview, TimeToHireData, DiversityData, Job, User } from '@/types';
 
-// Mock data service
-export const mockDataService = {
-  getAllCandidates: (): Candidate[] => candidates,
-  getCandidate: (id: string): Candidate | undefined => candidates.find(c => c.id === id),
-  getAllUsers: (): User[] => users,
-  getUser: (id: string): User | undefined => users.find(u => u.id === id),
-  getAllInterviews: (): Interview[] => interviews,
-  getInterview: (id: string): Interview | undefined => interviews.find(i => i.id === id),
-  getAllJobs: (): Job[] => jobs,
-  getTimeToHireData: (): TimeToHireData[] => timeToHireData,
-  getDiversityData: (): DiversityData => diversityData,
-  updateCandidate: (candidate: Candidate): Candidate => {
-    const index = candidates.findIndex(c => c.id === candidate.id);
-    if (index !== -1) {
-      candidates[index] = candidate;
-    }
-    return candidate;
-  },
-  addCandidate: (candidate: Omit<Candidate, "id">): Candidate => {
-    const newCandidate = createCandidate(candidate);
-    candidates.push(newCandidate);
-    return newCandidate;
-  }
-};
-
 // Time to Hire mock data
 const timeToHireData: TimeToHireData[] = [
   { month: "Jan", Engineering: 45, Product: 32, Marketing: 28, Sales: 25 },
@@ -70,6 +45,7 @@ const jobs: Job[] = [
     department: "Engineering",
     location: "New York, NY",
     type: "Full-time",
+    employmentType: "Full-time",
     description: "We are looking for a Frontend Developer to join our team.",
     responsibilities: [
       "Develop new user-facing features",
@@ -86,6 +62,7 @@ const jobs: Job[] = [
     postedDate: "2023-01-01",
     closingDate: "2023-03-01",
     salary: "$100,000 - $130,000",
+    salaryRange: "$100,000 - $130,000",
     status: "Published",
     hiringManager: "John Doe",
     applicants: 15,
@@ -97,6 +74,7 @@ const jobs: Job[] = [
     department: "Engineering",
     location: "San Francisco, CA",
     type: "Full-time",
+    employmentType: "Full-time",
     description: "We are looking for a Backend Developer to join our team.",
     responsibilities: [
       "Design and implement scalable and reliable backend services",
@@ -113,6 +91,7 @@ const jobs: Job[] = [
     postedDate: "2023-01-15",
     closingDate: "2023-03-15",
     salary: "$120,000 - $150,000",
+    salaryRange: "$120,000 - $150,000",
     status: "Published",
     hiringManager: "Jane Smith",
     applicants: 10,
@@ -124,6 +103,7 @@ const jobs: Job[] = [
     department: "Product",
     location: "Chicago, IL",
     type: "Full-time",
+    employmentType: "Full-time",
     description: "We are looking for a Product Manager to join our team.",
     responsibilities: [
       "Define the product vision and strategy",
@@ -140,6 +120,7 @@ const jobs: Job[] = [
     postedDate: "2023-02-01",
     closingDate: "2023-04-01",
     salary: "$130,000 - $160,000",
+    salaryRange: "$130,000 - $160,000",
     status: "Published",
     hiringManager: "Michael Johnson",
     applicants: 8,
@@ -565,4 +546,114 @@ export const createUser = (userData: Omit<User, "id">): User => {
     id,
     ...userData
   };
+};
+
+// Mock data service
+export const mockDataService = {
+  // Candidates CRUD
+  getAllCandidates: (): Candidate[] => candidates,
+  getCandidate: (id: string): Candidate | undefined => candidates.find(c => c.id === id),
+  addCandidate: (candidate: Omit<Candidate, "id">): Candidate => {
+    const newCandidate = createCandidate(candidate);
+    candidates.push(newCandidate);
+    return newCandidate;
+  },
+  updateCandidate: (candidate: Candidate): Candidate => {
+    const index = candidates.findIndex(c => c.id === candidate.id);
+    if (index !== -1) {
+      candidates[index] = candidate;
+    }
+    return candidate;
+  },
+  deleteCandidate: (id: string): boolean => {
+    const index = candidates.findIndex(c => c.id === id);
+    if (index !== -1) {
+      candidates.splice(index, 1);
+      return true;
+    }
+    return false;
+  },
+
+  // Jobs CRUD
+  getAllJobs: (): Job[] => jobs,
+  getJob: (id: string): Job | undefined => jobs.find(j => j.id === id),
+  addJob: (job: Omit<Job, "id" | "applicants">): Job => {
+    const newJob: Job = {
+      id: uuidv4(),
+      applicants: 0,
+      ...job
+    };
+    jobs.push(newJob);
+    return newJob;
+  },
+  updateJob: (job: Job): Job => {
+    const index = jobs.findIndex(j => j.id === job.id);
+    if (index !== -1) {
+      jobs[index] = job;
+    }
+    return job;
+  },
+  deleteJob: (id: string): boolean => {
+    const index = jobs.findIndex(j => j.id === id);
+    if (index !== -1) {
+      jobs.splice(index, 1);
+      return true;
+    }
+    return false;
+  },
+
+  // Interviews CRUD
+  getAllInterviews: (): Interview[] => interviews,
+  getInterview: (id: string): Interview | undefined => interviews.find(i => i.id === id),
+  addInterview: (interview: Omit<Interview, "id">): Interview => {
+    const newInterview: Interview = {
+      id: uuidv4(),
+      ...interview
+    };
+    interviews.push(newInterview);
+    return newInterview;
+  },
+  updateInterview: (interview: Interview): Interview => {
+    const index = interviews.findIndex(i => i.id === interview.id);
+    if (index !== -1) {
+      interviews[index] = interview;
+    }
+    return interview;
+  },
+  deleteInterview: (id: string): boolean => {
+    const index = interviews.findIndex(i => i.id === id);
+    if (index !== -1) {
+      interviews.splice(index, 1);
+      return true;
+    }
+    return false;
+  },
+
+  // Users CRUD
+  getAllUsers: (): User[] => users,
+  getUser: (id: string): User | undefined => users.find(u => u.id === u.id),
+  addUser: (user: Omit<User, "id">): User => {
+    const newUser = createUser(user);
+    users.push(newUser);
+    return newUser;
+  },
+  updateUser: (user: User): User => {
+    const index = users.findIndex(u => u.id === user.id);
+    if (index !== -1) {
+      users[index] = user;
+    }
+    return user;
+  },
+  deleteUser: (id: string): boolean => {
+    const index = users.findIndex(u => u.id === id);
+    if (index !== -1) {
+      users.splice(index, 1);
+      return true;
+    }
+    return false;
+  },
+
+  // Analytics data
+  getTimeToHireData: (): TimeToHireData[] => timeToHireData,
+  getDiversityData: (): DiversityData => diversityData
 };
