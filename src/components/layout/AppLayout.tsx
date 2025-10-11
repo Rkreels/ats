@@ -45,7 +45,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
                 sidebarOpen ? 'translate-x-0' : '-translate-x-full'
               }`}
             >
-              <AppSidebar />
+              <AppSidebar onLinkClick={() => setSidebarOpen(false)} />
             </div>
             
             {sidebarOpen && (

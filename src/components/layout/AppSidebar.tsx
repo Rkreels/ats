@@ -6,7 +6,11 @@ import { useUser } from "@/contexts/UserContext";
 import { useToast } from "@/hooks/use-toast";
 import VoiceTutorialListener from "@/components/voice/VoiceTutorialListener";
 
-export default function AppSidebar() {
+interface AppSidebarProps {
+  onLinkClick?: () => void;
+}
+
+export default function AppSidebar({ onLinkClick }: AppSidebarProps = {}) {
   const location = useLocation();
   const { currentUser } = useUser();
   const { toast } = useToast();
@@ -82,6 +86,7 @@ export default function AppSidebar() {
                   >
                     <Link
                       to={item.path}
+                      onClick={onLinkClick}
                       className={cn(
                         "flex items-center px-4 py-3 text-gray-700 rounded-md",
                         "transition-colors duration-200",
@@ -106,6 +111,7 @@ export default function AppSidebar() {
           >
             <Link
               to="/settings"
+              onClick={onLinkClick}
               className={cn(
                 "flex items-center px-4 py-3 text-gray-700 rounded-md",
                 "transition-colors duration-200 hover:bg-gray-100",

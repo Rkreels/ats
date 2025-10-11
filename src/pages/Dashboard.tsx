@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { mockDataService } from "@/data/mockData";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import AnalyticsDashboard from "@/components/dashboard/AnalyticsDashboard";
@@ -8,6 +9,7 @@ import NotificationCenter from "@/components/notifications/NotificationCenter";
 import VoiceTutorialListener from "@/components/voice/VoiceTutorialListener";
 
 const Dashboard = () => {
+  const navigate = useNavigate();
   const [stats, setStats] = useState({
     totalCandidates: 0,
     activeJobs: 0,
@@ -39,9 +41,12 @@ const Dashboard = () => {
           <VoiceTutorialListener
             selector="dashboard-total-candidates"
             description="This card shows the total number of candidates in your recruitment system."
-            actionStep="You can click details in Candidates to view or modify."
+            actionStep="Click to view all candidates in the system."
           >
-            <Card>
+            <Card 
+              className="cursor-pointer hover:shadow-lg transition-shadow"
+              onClick={() => navigate('/candidates')}
+            >
               <CardHeader className="pb-2">
                 <CardTitle>Total Candidates</CardTitle>
                 <CardDescription>All applicants in the system</CardDescription>
@@ -54,9 +59,12 @@ const Dashboard = () => {
           <VoiceTutorialListener
             selector="dashboard-active-jobs"
             description="This card displays the number of active job postings."
-            actionStep="Go to Jobs to manage or create new job posts."
+            actionStep="Click to view and manage all job postings."
           >
-            <Card>
+            <Card 
+              className="cursor-pointer hover:shadow-lg transition-shadow"
+              onClick={() => navigate('/jobs')}
+            >
               <CardHeader className="pb-2">
                 <CardTitle>Active Jobs</CardTitle>
                 <CardDescription>Currently open positions</CardDescription>
@@ -69,9 +77,12 @@ const Dashboard = () => {
           <VoiceTutorialListener
             selector="dashboard-scheduled-interviews"
             description="Displays all upcoming interviews across all jobs and candidates."
-            actionStep="See Interviews for editing or rescheduling interviews."
+            actionStep="Click to view and manage all scheduled interviews."
           >
-            <Card>
+            <Card 
+              className="cursor-pointer hover:shadow-lg transition-shadow"
+              onClick={() => navigate('/interviews')}
+            >
               <CardHeader className="pb-2">
                 <CardTitle>Scheduled Interviews</CardTitle>
                 <CardDescription>Upcoming interviews</CardDescription>
