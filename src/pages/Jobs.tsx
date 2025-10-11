@@ -96,7 +96,7 @@ export default function Jobs() {
             </div>
             
             {hasPermission('canCreateJob') && (
-              <Button onClick={handleOpenNewJobDialog} {...addJobProps}>
+              <Button onClick={handleOpenNewJobDialog} data-action="add-job" {...addJobProps}>
                 Add New Job
               </Button>
             )}

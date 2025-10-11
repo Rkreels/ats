@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { useToast } from "@/hooks/use-toast";
 import { useVoiceTrigger } from "@/hooks/useVoiceTrigger";
 import { Plus, Edit, Trash2 } from "lucide-react";
@@ -222,37 +223,31 @@ export default function JobTemplateSettings() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4 mb-6">
-              <div className="border rounded-md">
-                <table className="w-full">
-                  <thead>
-                    <tr className="border-b bg-gray-50 text-left">
-                      <th className="p-3 font-medium text-gray-500">Template Name</th>
-                      <th className="p-3 font-medium text-gray-500">Department</th>
-                      <th className="p-3 font-medium text-gray-500">Employment Type</th>
-                      <th className="p-3 font-medium text-gray-500">Salary Range</th>
-                      <th className="p-3 font-medium text-gray-500">Actions</th>
-                    </tr>
-                  </thead>
+              <ScrollArea className="h-[500px]">
+                <div className="border rounded-md">
+                  <table className="w-full">
+                    <thead className="sticky top-0 bg-gray-50 z-10">
+                      <tr className="border-b text-left">
+                        <th className="p-3 font-medium text-gray-500 w-[25%]">Template Name</th>
+                        <th className="p-3 font-medium text-gray-500 w-[20%]">Department</th>
+                        <th className="p-3 font-medium text-gray-500 w-[20%]">Employment Type</th>
+                        <th className="p-3 font-medium text-gray-500 w-[20%]">Salary Range</th>
+                        <th className="p-3 font-medium text-gray-500 w-[15%]">Actions</th>
+                      </tr>
+                    </thead>
                   <tbody>
                     {jobTemplates.map((template) => (
-                      <EnhancedVoiceTutorialListener
-                        key={template.id}
-                        selector={`template-${template.id}`}
-                        description={`Job template for ${template.title} in ${template.department} department.`}
-                        actionStep="Use the action buttons to edit or delete this template."
-                        category="info"
-                      >
-                        <tr className="border-b last:border-0 hover:bg-gray-50">
-                          <td className="p-3 font-medium">{template.title}</td>
-                          <td className="p-3">{template.department}</td>
-                          <td className="p-3">
+                      <tr key={template.id} className="border-b last:border-0 hover:bg-gray-50">
+                          <td className="p-3 font-medium w-[25%]">{template.title}</td>
+                          <td className="p-3 w-[20%]">{template.department}</td>
+                          <td className="p-3 w-[20%]">
                             <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                               {template.employmentType}
                             </span>
                           </td>
-                          <td className="p-3 text-sm text-gray-600">{template.salaryRange}</td>
-                          <td className="p-3">
-                            <div className="flex space-x-2">
+                          <td className="p-3 text-sm text-gray-600 w-[20%]">{template.salaryRange}</td>
+                          <td className="p-3 w-[15%]">
+                            <div className="flex space-x-1">
                               <Button 
                                 variant="ghost" 
                                 size="sm"
@@ -291,11 +286,11 @@ export default function JobTemplateSettings() {
                             </div>
                           </td>
                         </tr>
-                      </EnhancedVoiceTutorialListener>
                     ))}
                   </tbody>
-                </table>
-              </div>
+                  </table>
+                </div>
+              </ScrollArea>
               
               <Button onClick={() => setIsAddDialogOpen(true)} className="flex items-center space-x-2">
                 <Plus className="h-4 w-4" />

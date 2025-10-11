@@ -13,7 +13,13 @@ export default function QuickActions() {
       title: "Add Candidate",
       description: "Add a new candidate to your pipeline",
       icon: Users,
-      action: () => navigate("/candidates"),
+      action: () => {
+        navigate("/candidates");
+        setTimeout(() => {
+          const addButton = document.querySelector('[data-action="add-candidate"]') as HTMLElement;
+          addButton?.click();
+        }, 100);
+      },
       voiceDescription: "Quickly add a new candidate to your recruitment pipeline",
       actionStep: "Click to navigate to candidates page and add a new candidate"
     },
@@ -21,7 +27,13 @@ export default function QuickActions() {
       title: "Create Job",
       description: "Post a new job opening",
       icon: Plus,
-      action: () => navigate("/jobs"),
+      action: () => {
+        navigate("/jobs");
+        setTimeout(() => {
+          const addButton = document.querySelector('[data-action="add-job"]') as HTMLElement;
+          addButton?.click();
+        }, 100);
+      },
       voiceDescription: "Create and publish a new job posting",
       actionStep: "Click to go to jobs page and create a new position"
     },

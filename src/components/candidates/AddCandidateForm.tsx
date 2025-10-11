@@ -117,7 +117,7 @@ export function AddCandidateForm({ onAdd }: AddCandidateFormProps = {}) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button>
+        <Button data-action="add-candidate">
           <UserPlus className="mr-2 h-4 w-4" /> Add Candidate
         </Button>
       </DialogTrigger>

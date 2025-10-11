@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -70,8 +71,9 @@ const InterviewsList = ({ interviews, onEdit, onDelete }: InterviewsListProps) =
 
   return (
     <>
-      <div className="space-y-4">
-        {interviews.map(interview => (
+      <ScrollArea className="h-[500px]">
+        <div className="space-y-4 pr-4">
+          {interviews.map(interview => (
           <EnhancedVoiceTutorialListener
             key={interview.id}
             selector={`interview-${interview.id}`}
@@ -158,14 +160,15 @@ const InterviewsList = ({ interviews, onEdit, onDelete }: InterviewsListProps) =
             </div>
           </EnhancedVoiceTutorialListener>
         ))}
-        {interviews.length === 0 && (
-          <div className="text-center py-8">
-            <Calendar className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No interviews scheduled</h3>
-            <p className="text-gray-500">Schedule your first interview to get started.</p>
-          </div>
-        )}
-      </div>
+          {interviews.length === 0 && (
+            <div className="text-center py-8">
+              <Calendar className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-gray-900 mb-2">No interviews scheduled</h3>
+              <p className="text-gray-500">Schedule your first interview to get started.</p>
+            </div>
+          )}
+        </div>
+      </ScrollArea>
 
       {/* Edit Interview Dialog */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
