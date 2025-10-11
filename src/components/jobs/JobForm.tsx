@@ -10,13 +10,16 @@ interface JobFormData {
   title: string;
   department: string;
   location: string;
-  employmentType: "Full-time" | "Part-time" | "Contract" | "Temporary" | "Internship";
+  type: "Full-time" | "Part-time" | "Contract" | "Temporary" | "Internship";
   status: "Draft" | "Pending Approval" | "Published" | "Closed" | "On Hold";
   description: string;
-  requirements: string;
+  requirements: string[];
+  responsibilities: string[];
   postedDate: string;
   closingDate: string;
-  salaryRange: string;
+  salary: string;
+  hiringManager: string;
+  skills: string[];
 }
 
 interface JobFormProps {
@@ -37,13 +40,16 @@ export default function JobForm({
     title: "",
     department: "",
     location: "",
-    employmentType: "Full-time",
+    type: "Full-time",
     status: "Draft",
     description: "",
-    requirements: "",
+    requirements: [],
+    responsibilities: [],
     postedDate: new Date().toISOString().split('T')[0],
     closingDate: "",
-    salaryRange: "",
+    salary: "",
+    hiringManager: "",
+    skills: [],
     ...initialData
   });
 
@@ -63,7 +69,13 @@ export default function JobForm({
   };
 
   const handleInputChange = (field: keyof JobFormData, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    if (field === 'requirements' || field === 'responsibilities') {
+      setFormData(prev => ({ ...prev, [field]: value.split('\n').filter(Boolean) }));
+    } else if (field === 'skills') {
+      setFormData(prev => ({ ...prev, [field]: value.split(',').map(s => s.trim()).filter(Boolean) }));
+    } else {
+      setFormData(prev => ({ ...prev, [field]: value }));
+    }
   };
 
   return (
@@ -100,10 +112,10 @@ export default function JobForm({
           />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="employmentType">Employment Type</Label>
+          <Label htmlFor="type">Employment Type</Label>
           <Select
-            value={formData.employmentType}
-            onValueChange={(value) => handleInputChange("employmentType", value)}
+            value={formData.type}
+            onValueChange={(value) => handleInputChange("type", value)}
           >
             <SelectTrigger>
               <SelectValue />
@@ -139,11 +151,11 @@ export default function JobForm({
           </Select>
         </div>
         <div className="space-y-2">
-          <Label htmlFor="salaryRange">Salary Range</Label>
+          <Label htmlFor="salary">Salary Range</Label>
           <Input
-            id="salaryRange"
-            value={formData.salaryRange}
-            onChange={(e) => handleInputChange("salaryRange", e.target.value)}
+            id="salary"
+            value={formData.salary}
+            onChange={(e) => handleInputChange("salary", e.target.value)}
             placeholder="e.g. $120,000 - $150,000"
           />
         </div>
@@ -181,13 +193,45 @@ export default function JobForm({
         />
       </div>
 
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <Label htmlFor="hiringManager">Hiring Manager</Label>
+          <Input
+            id="hiringManager"
+            value={formData.hiringManager}
+            onChange={(e) => handleInputChange("hiringManager", e.target.value)}
+            placeholder="e.g. John Smith"
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="skills">Required Skills</Label>
+          <Input
+            id="skills"
+            value={formData.skills.join(", ")}
+            onChange={(e) => handleInputChange("skills", e.target.value)}
+            placeholder="e.g. React, TypeScript, Node.js"
+          />
+        </div>
+      </div>
+
       <div className="space-y-2">
         <Label htmlFor="requirements">Requirements</Label>
         <Textarea
           id="requirements"
-          value={formData.requirements}
+          value={formData.requirements.join("\n")}
           onChange={(e) => handleInputChange("requirements", e.target.value)}
-          placeholder="List the required skills, experience, and qualifications..."
+          placeholder="List the required skills, experience, and qualifications (one per line)..."
+          rows={4}
+        />
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="responsibilities">Responsibilities</Label>
+        <Textarea
+          id="responsibilities"
+          value={formData.responsibilities.join("\n")}
+          onChange={(e) => handleInputChange("responsibilities", e.target.value)}
+          placeholder="List the key responsibilities (one per line)..."
           rows={4}
         />
       </div>

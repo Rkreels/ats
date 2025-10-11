@@ -38,7 +38,11 @@ const candidateFormSchema = z.object({
 
 type CandidateFormValues = z.infer<typeof candidateFormSchema>;
 
-export function AddCandidateForm() {
+interface AddCandidateFormProps {
+  onAdd?: (newCandidate: Omit<import("@/types").Candidate, "id">) => void;
+}
+
+export function AddCandidateForm({ onAdd }: AddCandidateFormProps = {}) {
   const [open, setOpen] = useState(false);
   const { toast } = useToast();
 
@@ -87,7 +91,12 @@ export function AddCandidateForm() {
     };
 
     try {
-      mockDataService.addCandidate(newCandidate);
+      const candidate = mockDataService.addCandidate(newCandidate);
+      
+      // Call the onAdd callback if provided
+      if (onAdd) {
+        onAdd(newCandidate);
+      }
       
       toast({
         title: "Candidate added successfully",

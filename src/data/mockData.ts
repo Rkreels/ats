@@ -45,7 +45,6 @@ const jobs: Job[] = [
     department: "Engineering",
     location: "New York, NY",
     type: "Full-time",
-    employmentType: "Full-time",
     description: "We are looking for a Frontend Developer to join our team.",
     responsibilities: [
       "Develop new user-facing features",
@@ -62,7 +61,6 @@ const jobs: Job[] = [
     postedDate: "2023-01-01",
     closingDate: "2023-03-01",
     salary: "$100,000 - $130,000",
-    salaryRange: "$100,000 - $130,000",
     status: "Published",
     hiringManager: "John Doe",
     applicants: 15,
@@ -74,7 +72,6 @@ const jobs: Job[] = [
     department: "Engineering",
     location: "San Francisco, CA",
     type: "Full-time",
-    employmentType: "Full-time",
     description: "We are looking for a Backend Developer to join our team.",
     responsibilities: [
       "Design and implement scalable and reliable backend services",
@@ -91,7 +88,6 @@ const jobs: Job[] = [
     postedDate: "2023-01-15",
     closingDate: "2023-03-15",
     salary: "$120,000 - $150,000",
-    salaryRange: "$120,000 - $150,000",
     status: "Published",
     hiringManager: "Jane Smith",
     applicants: 10,
@@ -103,7 +99,6 @@ const jobs: Job[] = [
     department: "Product",
     location: "Chicago, IL",
     type: "Full-time",
-    employmentType: "Full-time",
     description: "We are looking for a Product Manager to join our team.",
     responsibilities: [
       "Define the product vision and strategy",
@@ -120,7 +115,6 @@ const jobs: Job[] = [
     postedDate: "2023-02-01",
     closingDate: "2023-04-01",
     salary: "$130,000 - $160,000",
-    salaryRange: "$130,000 - $160,000",
     status: "Published",
     hiringManager: "Michael Johnson",
     applicants: 8,
