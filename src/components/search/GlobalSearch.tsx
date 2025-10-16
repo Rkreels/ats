@@ -122,10 +122,10 @@ export default function GlobalSearch() {
 
   const getTypeColor = (type: string) => {
     switch (type) {
-      case "candidate": return "bg-blue-100 text-blue-800";
-      case "job": return "bg-green-100 text-green-800";
-      case "interview": return "bg-purple-100 text-purple-800";
-      default: return "bg-gray-100 text-gray-800";
+      case "candidate": return "bg-primary/10 text-primary";
+      case "job": return "bg-green-500/10 text-green-600 dark:text-green-400";
+      case "interview": return "bg-purple-500/10 text-purple-600 dark:text-purple-400";
+      default: return "bg-muted text-muted-foreground";
     }
   };
 

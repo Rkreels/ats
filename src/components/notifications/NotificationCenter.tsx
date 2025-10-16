@@ -85,19 +85,19 @@ export default function NotificationCenter() {
 
   const getNotificationIcon = (type: string) => {
     switch (type) {
-      case "warning": return <AlertCircle className="h-5 w-5 text-yellow-500" />;
-      case "success": return <Check className="h-5 w-5 text-green-500" />;
-      case "error": return <X className="h-5 w-5 text-red-500" />;
-      default: return <Bell className="h-5 w-5 text-blue-500" />;
+      case "warning": return <AlertCircle className="h-5 w-5 text-yellow-600 dark:text-yellow-400" />;
+      case "success": return <Check className="h-5 w-5 text-green-600 dark:text-green-400" />;
+      case "error": return <X className="h-5 w-5 text-destructive" />;
+      default: return <Bell className="h-5 w-5 text-primary" />;
     }
   };
 
   const getTypeColor = (type: string) => {
     switch (type) {
-      case "warning": return "bg-yellow-100 text-yellow-800";
-      case "success": return "bg-green-100 text-green-800";
-      case "error": return "bg-red-100 text-red-800";
-      default: return "bg-blue-100 text-blue-800";
+      case "warning": return "bg-yellow-500/10 text-yellow-600 dark:text-yellow-400";
+      case "success": return "bg-green-500/10 text-green-600 dark:text-green-400";
+      case "error": return "bg-destructive/10 text-destructive";
+      default: return "bg-primary/10 text-primary";
     }
   };
 
@@ -161,8 +161,8 @@ export default function NotificationCenter() {
                     <div
                       className={`p-4 border rounded-lg transition-colors ${
                         notification.read 
-                          ? "bg-gray-50" 
-                          : "bg-white border-l-4 border-l-blue-500"
+                          ? "bg-muted/30" 
+                          : "bg-card border-l-4 border-l-primary"
                       }`}
                     >
                       <div className="flex items-start justify-between">

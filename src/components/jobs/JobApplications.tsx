@@ -37,13 +37,13 @@ export default function JobApplications({ jobId, jobTitle }: JobApplicationsProp
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "Applied": return "bg-blue-100 text-blue-800";
-      case "Screen": return "bg-yellow-100 text-yellow-800";
-      case "Interview": return "bg-purple-100 text-purple-800";
-      case "Offer": return "bg-green-100 text-green-800";
-      case "Hired": return "bg-green-200 text-green-900";
-      case "Rejected": return "bg-red-100 text-red-800";
-      default: return "bg-gray-100 text-gray-800";
+      case "Applied": return "bg-primary/10 text-primary";
+      case "Screen": return "bg-yellow-500/10 text-yellow-600 dark:text-yellow-400";
+      case "Interview": return "bg-purple-500/10 text-purple-600 dark:text-purple-400";
+      case "Offer": return "bg-green-500/10 text-green-600 dark:text-green-400";
+      case "Hired": return "bg-green-500/20 text-green-700 dark:text-green-300";
+      case "Rejected": return "bg-destructive/10 text-destructive";
+      default: return "bg-muted text-muted-foreground";
     }
   };
 

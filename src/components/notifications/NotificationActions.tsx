@@ -81,7 +81,7 @@ export default function NotificationActions({
         variant="ghost" 
         size="sm"
         onClick={handleDelete}
-        className="h-6 w-6 p-0 text-red-500 hover:text-red-700"
+        className="h-6 w-6 p-0 text-destructive hover:text-destructive/80"
       >
         <X className="h-3 w-3" />
       </Button>
