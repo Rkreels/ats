@@ -5,7 +5,6 @@ import { NotificationsPopover } from "../notifications/NotificationsPopover";
 import VoiceToggle from "@/components/voice/VoiceToggle";
 import { Button } from "@/components/ui/button";
 import { Menu, X, ExternalLink } from "lucide-react";
-import { useIsMobile } from "@/hooks/use-mobile";
 import EnhancedVoiceTutorialListener from "@/components/voice/EnhancedVoiceTutorialListener";
 
 interface AppLayoutProps {
@@ -14,17 +13,20 @@ interface AppLayoutProps {
 
 export default function AppLayout({ children }: AppLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const isMobile = useIsMobile();
-  
+  const [isMobile, setIsMobile] = useState(false);
+
   useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth >= 768 && sidebarOpen) {
+    const checkMobile = () => {
+      const mobile = window.innerWidth < 1024;
+      setIsMobile(mobile);
+      if (!mobile && sidebarOpen) {
         setSidebarOpen(false);
       }
     };
 
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
   }, [sidebarOpen]);
   
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
@@ -51,7 +53,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
             {sidebarOpen && (
               <div 
                 className="fixed inset-0 bg-black bg-opacity-50 z-30"
-                onClick={toggleSidebar}
+                onClick={() => setSidebarOpen(false)}
               />
             )}
           </>
@@ -62,61 +64,35 @@ export default function AppLayout({ children }: AppLayoutProps) {
         )}
         
         <div className="flex-1 flex flex-col min-h-screen">
-          <EnhancedVoiceTutorialListener
-            selector="app-header"
-            description="Application header with mobile menu toggle and notifications."
-            category="navigation"
-          >
-            <header className="sticky top-0 bg-white border-b border-gray-200 p-4 z-20 flex justify-between items-center">
-              <EnhancedVoiceTutorialListener
-                selector="mobile-menu-toggle"
-                description="Mobile menu toggle button for opening and closing the sidebar."
-                actionStep="Click to toggle the navigation menu on mobile devices."
-                category="action"
+          <header className="sticky top-0 bg-white border-b border-gray-200 p-4 z-20 flex justify-between items-center">
+            {isMobile && (
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={toggleSidebar}
               >
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  className="lg:hidden" 
-                  onClick={toggleSidebar}
-                >
-                  {sidebarOpen ? <X size={20} /> : <Menu size={20} />}
-                  <span className="sr-only">Toggle menu</span>
-                </Button>
-              </EnhancedVoiceTutorialListener>
-              
-              <div className="ml-auto flex items-center space-x-4">
-                <EnhancedVoiceTutorialListener
-                  selector="master-dashboard-link"
-                  description="Master Dashboard link - opens the main system dashboard in a new window"
-                  actionStep="Click to access the central management dashboard"
-                  category="navigation"
-                  priority="medium"
-                >
-                  <Button
-                    onClick={() => window.open('https://skillsim.vercel.app/dashboard', '_self')}
-                    variant="outline"
-                    size="sm"
-                    className="flex items-center gap-2"
-                  >
-                    <ExternalLink className="h-4 w-4" />
-                    Master Dashboard
-                  </Button>
-                </EnhancedVoiceTutorialListener>
-                <NotificationsPopover />
-              </div>
-            </header>
-          </EnhancedVoiceTutorialListener>
+                {sidebarOpen ? <X size={20} /> : <Menu size={20} />}
+                <span className="sr-only">Toggle menu</span>
+              </Button>
+            )}
+            
+            <div className="ml-auto flex items-center space-x-4">
+              <Button
+                onClick={() => window.open('https://skillsim.vercel.app/dashboard', '_self')}
+                variant="outline"
+                size="sm"
+                className="flex items-center gap-2"
+              >
+                <ExternalLink className="h-4 w-4" />
+                Master Dashboard
+              </Button>
+              <NotificationsPopover />
+            </div>
+          </header>
           
-          <EnhancedVoiceTutorialListener
-            selector="main-content-area"
-            description="Main content area where page content is displayed."
-            category="info"
-          >
-            <main className="flex-1 p-3 sm:p-6 lg:p-8 overflow-x-hidden">
-              {children}
-            </main>
-          </EnhancedVoiceTutorialListener>
+          <main className="flex-1 p-3 sm:p-6 lg:p-8 overflow-x-hidden">
+            {children}
+          </main>
         </div>
       </div>
       <VoiceToggle />
