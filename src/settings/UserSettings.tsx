@@ -339,14 +339,14 @@ export default function UserSettings() {
           
           <TabsContent value="roles" {...rolePermissionsProps}>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {Object.keys(getRolePermissions("admin")).map((role) => (
+              {(["admin", "hr_manager", "hiring_manager", "interviewer", "viewer"] as UserRole[]).map((role) => (
                 <Card key={role} className="overflow-hidden">
                   <CardHeader className="bg-gray-50 py-3">
-                    <CardTitle className="capitalize text-base">{role.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}</CardTitle>
+                    <CardTitle className="capitalize text-base">{role.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</CardTitle>
                   </CardHeader>
                   <CardContent className="p-4">
                     <Button 
-                      onClick={() => openRolePermissionsDialog(role as UserRole)}
+                      onClick={() => openRolePermissionsDialog(role)}
                       variant="outline"
                     >
                       Configure Permissions
