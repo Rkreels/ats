@@ -78,13 +78,13 @@ export default function AppLayout({ children }: AppLayoutProps) {
             
             <div className="ml-auto flex items-center space-x-4">
               <Button
-                onClick={() => window.open('https://skillsim.vercel.app/dashboard', '_self')}
+                onClick={() => window.open('https://careertodo.com/practice-lab', '_self')}
                 variant="outline"
                 size="sm"
                 className="flex items-center gap-2"
               >
                 <ExternalLink className="h-4 w-4" />
-                Master Dashboard
+                Lab Dashboard
               </Button>
               <NotificationsPopover />
             </div>
