@@ -2,7 +2,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Plus, Calendar, FileText, Users } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useVoiceTrigger } from "@/hooks/useVoiceTrigger";
 import VoiceTutorialListener from "@/components/voice/VoiceTutorialListener";
 
 export default function QuickActions() {
@@ -79,10 +78,6 @@ export default function QuickActions() {
                   variant="outline"
                   className="h-auto p-4 flex flex-col items-center space-y-2"
                   onClick={action.action}
-                  {...useVoiceTrigger({
-                    what: action.voiceDescription,
-                    actionStep: action.actionStep
-                  }).voiceProps}
                 >
                   <action.icon className="h-6 w-6" />
                   <div className="text-center">
